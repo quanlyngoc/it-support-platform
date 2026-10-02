@@ -22,6 +22,7 @@ class Settings:
     MONGO_URI: str
     MONGO_DB: str = "itm_core"
     MASTER_DB: str = "itm_master"
+    HOST: str = "127.0.0.1"  # Caddy cùng máy → chỉ nghe nội bộ; Core ở máy riêng thì đặt HOST=0.0.0.0 + tường lửa
     PORT: int = 7009
     MASTER_KEY_B64: str = _DEV_MASTER_KEY_B64
     SESSION_TTL_HOURS: int = 12
@@ -48,6 +49,7 @@ def get_settings() -> Settings:
         MONGO_URI=uri,
         MONGO_DB=os.getenv("MONGO_DB", "itm_core"),
         MASTER_DB=os.getenv("MASTER_DB", "itm_master"),
+        HOST=os.getenv("HOST", "127.0.0.1").strip() or "127.0.0.1",
         PORT=int(os.getenv("PORT", "7009")),
         MASTER_KEY_B64=os.getenv("MASTER_KEY_B64", "") or _DEV_MASTER_KEY_B64,
         SESSION_TTL_HOURS=int(os.getenv("SESSION_TTL_HOURS", "12")),

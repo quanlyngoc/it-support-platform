@@ -13,6 +13,19 @@ from tests.conftest import AD_PASSWORD, TEST_SETTINGS, auth, login
 def test_health(client):
     r = client.get("/api/health")
     assert r.status_code == 200 and r.get_json()["ok"] is True
+    assert "db" not in r.get_json()  # bản thường không chạm CSDL
+
+
+def test_health_kiem_csdl(client, app, monkeypatch):
+    r = client.get("/api/health?db=1")
+    assert r.status_code == 200 and r.get_json()["db"] == "ok"
+
+    def hong(*_a, **_k):
+        raise TimeoutError("khong toi duoc CSDL")
+
+    monkeypatch.setattr(app.extensions["itm_db"], "command", hong)
+    r = client.get("/api/health?db=1")
+    assert r.status_code == 503 and r.get_json()["ok"] is False and r.get_json()["db_error"] == "TimeoutError"
 
 
 def test_dang_nhap_dung_tra_token_va_quyen(client, two_tenants):

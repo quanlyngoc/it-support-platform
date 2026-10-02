@@ -53,8 +53,8 @@ def main() -> None:
     utf8_stdio()
     s = get_settings()
     app = create_app()
-    print(f"Platform-Core {s.VERSION} chạy cổng {s.PORT} (CSDL {s.MONGO_DB})")
-    socketio.run(app, host="0.0.0.0", port=s.PORT)
+    print(f"Platform-Core {s.VERSION} chạy {s.HOST}:{s.PORT} (CSDL {s.MONGO_DB})", flush=True)
+    socketio.run(app, host=s.HOST, port=s.PORT)
 
 
 if __name__ == "__main__":
