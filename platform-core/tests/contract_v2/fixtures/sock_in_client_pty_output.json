@@ -1,0 +1,14 @@
+{
+  "id": "sock_in_client_pty_output",
+  "kind": "socket_in",
+  "event": "client_pty_output",
+  "payload": {
+    "mac": "aa:bb:cc:00:30:01",
+    "data": "\u001b[32mPS\u001b[0m"
+  },
+  "setup": [],
+  "effect": "pty_output tới room ptyview_aabbcc003001",
+  "rules": [],
+  "source": "D:/NetworkInventory/app.py:680; D:/NetworkInventory/agent_build/client.py:446",
+  "note": ""
+}

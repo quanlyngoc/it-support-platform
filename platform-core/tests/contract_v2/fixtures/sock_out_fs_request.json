@@ -1,0 +1,19 @@
+{
+  "id": "sock_out_fs_request",
+  "kind": "socket_out",
+  "event": "fs_request",
+  "payload": {
+    "hostname": "A6-301-01",
+    "op": "list",
+    "path": "C:\\",
+    "req_id": "r1",
+    "reply_sid": "<sid trình duyệt>"
+  },
+  "setup": [
+    "agent_registered:A6-301-01"
+  ],
+  "effect": "tới room host_A6-301-01; reply_sid do SERVER gắn",
+  "rules": [],
+  "source": "D:/NetworkInventory/app.py:779; D:/NetworkInventory/agent_build/client.py:3907",
+  "note": ""
+}

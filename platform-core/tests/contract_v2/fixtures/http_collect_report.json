@@ -1,0 +1,32 @@
+{
+  "id": "http_collect_report",
+  "kind": "http",
+  "source": "D:/NetworkInventory/app.py:5015; D:/NetworkInventory/agent_build/client.py:3218-3227",
+  "rules": [
+    "A9"
+  ],
+  "setup": [
+    "collect_session:c0ec7000000000000000000000000001"
+  ],
+  "note": "",
+  "request": {
+    "method": "POST",
+    "path": "/collect_report",
+    "json": {
+      "session_id": "c0ec7000000000000000000000000001",
+      "hostname": "A6-301-01",
+      "status": "nofile",
+      "files": [],
+      "deleted": false,
+      "error": ""
+    }
+  },
+  "expect": {
+    "status": [
+      200
+    ],
+    "json_subset": {
+      "status": "ok"
+    }
+  }
+}

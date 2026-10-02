@@ -1,0 +1,22 @@
+{
+  "id": "http_check_command_str",
+  "kind": "http",
+  "source": "D:/NetworkInventory/app.py:4271-4293",
+  "rules": [],
+  "setup": [
+    "queue_command:shutdown"
+  ],
+  "note": "",
+  "request": {
+    "method": "GET",
+    "path": "/check_command/aa:bb:cc:00:30:01"
+  },
+  "expect": {
+    "status": [
+      200
+    ],
+    "json_subset": {
+      "command": "shutdown"
+    }
+  }
+}

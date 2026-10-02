@@ -1,0 +1,22 @@
+{
+  "id": "http_fs_bridge_pending",
+  "kind": "http",
+  "source": "D:/NetworkInventory/app.py:1450",
+  "rules": [],
+  "setup": [
+    "fs_token:f5000000000000000000000000000003"
+  ],
+  "note": "",
+  "request": {
+    "method": "GET",
+    "path": "/fs_bridge/f5000000000000000000000000000003"
+  },
+  "expect": {
+    "status": [
+      404
+    ],
+    "json_subset": {
+      "status": "pending"
+    }
+  }
+}

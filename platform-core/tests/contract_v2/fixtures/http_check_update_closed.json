@@ -1,0 +1,27 @@
+{
+  "id": "http_check_update_closed",
+  "kind": "http",
+  "source": "D:/NetworkInventory/app.py:1988; D:/NetworkInventory/agent_build/client.py:700",
+  "rules": [
+    "A4"
+  ],
+  "setup": [],
+  "note": "",
+  "request": {
+    "method": "GET",
+    "path": "/check_update",
+    "headers": {
+      "User-Agent": "Mozilla/5.0"
+    }
+  },
+  "expect": {
+    "status": [
+      200
+    ],
+    "json_subset": {
+      "version": "0.0.0.0",
+      "hash": "",
+      "size": 0
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "sock_in_disconnect",
+  "kind": "socket_in",
+  "event": "disconnect",
+  "payload": null,
+  "setup": [
+    "agent_registered:A6-301-01"
+  ],
+  "effect": "A6-301-01 offline ngay, mất kênh lệnh",
+  "rules": [],
+  "source": "D:/NetworkInventory/app.py:482",
+  "note": ""
+}

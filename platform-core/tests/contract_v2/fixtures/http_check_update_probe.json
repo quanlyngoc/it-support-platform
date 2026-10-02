@@ -1,0 +1,22 @@
+{
+  "id": "http_check_update_probe",
+  "kind": "http",
+  "source": "D:/NetworkInventory/agent_build/client.py:287-305",
+  "rules": [
+    "A4"
+  ],
+  "setup": [],
+  "note": "server_hunter thăm dò bằng verify=False, không UA Mozilla; cần 200 + khoá version",
+  "request": {
+    "method": "GET",
+    "path": "/check_update"
+  },
+  "expect": {
+    "status": [
+      200
+    ],
+    "json_keys": [
+      "version"
+    ]
+  }
+}

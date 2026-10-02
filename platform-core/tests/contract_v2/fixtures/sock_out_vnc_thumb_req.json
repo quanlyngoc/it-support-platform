@@ -1,0 +1,17 @@
+{
+  "id": "sock_out_vnc_thumb_req",
+  "kind": "socket_out",
+  "event": "vnc_thumb_req",
+  "payload": {
+    "hostname": "A6-301-01",
+    "reply_sid": "<sid>",
+    "hd": false
+  },
+  "setup": [
+    "agent_registered:A6-301-01"
+  ],
+  "effect": "tới room host_A6-301-01",
+  "rules": [],
+  "source": "D:/NetworkInventory/app.py:802; D:/NetworkInventory/agent_build/client.py:3898",
+  "note": ""
+}

@@ -1,0 +1,25 @@
+{
+  "id": "http_collect_upload_unknown",
+  "kind": "http",
+  "source": "D:/NetworkInventory/app.py:4998",
+  "rules": [],
+  "setup": [],
+  "note": "",
+  "request": {
+    "method": "POST",
+    "path": "/collect_upload",
+    "form": {
+      "session_id": "c0ec7000000000000000000000000999",
+      "hostname": "A6-301-01",
+      "file": {
+        "filename": "A6-301-01.zip",
+        "content_b64": "UEsFBgAAAAAAAAAAAAAAAAAAAAAAAA=="
+      }
+    }
+  },
+  "expect": {
+    "status": [
+      404
+    ]
+  }
+}

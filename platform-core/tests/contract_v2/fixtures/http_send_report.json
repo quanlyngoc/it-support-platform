@@ -1,0 +1,44 @@
+{
+  "id": "http_send_report",
+  "kind": "http",
+  "source": "D:/NetworkInventory/app.py:4925; D:/NetworkInventory/agent_build/client.py:3208-3216",
+  "rules": [
+    "A9"
+  ],
+  "setup": [
+    "send_session:5e55a0d00000000000000000000000aa"
+  ],
+  "note": "",
+  "request": {
+    "method": "POST",
+    "path": "/send_report",
+    "json": {
+      "session_id": "5e55a0d00000000000000000000000aa",
+      "hostname": "A6-301-01",
+      "status": "partial",
+      "saved": 1,
+      "skipped": 0,
+      "failed": 1,
+      "reason": "Ổ đĩa đầy",
+      "files": [
+        {
+          "name": "DeThi/bai1.docx",
+          "ok": true
+        },
+        {
+          "name": "bai2.mp3",
+          "ok": false,
+          "error": "Ổ đĩa đầy"
+        }
+      ]
+    }
+  },
+  "expect": {
+    "status": [
+      200
+    ],
+    "json_subset": {
+      "status": "ok"
+    }
+  }
+}

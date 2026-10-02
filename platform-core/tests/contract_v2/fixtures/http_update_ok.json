@@ -1,0 +1,45 @@
+{
+  "id": "http_update_ok",
+  "kind": "http",
+  "source": "D:/NetworkInventory/app.py:2240; D:/NetworkInventory/agent_build/client.py:4133-4161",
+  "rules": [
+    "A1",
+    "A2"
+  ],
+  "setup": [
+    "agent_registered:A6-301-01"
+  ],
+  "note": "",
+  "request": {
+    "method": "POST",
+    "path": "/update",
+    "json": {
+      "hostname": "A6-301-01",
+      "ip": "10.21.30.101",
+      "mac": "aa:bb:cc:00:30:01",
+      "cpu": "Intel(R) Core(TM) i5-10500 CPU @ 3.10GHz",
+      "ram": "16GB (2 thanh: 8GB Generic Bus2666 [SN:1234], 8GB Generic Bus2666 [SN:5678])",
+      "mainboard": "0J4XYZ",
+      "disk": "1 ổ: SSD 256GB NVMe",
+      "model": "OptiPlex 5080",
+      "serial": "ABC1234",
+      "network": "Intel(R) Ethernet Connection",
+      "cpu_usage": 12.5,
+      "ram_usage": 41.2,
+      "disk_usage": "C:Windows:63:88.5:237.9|D:Data:10:410.2:465.8",
+      "cpu_temp": "N/A",
+      "cpu_fan": "N/A",
+      "cmos_battery": "Bình thường",
+      "client_version": "2.7.5.3",
+      "dang_tat": 0
+    }
+  },
+  "expect": {
+    "status": [
+      200
+    ],
+    "json_subset": {
+      "status": "success"
+    }
+  }
+}

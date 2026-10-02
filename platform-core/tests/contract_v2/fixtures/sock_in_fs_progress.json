@@ -1,0 +1,17 @@
+{
+  "id": "sock_in_fs_progress",
+  "kind": "socket_in",
+  "event": "fs_progress",
+  "payload": {
+    "req_id": "r1",
+    "reply_sid": "<sid trình duyệt>",
+    "sent": 524288,
+    "total": 1048576,
+    "name": "a.zip"
+  },
+  "setup": [],
+  "effect": "chuyển tới đúng reply_sid",
+  "rules": [],
+  "source": "D:/NetworkInventory/app.py:794; D:/NetworkInventory/agent_build/client.py:3773",
+  "note": ""
+}

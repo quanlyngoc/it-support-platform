@@ -1,0 +1,16 @@
+{
+  "id": "sock_in_cmd_ack",
+  "kind": "socket_in",
+  "event": "cmd_ack",
+  "payload": {
+    "command_id": "c1d0000000000000000000000000000a",
+    "hostname": "A6-301-01"
+  },
+  "setup": [
+    "pending_ack:c1d0000000000000000000000000000a"
+  ],
+  "effect": "lệnh không còn trong danh sách chờ gửi lại",
+  "rules": [],
+  "source": "D:/NetworkInventory/app.py:494; D:/NetworkInventory/agent_build/client.py:3713",
+  "note": ""
+}

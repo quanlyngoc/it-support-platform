@@ -1,0 +1,24 @@
+{
+  "id": "http_check_command_obj",
+  "kind": "http",
+  "source": "D:/NetworkInventory/app.py:4294-4296",
+  "rules": [
+    "A8"
+  ],
+  "setup": [
+    "queue_command_obj:powershell"
+  ],
+  "note": "đường dự phòng cho máy có nhịp tim mà mất socket (hubapi push_update via_http)",
+  "request": {
+    "method": "GET",
+    "path": "/check_command/aa:bb:cc:00:30:01"
+  },
+  "expect": {
+    "status": [
+      200
+    ],
+    "json_keys": [
+      "command_obj"
+    ]
+  }
+}

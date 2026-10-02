@@ -1,0 +1,20 @@
+{
+  "id": "http_fs_serve",
+  "kind": "http",
+  "source": "D:/NetworkInventory/app.py:1441; D:/NetworkInventory/agent_build/client.py:3843",
+  "rules": [],
+  "setup": [
+    "fs_push:f5000000000000000000000000000002:a.txt"
+  ],
+  "note": "",
+  "request": {
+    "method": "GET",
+    "path": "/fs_serve/f5000000000000000000000000000002"
+  },
+  "expect": {
+    "status": [
+      200
+    ],
+    "binary": true
+  }
+}

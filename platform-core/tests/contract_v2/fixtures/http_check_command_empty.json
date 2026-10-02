@@ -1,0 +1,20 @@
+{
+  "id": "http_check_command_empty",
+  "kind": "http",
+  "source": "D:/NetworkInventory/app.py:4260; D:/NetworkInventory/agent_build/client.py:3914-3935",
+  "rules": [],
+  "setup": [],
+  "note": "",
+  "request": {
+    "method": "GET",
+    "path": "/check_command/aa:bb:cc:00:30:01"
+  },
+  "expect": {
+    "status": [
+      200
+    ],
+    "json_subset": {
+      "command": null
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "http_fs_recv_raw_bad_token",
+  "kind": "http",
+  "source": "D:/NetworkInventory/app.py:1410",
+  "rules": [],
+  "setup": [],
+  "note": "",
+  "request": {
+    "method": "POST",
+    "path": "/fs_recv_raw",
+    "query": {
+      "token": "deadbeef",
+      "name": "a.txt"
+    },
+    "raw": "aGVsbG8=",
+    "headers": {
+      "Content-Type": "application/octet-stream"
+    }
+  },
+  "expect": {
+    "status": [
+      403
+    ]
+  }
+}

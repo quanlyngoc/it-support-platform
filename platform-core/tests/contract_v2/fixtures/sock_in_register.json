@@ -1,0 +1,13 @@
+{
+  "id": "sock_in_register",
+  "kind": "socket_in",
+  "event": "register",
+  "payload": {
+    "hostname": "a6-301-01"
+  },
+  "setup": [],
+  "effect": "host A6-301-01 có kênh lệnh (join room host_A6-301-01)",
+  "rules": [],
+  "source": "D:/NetworkInventory/app.py:447; D:/NetworkInventory/agent_build/client.py:143-149",
+  "note": ""
+}

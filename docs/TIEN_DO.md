@@ -16,7 +16,7 @@ Cập nhật lần cuối: 02/10/2026 (kết thúc GĐ2 phần của Claude)
 4. Kiểm nhanh trạng thái trước khi làm tiếp (tất cả phải xanh):
    ```powershell
    cd D:\ITSupportPlatform\platform-core
-   uv run pytest -q                 # 58 passed, 2 skipped (skip có ghi giai đoạn)
+   uv run pytest -q                 # 61 passed, 2 skipped, 45 xfailed (xfail = hợp đồng agent v2 chờ 3.3)
    uv run ruff check .
    uv run pyright
    git -C D:\ITSupportPlatform status --short
@@ -50,23 +50,24 @@ Cập nhật lần cuối: 02/10/2026 (kết thúc GĐ2 phần của Claude)
 | 2.9 | `require_perm`, audit after_request (LAB/HSK/THI), OpenAPI `/docs`, `app/server.py` gevent | chạy thật cổng 7009 trên Atlas: login 0,5 s, `/me` 11 ms (đệm) |
 | 2.10 | 23 mục §4A.36 + §77 (`tests/isolation/test_spec_isolation.py`), CI `.github/workflows/ci.yml` | 21 xanh + 2 skip mức API (GĐ3, GĐ7) |
 | — | Công cụ QA: `platform-deployment/qa/check_routes.py`, `check_eol.py` (+ test của chính công cụ) | cả hai ĐẠT |
+| 3.1 | Hợp đồng agent v2: `platform-core/tests/contract_v2/HOP_DONG.md` (luật sống còn A1–A11, thông số, 18 route HTTP, 15 sự kiện socket, 15 action lệnh) + 45 fixture + `test_contract_v2.py` | 3 test kiểm fixture xanh; 45 test hợp đồng `xfail strict` chờ 3.3 |
 
 ## Đang làm
 
-- (không có — GĐ2 phần của Claude đã xong; chờ bắt đầu GĐ3)
+- (không có — 3.1 xong; bước kế là 3.3 viết legacy_adapter. 3.2 là việc người vận hành)
 
 ## BƯỚC TIẾP THEO
 
-1. **GĐ3 bước 3.1 — Ghi hợp đồng giao thức agent v2** vào `platform-core/tests/contract_v2/HOP_DONG.md`:
-   đọc (CHỈ ĐỌC) `D:\NetworkInventory\app.py`, `workers.py`, `utils.py`, `agent_build\client.py` (agent 2.7.5.3);
-   với mỗi HTTP route agent gọi (`/update`, `/check_update`, `/download_setup`, `/client_log`, `/offline`, `/check_command/…`,
-   `/login_result/…`, `/pty_auth_result/…`, `/ps_auth_result/…`, `/ps_bulk_result/…`, `/work_file/…`, `/collect_report`,
-   `/collect_upload`, `/send_report`, `/fs_recv_raw`, `/fs_serve/<tok>`, `/fs_bridge/<tok>`) và mỗi sự kiện socket
-   (agent→server: `register`, `cmd_ack`, `client_ps_output`, `client_pty_output`, `fs_progress`, `fs_response`, `vnc_thumb`;
-   server→agent: `execute_command`, `server_ps_input`, `server_pty_input`, `server_pty_resize`, `fs_request`, `vnc_thumb_req`)
-   ghi định dạng vào/ra + mã HTTP, lưu fixture JSON ở `tests/contract_v2/fixtures/`, viết test hợp đồng (đỏ, chờ 3.3).
-2. 3.3 `app/legacy_adapter/` theo Sổ tay (online trong RAM, ghi gộp — Atlas RTT 55 ms nên tuyệt đối không ghi CSDL mỗi nhịp tim).
-3. Bỏ `skip` của 2 test API trong `test_spec_isolation.py` khi module tương ứng xong (GĐ3: lệnh agent; GĐ7: tải tệp).
+1. **3.3 `app/legacy_adapter/`** theo Sổ tay + `HOP_DONG.md`: `state.py` (online + `REGISTERED` + hàng đợi lệnh HTTP + ACK
+   trong RAM của 1 tiến trình), `http_routes.py`, `socket_handlers.py`, `dispatch.py` (không broadcast — luật A8),
+   `results.py` (MongoDB `command_results`), `writer.py` (ghi `computers` gộp ở luồng nền — luật A10 + bài học 10.20/10.21),
+   `update_gate.py` (luật A4/A5), `contract.py` (`apply_setup`, `check_socket` cho test hợp đồng). Đọc thêm (CHỈ ĐỌC)
+   `D:\NetworkInventory\workers.py` (`async_db_writer_worker`, `_mevt_swap`, `_mevt_hwid`, `generic_serials`) và
+   `utils.py` (`get_room_from_hostname`, `SystemState`). Mỗi mục làm xong → thêm id vào `IMPLEMENTED` trong test.
+2. Bỏ `skip` của 2 test API trong `test_spec_isolation.py` khi module tương ứng xong (GĐ3: lệnh agent; GĐ7: tải tệp).
+3. ⚠️ **Sửa Sổ tay bước 3.6 (canary Caddy)** theo `HOP_DONG.md` mục A11: agent gửi `User-Agent: Mozilla/5.0` ở
+   `/check_update` + `/download_setup`, nên matcher canary phải là `client_ip` + **danh sách đường dẫn agent**, KHÔNG dùng
+   `not header User-Agent *Mozilla*`. Áp vào `docs/plan/SoTay_*.html|docx` khi cập nhật tài liệu (cùng lúc đổi `D:\Platform`).
 
 ## Việc cần người vận hành (Claude không có quyền Administrator)
 

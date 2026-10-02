@@ -1,0 +1,31 @@
+{
+  "id": "http_ps_bulk_result_ok",
+  "kind": "http",
+  "source": "D:/NetworkInventory/app.py:4474; D:/NetworkInventory/agent_build/client.py:3573",
+  "rules": [
+    "A9"
+  ],
+  "setup": [
+    "ps_bulk_token:0123456789abcdef0123456789abcdef"
+  ],
+  "note": "",
+  "request": {
+    "method": "POST",
+    "path": "/ps_bulk_result/0123456789abcdef0123456789abcdef",
+    "json": {
+      "hostname": "A6-301-01",
+      "status": "done",
+      "exit_code": 0,
+      "stdout": "nt authority\\system\r\n",
+      "stderr": ""
+    }
+  },
+  "expect": {
+    "status": [
+      200
+    ],
+    "json_subset": {
+      "status": "ok"
+    }
+  }
+}

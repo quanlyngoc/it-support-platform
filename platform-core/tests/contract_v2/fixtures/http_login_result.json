@@ -1,0 +1,24 @@
+{
+  "id": "http_login_result",
+  "kind": "http",
+  "source": "D:/NetworkInventory/app.py:4528",
+  "rules": [],
+  "setup": [],
+  "note": "",
+  "request": {
+    "method": "POST",
+    "path": "/login_result/aa:bb:cc:00:30:01",
+    "json": {
+      "status": "success",
+      "hostname": "A6-301-01"
+    }
+  },
+  "expect": {
+    "status": [
+      200
+    ],
+    "json_subset": {
+      "status": "ok"
+    }
+  }
+}

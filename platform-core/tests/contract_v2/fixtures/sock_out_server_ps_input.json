@@ -1,0 +1,14 @@
+{
+  "id": "sock_out_server_ps_input",
+  "kind": "socket_out",
+  "event": "server_ps_input",
+  "payload": {
+    "mac": "aa:bb:cc:00:30:01",
+    "data": "dir\r"
+  },
+  "setup": [],
+  "effect": "agent lọc theo MAC",
+  "rules": [],
+  "source": "D:/NetworkInventory/app.py:687; D:/NetworkInventory/agent_build/client.py:365",
+  "note": ""
+}

@@ -1,0 +1,25 @@
+{
+  "id": "http_offline",
+  "kind": "http",
+  "source": "D:/NetworkInventory/app.py:4560; D:/NetworkInventory/agent_build/client.py:604-611",
+  "rules": [],
+  "setup": [
+    "agent_registered:A6-301-01"
+  ],
+  "note": "",
+  "request": {
+    "method": "POST",
+    "path": "/offline",
+    "json": {
+      "hostname": "A6-301-01"
+    }
+  },
+  "expect": {
+    "status": [
+      200
+    ],
+    "json_subset": {
+      "status": "success"
+    }
+  }
+}

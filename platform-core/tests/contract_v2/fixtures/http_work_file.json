@@ -1,0 +1,20 @@
+{
+  "id": "http_work_file",
+  "kind": "http",
+  "source": "D:/NetworkInventory/app.py:4955",
+  "rules": [],
+  "setup": [
+    "work_batch:ba7c4000000000000000000000000001:DeThi/bai1.docx"
+  ],
+  "note": "",
+  "request": {
+    "method": "GET",
+    "path": "/work_file/ba7c4000000000000000000000000001/DeThi/bai1.docx"
+  },
+  "expect": {
+    "status": [
+      200
+    ],
+    "binary": true
+  }
+}

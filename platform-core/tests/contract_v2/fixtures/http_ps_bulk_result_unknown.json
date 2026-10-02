@@ -1,0 +1,24 @@
+{
+  "id": "http_ps_bulk_result_unknown",
+  "kind": "http",
+  "source": "D:/NetworkInventory/app.py:4480",
+  "rules": [],
+  "setup": [],
+  "note": "",
+  "request": {
+    "method": "POST",
+    "path": "/ps_bulk_result/ffffffffffffffffffffffffffffffff",
+    "json": {
+      "hostname": "A6-301-01",
+      "status": "done"
+    }
+  },
+  "expect": {
+    "status": [
+      200
+    ],
+    "json_subset": {
+      "status": "ignored"
+    }
+  }
+}

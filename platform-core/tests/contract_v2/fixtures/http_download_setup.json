@@ -1,0 +1,26 @@
+{
+  "id": "http_download_setup",
+  "kind": "http",
+  "source": "D:/NetworkInventory/app.py:2182; D:/NetworkInventory/agent_build/client.py:716",
+  "rules": [
+    "A5"
+  ],
+  "setup": [
+    "manifest:2.7.5.4"
+  ],
+  "note": "",
+  "request": {
+    "method": "GET",
+    "path": "/download_setup",
+    "headers": {
+      "User-Agent": "Mozilla/5.0"
+    }
+  },
+  "expect": {
+    "status": [
+      200,
+      503
+    ],
+    "binary": true
+  }
+}

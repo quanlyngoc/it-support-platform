@@ -1,0 +1,14 @@
+{
+  "id": "sock_in_client_ps_output",
+  "kind": "socket_in",
+  "event": "client_ps_output",
+  "payload": {
+    "mac": "aa:bb:cc:00:30:01",
+    "data": "PS C:\\> "
+  },
+  "setup": [],
+  "effect": "trình duyệt mở phiên nhận ps_output",
+  "rules": [],
+  "source": "D:/NetworkInventory/app.py:650; D:/NetworkInventory/agent_build/client.py:404",
+  "note": ""
+}

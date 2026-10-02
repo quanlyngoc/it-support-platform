@@ -127,7 +127,12 @@ CLI/server in tiếng Việt phải gọi `app.utils.console.utf8_stdio()` trư�
 | Lệnh | `execute_command` như cũ | Envelope v3 có `command_id`, `expires_at`, `sig` (Ed25519 của Core) |
 | Định tuyến | room `host_<HOSTNAME>` | room `t:<tenant>:dev:<device_id>` |
 
+- **Hợp đồng v2 đầy đủ (đo từ mã 2.7.5.3): `platform-core/tests/contract_v2/HOP_DONG.md`** — đọc mục A (luật sống còn)
+  TRƯỚC khi sửa bất cứ gì trong `legacy_adapter`. Ba luật dễ phạm nhất: `/update` **luôn 200, không bao giờ 426**
+  (mã khác ×3 → agent đi "săn server"); `/check_update` luôn 200 + khoá `version` (agent dùng nó để nhận ra server);
+  Core **không** trả lời UDP 5010.
 - **KHÔNG BAO GIỜ broadcast lệnh.** Không tìm thấy room của máy → ghi log `KENH-LENH`, trả lỗi cho người bấm.
+  Máy còn nhịp tim mà mất socket → xếp lệnh vào hàng đợi HTTP `/check_command/<mac>` (agent poll 1,6–3 s).
 - ACK: `command_id`, `ACK_TIMEOUT=8s`, `ACK_MAX_TRIES=3`; agent chống chạy đúp theo `command_id`.
 - Kết quả bất đồng bộ (PowerShell hàng loạt, giao/thu bài): **đệm kết quả về sớm + API poll dự phòng**.
 - Online: RAM `ONLINE[tenant][device]=ts`; ghi `online_state` CHỈ khi đổi trạng thái + flush `last_seen` mỗi 60s.
@@ -137,8 +142,9 @@ CLI/server in tiếng Việt phải gọi `app.utils.console.utf8_stdio()` trư�
 
 ### Action agent xử lý
 `powershell` · `start_ps`/`stop_ps` · `start_pty`/`stop_pty`/`pty_validate` · `login_encrypted` ·
-`internet_control` · `relay_wake`/`relay_wake_batch` · `kill_and_update` · `receive_work` · `collect_work` ·
-`hsk_launch` · `show_sbd`/`hide_sbd` · `vnc_start`/`vnc_stop` · `vnc_thumb` · `fs_request`.
+`internet_control` · `relay_wake`/`relay_wake_batch` · `receive_work` · `collect_work` ·
+`hsk_launch` · `show_sbd`/`hide_sbd` · `vnc_start`/`vnc_stop` + lệnh chuỗi `shutdown`/`restart`/`logout`;
+sự kiện riêng `vnc_thumb_req`, `fs_request`. (`kill_and_update` KHÔNG còn trong agent 2.7.5.3 — Core không được gửi.)
 
 ---
 
@@ -278,6 +284,8 @@ Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay l�
 | 02/10/2026 | 2.2 Khung 5 project, `.gitattributes`, `.gitignore`, ADR | Xong | `docs/adr/ADR-0001…0012` |
 | 02/10/2026 | 2.3–2.10 Nền platform-core | Xong (trừ CI chạy thật) | Atlas `itm_core` đã khởi tạo; tổ chức PHENIKAA + `admin`; 58 test + 3 test Atlas xanh; ruff/pyright sạch; CI viết sẵn, chờ repo GitHub |
 | 02/10/2026 | 2.11 Core thành dịch vụ NSSM | Chờ người vận hành | Cần quyền Administrator — lệnh trong Sổ tay 2.11 |
+| 02/10/2026 | 3.1 Hợp đồng agent v2 | Xong | `tests/contract_v2/HOP_DONG.md` + 45 fixture (xfail strict chờ 3.3). Phát hiện: agent gửi UA `Mozilla/5.0` ở `/check_update`/`/download_setup` → sửa điều kiện canary 3.6 (mục A11) |
+| — | 3.3 legacy_adapter | Kế tiếp | Theo `docs/TIEN_DO.md` |
 
 Chi tiết bàn giao từng bước: `docs/TIEN_DO.md`.
 

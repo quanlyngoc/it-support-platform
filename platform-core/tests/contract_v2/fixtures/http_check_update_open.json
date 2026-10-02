@@ -1,0 +1,31 @@
+{
+  "id": "http_check_update_open",
+  "kind": "http",
+  "source": "D:/NetworkInventory/app.py:1871",
+  "rules": [
+    "A4",
+    "A5"
+  ],
+  "setup": [
+    "rollout_open_for_client",
+    "manifest:2.7.5.4"
+  ],
+  "note": "",
+  "request": {
+    "method": "GET",
+    "path": "/check_update",
+    "headers": {
+      "User-Agent": "Mozilla/5.0"
+    }
+  },
+  "expect": {
+    "status": [
+      200
+    ],
+    "json_keys": [
+      "version",
+      "hash",
+      "size"
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "id": "http_pty_auth_result",
+  "kind": "http",
+  "source": "D:/NetworkInventory/app.py:1707",
+  "rules": [],
+  "setup": [],
+  "note": "",
+  "request": {
+    "method": "POST",
+    "path": "/pty_auth_result/aa:bb:cc:00:30:01",
+    "json": {
+      "status": "error",
+      "msg": "Sai mật khẩu"
+    }
+  },
+  "expect": {
+    "status": [
+      200
+    ],
+    "json_subset": {
+      "status": "ok"
+    }
+  }
+}

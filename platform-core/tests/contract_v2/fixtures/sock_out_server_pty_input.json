@@ -1,0 +1,17 @@
+{
+  "id": "sock_out_server_pty_input",
+  "kind": "socket_out",
+  "event": "server_pty_input",
+  "payload": {
+    "mac": "aa:bb:cc:00:30:01",
+    "hostname": "A6-301-01",
+    "data": "ls\r"
+  },
+  "setup": [
+    "agent_registered:A6-301-01"
+  ],
+  "effect": "tới room host_A6-301-01",
+  "rules": [],
+  "source": "D:/NetworkInventory/app.py:665; D:/NetworkInventory/agent_build/client.py:536",
+  "note": ""
+}

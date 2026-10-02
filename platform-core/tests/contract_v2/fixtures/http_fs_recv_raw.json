@@ -1,0 +1,30 @@
+{
+  "id": "http_fs_recv_raw",
+  "kind": "http",
+  "source": "D:/NetworkInventory/app.py:1406; D:/NetworkInventory/agent_build/client.py:3825",
+  "rules": [],
+  "setup": [
+    "fs_token:f5000000000000000000000000000001"
+  ],
+  "note": "",
+  "request": {
+    "method": "POST",
+    "path": "/fs_recv_raw",
+    "query": {
+      "token": "f5000000000000000000000000000001",
+      "name": "a.txt"
+    },
+    "raw": "aGVsbG8=",
+    "headers": {
+      "Content-Type": "application/octet-stream"
+    }
+  },
+  "expect": {
+    "status": [
+      200
+    ],
+    "json_subset": {
+      "status": "ok"
+    }
+  }
+}

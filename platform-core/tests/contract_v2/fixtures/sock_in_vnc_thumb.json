@@ -1,0 +1,16 @@
+{
+  "id": "sock_in_vnc_thumb",
+  "kind": "socket_in",
+  "event": "vnc_thumb",
+  "payload": {
+    "hostname": "A6-301-01",
+    "image": "/9j/4AAQSkZJRg==",
+    "hd": false,
+    "reply_sid": "<sid trình duyệt>"
+  },
+  "setup": [],
+  "effect": "chuyển tới đúng reply_sid",
+  "rules": [],
+  "source": "D:/NetworkInventory/app.py:812; D:/NetworkInventory/agent_build/client.py:1671",
+  "note": ""
+}

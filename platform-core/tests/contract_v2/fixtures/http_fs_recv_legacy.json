@@ -1,0 +1,29 @@
+{
+  "id": "http_fs_recv_legacy",
+  "kind": "http",
+  "source": "D:/NetworkInventory/app.py:1395",
+  "rules": [],
+  "setup": [
+    "fs_token:f5000000000000000000000000000001"
+  ],
+  "note": "",
+  "request": {
+    "method": "POST",
+    "path": "/fs_recv",
+    "form": {
+      "token": "f5000000000000000000000000000001",
+      "file": {
+        "filename": "a.txt",
+        "content_b64": "aGVsbG8="
+      }
+    }
+  },
+  "expect": {
+    "status": [
+      200
+    ],
+    "json_subset": {
+      "status": "ok"
+    }
+  }
+}

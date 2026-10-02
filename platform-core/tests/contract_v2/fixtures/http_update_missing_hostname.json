@@ -1,0 +1,22 @@
+{
+  "id": "http_update_missing_hostname",
+  "kind": "http",
+  "source": "D:/NetworkInventory/app.py:2243",
+  "rules": [
+    "A1"
+  ],
+  "setup": [],
+  "note": "hub cũ trả 400; Core trả 200 để không đẩy agent vào chế độ săn server (thân lỗi không phải agent thật)",
+  "request": {
+    "method": "POST",
+    "path": "/update",
+    "json": {
+      "cpu_usage": 1
+    }
+  },
+  "expect": {
+    "status": [
+      200
+    ]
+  }
+}

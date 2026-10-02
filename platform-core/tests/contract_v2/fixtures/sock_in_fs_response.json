@@ -1,0 +1,27 @@
+{
+  "id": "sock_in_fs_response",
+  "kind": "socket_in",
+  "event": "fs_response",
+  "payload": {
+    "req_id": "r1",
+    "reply_sid": "<sid trình duyệt>",
+    "mac": "aa:bb:cc:00:30:01",
+    "op": "list",
+    "ok": true,
+    "error": "",
+    "path": "C:\\",
+    "items": [
+      {
+        "name": "Users",
+        "type": "dir",
+        "size": 0,
+        "mtime": 0
+      }
+    ]
+  },
+  "setup": [],
+  "effect": "chuyển tới đúng reply_sid (bỏ reply_sid khỏi dữ liệu)",
+  "rules": [],
+  "source": "D:/NetworkInventory/app.py:788; D:/NetworkInventory/agent_build/client.py:3793-3896",
+  "note": ""
+}

@@ -1,0 +1,25 @@
+{
+  "id": "sock_out_execute_command",
+  "kind": "socket_out",
+  "event": "execute_command",
+  "payload": {
+    "command_obj": {
+      "action": "powershell",
+      "script": "hostname; whoami",
+      "result_token": "<token>",
+      "timeout": 90
+    },
+    "command_id": "<uuid hex>",
+    "mac": "aa:bb:cc:00:30:01",
+    "hostname": "A6-301-01"
+  },
+  "setup": [
+    "agent_registered:A6-301-01"
+  ],
+  "effect": "CHỈ socket trong room host_A6-301-01 nhận; chờ ACK 8 s, gửi lại ≤ 3 lần",
+  "rules": [
+    "A8"
+  ],
+  "source": "D:/NetworkInventory/app.py:373-431; D:/NetworkInventory/agent_build/client.py:3698-3718",
+  "note": ""
+}
