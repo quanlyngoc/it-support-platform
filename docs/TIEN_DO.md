@@ -6,7 +6,7 @@
 > Kế hoạch đầy đủ: `docs/plan/SoTay_ThucHien_ITMonitor_SaaS.html` (số bước bên dưới theo Sổ tay;
 > tài liệu đó còn ghi `D:\Platform` — hiểu là `D:\ITSupportPlatform`).
 
-Cập nhật lần cuối: 02/10/2026 (2.11 xong — dịch vụ PlatformCore đang chạy; kế: 3.3)
+Cập nhật lần cuối: 02/10/2026 tối (3.3 legacy_adapter xong; Sổ tay sửa theo thực tế; kế: CapNhat dịch vụ → 0.6/0.7 → canary 3.5–3.8)
 
 ## Cách mở phiên mới để làm tiếp
 
@@ -16,7 +16,7 @@ Cập nhật lần cuối: 02/10/2026 (2.11 xong — dịch vụ PlatformCore đ
 4. Kiểm nhanh trạng thái trước khi làm tiếp (tất cả phải xanh):
    ```powershell
    cd D:\ITSupportPlatform\platform-core
-   uv run pytest -q                 # 62 passed, 2 skipped, 45 xfailed (xfail = hợp đồng agent v2 chờ 3.3)
+   uv run pytest -q                 # 133 passed, 1 skipped (05b chờ GĐ7 tải tệp)
    uv run ruff check .
    uv run pyright
    git -C D:\ITSupportPlatform status --short
@@ -52,24 +52,28 @@ Cập nhật lần cuối: 02/10/2026 (2.11 xong — dịch vụ PlatformCore đ
 | — | Công cụ QA: `platform-deployment/qa/check_routes.py`, `check_eol.py` (+ test của chính công cụ) | cả hai ĐẠT |
 | 2.11 | **Dịch vụ `PlatformCore` đã cài và chạy** (người vận hành cài tay bằng lệnh nssm, 02/10/2026). `dich_vu_core.ps1 -Lenh KiemTra`: Running, Delayed Auto (registry `DelayedAutostart=1`), LocalSystem, nghe 127.0.0.1:7009, ping Atlas 431 ms; `core-out.log` có 2 dòng khởi động (lần đầu + tự lên lại sau khi giết tiến trình), `core-err.log` trống; 7 dịch vụ hệ cũ vẫn Running | `dich_vu_core.ps1 -Lenh KiemTra` |
 | 2.11 (chuẩn bị) | Script dịch vụ `platform-deployment/nssm/dich_vu_core.ps1` (CaiDat/KiemTra/CapNhat/Go) + bản chạy `D:\ITSupportPlatformRun` (clone `main`, `uv sync --no-dev --locked`); `HOST` (mặc định 127.0.0.1); `/api/health?db=1` | Chạy thử bằng tài khoản thường cổng 7019: nghe 127.0.0.1, ping Atlas 456 ms, giết tiến trình con → launcher thoát (NSSM sẽ thấy), giết launcher → con chết theo, nhả cổng; tham số nssm truyền đúng (thay nssm bằng chương trình ghi tham số) |
+| 3.3 | `app/legacy_adapter/` (state · adapter · fastpath · http_routes · socket_handlers · writer · store · update_gate · identity · api · contract) — commit `db637ac` | 45/45 test hợp đồng xanh; test cô lập 07b chạy thật; unit A1–A10; Atlas: Writer ghi 30 máy/lượt. Thử tải: xem dòng "Thử tải 3.3" |
+| 3.3 (thử tải) | Core cổng 7019 + DB tạm `itm_loadtest`, giả lập agent 2.7.5.3 (nhịp tim 2 s + poll 1,6–3 s + websocket register/ping/ACK), mọi tiến trình thử BelowNormal | 300 agent/90 s: qua Flask 28,5% một lõi, p99 ≈ 510 ms → thêm đường nhanh WSGI: **5%, p99 ≈ 3 ms**; tắt nhật ký truy cập gevent-websocket (≈ 10 GB/ngày). **900 agent/30 phút (ĐẠT điều kiện Sổ tay 3.3):** 810 nghìn nhịp tim (450/s) + 704 nghìn poll (391/s), **0 lỗi, 0 mã ≠ 200**, 900/900 socket không rớt; p50/p95/p99 nhịp tim 1,4/6/14 ms; CPU Core TB 22,5% (max 29,5%) một lõi; RAM 226 → 224 MB (không rò); CPU toàn máy TB 17,5%. Atlas: 900 `computers`, 26.700 phút `usage_stats`, 0 `machine_events`; ngắt socket → 900 máy offline ngay. DB tạm đã xoá |
+| — | Sổ tay + Lộ trình theo thực tế (commit `90fe9f0`): `D:\ITSupportPlatform`, Atlas, Core cùng máy; canary A11 lọc IP + 19 đường dẫn — đã `caddy adapt` + `validate` trên bản sao Caddyfile (đứng trước `@hub`, `path` gộp HOẶC); 3.2 không bắt buộc; 3.4–3.8 viết lại với lệnh PowerShell + `/api/legacy/*`; docx dựng lại; artifact cập nhật (bản 3) | `docs/plan/*`, https://claude.ai/artifact/6YS1eX45UvaRHQGGQD3T9G |
 | 3.1 | Hợp đồng agent v2: `platform-core/tests/contract_v2/HOP_DONG.md` (luật sống còn A1–A11, thông số, 18 route HTTP, 15 sự kiện socket, 15 action lệnh) + 45 fixture + `test_contract_v2.py` | 3 test kiểm fixture xanh; 45 test hợp đồng `xfail strict` chờ 3.3 |
 
 ## Đang làm
 
-- (không có — 3.1 xong; bước kế là 3.3 viết legacy_adapter. 3.2 là việc người vận hành)
+- (không có)
 
 ## BƯỚC TIẾP THEO
 
-1. **3.3 `app/legacy_adapter/`** theo Sổ tay + `HOP_DONG.md`: `state.py` (online + `REGISTERED` + hàng đợi lệnh HTTP + ACK
-   trong RAM của 1 tiến trình), `http_routes.py`, `socket_handlers.py`, `dispatch.py` (không broadcast — luật A8),
-   `results.py` (MongoDB `command_results`), `writer.py` (ghi `computers` gộp ở luồng nền — luật A10 + bài học 10.20/10.21),
-   `update_gate.py` (luật A4/A5), `contract.py` (`apply_setup`, `check_socket` cho test hợp đồng). Đọc thêm (CHỈ ĐỌC)
-   `D:\NetworkInventory\workers.py` (`async_db_writer_worker`, `_mevt_swap`, `_mevt_hwid`, `generic_serials`) và
-   `utils.py` (`get_room_from_hostname`, `SystemState`). Mỗi mục làm xong → thêm id vào `IMPLEMENTED` trong test.
-2. Bỏ `skip` của 2 test API trong `test_spec_isolation.py` khi module tương ứng xong (GĐ3: lệnh agent; GĐ7: tải tệp).
-3. ⚠️ **Sửa Sổ tay bước 3.6 (canary Caddy)** theo `HOP_DONG.md` mục A11: agent gửi `User-Agent: Mozilla/5.0` ở
-   `/check_update` + `/download_setup`, nên matcher canary phải là `client_ip` + **danh sách đường dẫn agent**, KHÔNG dùng
-   `not header User-Agent *Mozilla*`. Áp vào `docs/plan/SoTay_*.html|docx` khi cập nhật tài liệu (cùng lúc đổi `D:\Platform`).
+1. **Người vận hành: đưa mã 3.3 lên dịch vụ** — PowerShell Run as Administrator:
+   `Set-ExecutionPolicy -Scope Process Bypass -Force; & D:\ITSupportPlatform\platform-deployment\nssm\dich_vu_core.ps1 -Lenh CapNhat`
+   (tự thêm `DATA_DIR=D:\ITSupportPlatformData`). Sau đó Claude kiểm bằng `-Lenh KiemTra` + `/check_update` trả `0.0.0.0`.
+   Caddy chưa trỏ gì về Core nên KHÔNG có máy trạm nào bị ảnh hưởng.
+2. **Điều kiện vào canary chưa đủ:** Sổ tay GĐ3 bắt buộc bước **0.6** (sao lưu SQLite hằng ngày) và **0.7** (cảnh báo online
+   tụt qua Telegram) đang chạy — cả hai CHƯA làm (`D:\Backup` chưa tồn tại). Claude soạn sẵn script (chỉ đọc hệ cũ) vào
+   `platform-deployment/ops/`, người vận hành tạo task Task Scheduler.
+3. **Canary 1 máy (3.5 → 3.8)** theo Sổ tay đã sửa: chọn máy thử không dạy, người trực có mặt; khối Caddy ở 3.6 đã kiểm sẵn.
+4. Phần còn lại của 3.3 ghi ở `HOP_DONG.md` mục H "Chưa làm": cảnh báo đổi RAM/ổ cứng → `incidents`; dọn tệp cũ trong
+   `DATA_DIR`; API phiên giao/thu bài + token truyền tệp cho Desktop (GĐ7); `/internal/*` cho hệ thi (GĐ9).
+5. GĐ4 Desktop chờ người vận hành cài Node.js 24 LTS + Rust + VS Build Tools trên máy phát triển.
 
 ## Việc cần người vận hành (Claude không có quyền Administrator)
 
@@ -78,7 +82,8 @@ Cập nhật lần cuối: 02/10/2026 (2.11 xong — dịch vụ PlatformCore đ
 - [x] 2.11: dịch vụ `PlatformCore` đã cài (02/10/2026). Khi có mã mới cần chạy trên dịch vụ: PowerShell **Run as Administrator** →
       `Set-ExecutionPolicy -Scope Process Bypass -Force; & D:\ITSupportPlatform\platform-deployment\nssm\dich_vu_core.ps1 -Lenh CapNhat`
       (máy chủ thiếu System32 trong PATH nên KHÔNG gõ `powershell -File ...`; Claude không tự làm được vì cần dừng dịch vụ).
-- [ ] 3.2, 3.5–3.9: các bước sửa Caddy (canary) — chỉ làm khi đã có legacy_adapter và có người trực.
+- [ ] `dich_vu_core.ps1 -Lenh CapNhat` để dịch vụ chạy mã 3.3 (xem BƯỚC TIẾP THEO 1).
+- [ ] 3.5–3.9: canary bằng Caddy — chỉ làm sau khi 0.6 + 0.7 chạy và có người trực (3.2 không còn bắt buộc).
 - [ ] Cài Node.js 24 LTS, Rust, VS Build Tools trên máy phát triển desktop-app (GĐ4).
 - [ ] Bước 0.6, 0.7 (sao lưu hằng ngày, cảnh báo online tụt) trên máy chủ hệ cũ.
 
@@ -98,6 +103,8 @@ Cập nhật lần cuối: 02/10/2026 (2.11 xong — dịch vụ PlatformCore đ
 - Database: `itm_core` (Core, đã khởi tạo) · `itm_master` (chưa dùng, GĐ11) · test tạo `itm_test_<hex>` rồi tự xoá.
   Atlas còn sẵn `sample_mflix` (dữ liệu mẫu của Atlas, không liên quan).
 - Hiệu năng đo được: đăng nhập ≈ 0,5 s (≈ 8 lượt CSDL), kiểm phiên lần đầu ≈ 190 ms, có đệm ≈ 11 ms.
+- Thử tải agent v2 (02/10/2026): xem dòng "3.3 (thử tải)" ở bảng Đã xong. Lặp lại: scratchpad `loadgen.py` + `run_load.ps1`
+  (DB tạm `itm_loadtest`, cổng 7019, mọi tiến trình BelowNormal; thử xong xoá DB tạm). Đường nhanh WSGI là lý do đạt — đừng gỡ.
 - Chạy thử Core khi phát triển: `cd D:\ITSupportPlatform\platform-core; $env:PORT='7019'; uv run python -m app.server`
   → `http://127.0.0.1:7019/docs`. **Cổng 7009 dành cho dịch vụ `PlatformCore`** — chạy thử dùng cổng khác (7019),
   xong nhớ tắt (chỉ dừng tiến trình có `app.server` trong dòng lệnh).

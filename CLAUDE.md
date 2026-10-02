@@ -301,7 +301,7 @@ Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay l�
 | 02/10/2026 | 2.3–2.10 Nền platform-core | Xong (trừ CI chạy thật) | Atlas `itm_core` đã khởi tạo; tổ chức PHENIKAA + `admin`; 58 test + 3 test Atlas xanh; ruff/pyright sạch; CI viết sẵn, chờ repo GitHub |
 | 02/10/2026 | 2.11 Core thành dịch vụ NSSM | Xong | Người vận hành cài tay theo lệnh nssm; dịch vụ `PlatformCore` Running, Delayed Auto, LocalSystem, nghe `127.0.0.1:7009`, ping Atlas ≈ 0,4 s, giết tiến trình → tự lên lại. Quản lý: `platform-deployment/nssm/dich_vu_core.ps1` (KiemTra không cần Admin; CapNhat/Go cần Admin) |
 | 02/10/2026 | 3.1 Hợp đồng agent v2 | Xong | `tests/contract_v2/HOP_DONG.md` + 45 fixture (xfail strict chờ 3.3). Phát hiện: agent gửi UA `Mozilla/5.0` ở `/check_update`/`/download_setup` → sửa điều kiện canary 3.6 (mục A11) |
-| 02/10/2026 | 3.3 legacy_adapter | Xong (chờ thử tải 30 phút) | 45/45 test hợp đồng xanh; 133 test; đường nhanh WSGI: 300 agent ≈ 5% một lõi, p99 ≈ 3 ms. Dịch vụ `PlatformCore` cần `dich_vu_core.ps1 -Lenh CapNhat` để chạy mã này |
+| 02/10/2026 | 3.3 legacy_adapter | Xong | 45/45 test hợp đồng xanh; 133 test; thử tải 900 agent/30 phút: 0 lỗi, CPU Core TB 22,5% một lõi, RAM không rò, p99 14 ms. Dịch vụ `PlatformCore` cần `dich_vu_core.ps1 -Lenh CapNhat` để chạy mã này |
 | — | 3.4 Cập nhật agent từ Core · 3.2/3.5–3.9 Caddy canary | Kế tiếp | 3.4 phần mã đã có trong `update_gate.py`; còn chép bộ cài + kiểm |
 
 Chi tiết bàn giao từng bước: `docs/TIEN_DO.md`.
