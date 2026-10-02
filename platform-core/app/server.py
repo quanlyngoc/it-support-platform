@@ -82,7 +82,22 @@ def main() -> None:
     app = create_app()
     app.extensions["legacy"].start()  # vòng nền: ghi computers theo lô + gửi lại lệnh chưa ACK
     print(f"Platform-Core {s.VERSION} chạy {s.HOST}:{s.PORT} (CSDL {s.MONGO_DB})", flush=True)
-    socketio.run(app, host=s.HOST, port=s.PORT)
+    _quiet_ctrl_c()
+    try:
+        socketio.run(app, host=s.HOST, port=s.PORT)
+    except KeyboardInterrupt:
+        logging.getLogger("core").info("Dừng theo yêu cầu (NSSM stop / Ctrl+C)")
+
+
+def _quiet_ctrl_c() -> None:
+    """NSSM dừng dịch vụ bằng Ctrl+C → KeyboardInterrupt. gevent mặc định in ~30 dòng traceback ra stderr
+    (core-err.log) mỗi lần dừng/CapNhat — báo động giả vì Sổ tay coi "core-err.log có dòng mới" là có lỗi.
+    Thêm KeyboardInterrupt vào NOT_ERROR của hub: không in nữa, nhưng vẫn là SYSTEM_ERROR nên vẫn ném lên main
+    để thoát (đã thử: tắt phần này thì stderr có traceback, bật thì stderr trống, mã thoát 0)."""
+    from gevent import get_hub
+
+    hub = get_hub()
+    setattr(hub, "NOT_ERROR", (*getattr(hub, "NOT_ERROR", ()), KeyboardInterrupt))  # noqa: B010
 
 
 if __name__ == "__main__":
