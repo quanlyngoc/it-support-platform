@@ -284,11 +284,12 @@ Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay l�
 | 02/10/2026 | 0.11 Không gian xây mới + rào chỉ đọc | Xong | `.claude/settings.json` + hook `guard_readonly.py` (có test) |
 | 02/10/2026 | 2.2 Khung 5 project, `.gitattributes`, `.gitignore`, ADR | Xong | `docs/adr/ADR-0001…0012` |
 | 02/10/2026 | 2.3–2.10 Nền platform-core | Xong (trừ CI chạy thật) | Atlas `itm_core` đã khởi tạo; tổ chức PHENIKAA + `admin`; 58 test + 3 test Atlas xanh; ruff/pyright sạch; CI viết sẵn, chờ repo GitHub |
-| 02/10/2026 | 2.11 Core thành dịch vụ NSSM | Chờ người vận hành chạy script | Script `platform-deployment/nssm/dich_vu_core.ps1` (CaiDat/KiemTra/CapNhat/Go) + bản chạy `D:\ITSupportPlatformRun` đã chuẩn bị; Core nghe `127.0.0.1:7009` (`HOST`); kiểm CSDL `/api/health?db=1` |
+| 02/10/2026 | 2.11 Core thành dịch vụ NSSM | Xong | Người vận hành cài tay theo lệnh nssm; dịch vụ `PlatformCore` Running, Delayed Auto, LocalSystem, nghe `127.0.0.1:7009`, ping Atlas ≈ 0,4 s, giết tiến trình → tự lên lại. Quản lý: `platform-deployment/nssm/dich_vu_core.ps1` (KiemTra không cần Admin; CapNhat/Go cần Admin) |
 | 02/10/2026 | 3.1 Hợp đồng agent v2 | Xong | `tests/contract_v2/HOP_DONG.md` + 45 fixture (xfail strict chờ 3.3). Phát hiện: agent gửi UA `Mozilla/5.0` ở `/check_update`/`/download_setup` → sửa điều kiện canary 3.6 (mục A11) |
 | — | 3.3 legacy_adapter | Kế tiếp | Theo `docs/TIEN_DO.md` |
 
 Chi tiết bàn giao từng bước: `docs/TIEN_DO.md`.
 
 Việc cần người vận hành (Claude không có quyền Administrator): GĐ1 (MongoDB replica set, VM, tường lửa, sao lưu),
-tạo repo GitHub riêng tư và đẩy mã, cài Node.js/Rust/VS Build Tools cho desktop-app (GĐ4), dịch vụ NSSM, sửa Caddyfile.
+đẩy mã lên GitHub (`git push`), cài Node.js/Rust/VS Build Tools cho desktop-app (GĐ4), `dich_vu_core.ps1 -Lenh CapNhat`
+khi cần đưa mã mới lên dịch vụ `PlatformCore`, sửa Caddyfile.

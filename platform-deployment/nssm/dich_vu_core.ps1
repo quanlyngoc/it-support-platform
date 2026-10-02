@@ -200,7 +200,7 @@ switch ($Lenh) {
         if ($p) {
             Write-Host "    Chạy: $($p.Application) $($p.AppParameters)"
             Write-Host "    Thư mục: $($p.AppDirectory)"
-            Write-Host "    Biến môi trường: $(@($p.AppEnvironmentExtra) -join ' · ')"
+            Write-Host "    Biến môi trường: $(@($p.AppEnvironmentExtra | Where-Object { $_ }) -join ' · ')"
         }
         Buoc 'Phiên bản mã'
         $chay = Get-Commit $ThuMucChay
