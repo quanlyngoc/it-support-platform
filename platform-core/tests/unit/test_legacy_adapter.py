@@ -290,3 +290,101 @@ def test_api_cong_cap_nhat_can_quyen(world):
     tp = _tok(world)
     j = c.put("/api/legacy/update_gate", json={"hosts": ["a6-301-01"], "rollout_percent": 5}, headers=auth(tp))
     assert j.status_code == 200 and j.get_json()["hosts"] == ["A6-301-01"] and j.get_json()["manifest"] is None
+
+
+# ====================================================================== thay đổi phần cứng → sự cố
+@pytest.mark.parametrize("cu,moi,tieu_de", [
+    ("16GB (2 thanh: 8GB [SN:A1], 8GB [SN:A2])", "24GB (3 thanh)", "THÊM RAM"),
+    ("16GB (2 thanh: 8GB [SN:A1], 8GB [SN:A2])", "8GB (1 thanh: 8GB [SN:A1])", "MẤT RAM"),
+    ("16GB (2 thanh: 8GB [SN:A1], 8GB [SN:A2])", "16GB (2 thanh: 8GB [SN:A1], 8GB [SN:B9])", "TRÁO ĐỔI RAM"),
+    ("16GB (2 thanh: 8GB [SN:A1], 8GB [SN:A2])", "16GB (2 thanh: 8GB [SN:A1], 8GB [SN:A2])", None),
+    ("16GB [SN:00000000]", "16GB [SN:A1]", None),  # SN chứa "0000" là rác → không coi là tráo
+    ("16GB", "N/A", None), ("N/A", "8GB", None),    # giá trị tạm lúc khởi động → không so
+])
+def test_phat_hien_doi_ram(cu, moi, tieu_de):
+    from app.legacy_adapter.hardware import ram_doi
+
+    td = ram_doi(cu, moi)
+    assert (td.tieu_de if td else None) == tieu_de
+
+
+def test_phat_hien_doi_o_cung():
+    from app.legacy_adapter.hardware import disk_doi
+
+    assert disk_doi("SSD (256GB) [SN:X1]", "SSD (256GB) [SN:X1] · HDD (1000GB)").tieu_de == "THÊM Ổ CỨNG"
+    assert disk_doi("SSD (256GB) [SN:X1]", "SSD (256GB) [SN:Y7]").tieu_de == "TRÁO ĐỔI Ổ CỨNG"
+    assert disk_doi("SSD (256GB)", "N/A") is None
+
+
+def _incidents(w):
+    return list(repo_for(w["app"].extensions["itm_db"], w["tid"], "incidents").find({}, {"_id": 0, "tenant_id": 0}))
+
+
+def test_doi_ram_tao_mot_su_co_va_phat_realtime(world):
+    ad, c, clock = world["ad"], world["c"], world["clock"]
+    ram8 = "8GB (1 thanh: 8GB Bus2666 [SN:A1])"
+    c.post("/update", json=k.heartbeat(ram="N/A"))  # khởi động: giá trị tạm
+    ad.writer_tick()
+    clock[0] += 61
+    c.post("/update", json=k.heartbeat(ram=ram8))
+    ad.writer_tick()
+    assert _incidents(world) == []  # N/A → 8GB là agent nạp xong phần cứng, KHÔNG phải đổi RAM
+    nhan = []
+    ad.writer().on_incident = nhan.append
+    for _ in range(2):  # đổi RAM, rồi nhịp sau vẫn 4GB → chỉ 1 sự cố (đang chờ thì không tạo trùng)
+        clock[0] += 61
+        c.post("/update", json=k.heartbeat(ram="4GB (1 thanh: 4GB [SN:Z9])"))
+        ad.writer_tick()
+    inc = _incidents(world)
+    assert len(inc) == 1 and inc[0]["title"] == "MẤT RAM" and inc[0]["status"] == "PENDING"
+    assert inc[0]["category"] == "hardware_ram" and inc[0]["source"] == "SYSTEM_WATCHDOG"
+    assert inc[0]["room_name"] == "Phòng 301 - A6" and inc[0]["device_id"] is not None
+    assert len(nhan) == 1 and nhan[0]["title"] == "MẤT RAM"
+
+
+def test_het_pin_cmos_chi_bao_luc_chuyen_trang_thai(world):
+    ad, c, clock = world["ad"], world["c"], world["clock"]
+    for _ in range(3):
+        c.post("/update", json=k.heartbeat(cmos_battery="Hết pin (3 lần reset giờ)"))
+        ad.writer_tick()
+        clock[0] += 61
+    assert [i["title"] for i in _incidents(world)] == ["HẾT PIN CMOS"]
+
+
+def test_doi_ram_luc_core_tat_van_bat_duoc(world, db):
+    """Giá trị cũ nạp từ CSDL lúc khởi động (prime): đổi RAM trong lúc Core tắt vẫn bị phát hiện."""
+    repo_for(db, world["tid"], "computers").insert_one({"hostname": "A6-301-01", "legacy_hostname": "A6-301-01",
+                                                        "ram": "16GB (2 thanh)", "disk": "SSD (256GB)"})
+    world["c"].post("/update", json=k.heartbeat(ram="8GB (1 thanh)", disk="SSD (256GB)"))
+    world["ad"].writer_tick()
+    assert [i["title"] for i in _incidents(world)] == ["MẤT RAM"]
+
+
+# ====================================================================== dọn tệp cũ
+def test_don_tep_cu_chi_xoa_ma_phien_qua_han(tmp_path):
+    import os
+
+    from app.legacy_adapter.cleanup import don_tep_cu
+
+    now = time.time()
+    cu, moi = now - 200 * 3600, now - 3600
+
+    def tao(rel, mtime, thu_muc=False):
+        p = tmp_path / rel
+        p.parent.mkdir(parents=True, exist_ok=True)
+        if thu_muc:
+            p.mkdir()
+        else:
+            p.write_text("x")
+        os.utime(p, (mtime, mtime))
+        return p
+
+    giu = [tao("work/ba7c4000000000000000000000000002", moi, True),          # còn hạn
+           tao("work/Ca sang", cu, True),                                    # không phải mã phiên → giữ
+           tao("collect/c0ec7000000000000000000000000002", now - 100 * 3600, True),  # collect giữ 168 giờ
+           tao("updates/Client_Management.exe", cu)]                         # bộ cài: không bao giờ dọn
+    xoa = [tao("work/ba7c4000000000000000000000000001", cu, True),
+           tao("collect/c0ec7000000000000000000000000001", cu, True),
+           tao("fs_tmp/f5000000000000000000000000000001_bai.zip", cu)]
+    assert don_tep_cu(tmp_path, now) == {"work": 1, "collect": 1, "fs_tmp": 1}
+    assert all(p.exists() for p in giu) and not any(p.exists() for p in xoa)

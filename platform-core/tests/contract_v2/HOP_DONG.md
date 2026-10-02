@@ -151,6 +151,8 @@ cài bằng tác vụ Task Scheduler tách rời, báo tiến độ qua `/ps_bul
 | `ram_watchdog_worker` 35 s (538) | `state.sweep` (gọi trong `writer.tick`) | `test_mat_nhip_tim_35s_*` |
 | `async_db_writer_worker` + `_mevt_swap`/`_mevt_hwid` (workers.py 41-249) | `writer.py` | `test_trao_phan_cung_*`, `test_anti_ghost_*`, `test_cung_ten_doi_*` |
 | `usage_stats_worker` (551) | `writer._usage` | `test_phut_su_dung_*` |
+| `check_hardware_changes` RAM/ổ cứng/CMOS → `incidents` (utils.py 614-674) | `hardware.py` + `writer._hardware`/`_incident` (so trong RAM, nạp nền lúc khởi động; chỉ chạm CSDL khi có thay đổi) | `test_phat_hien_doi_*`, `test_doi_ram_*`, `test_het_pin_cmos_*`, `test_atlas` |
+| `cleanup_temp_files` (app.py 739-775) | `cleanup.py` + `adapter.cleanup_tick` (6 giờ/lần; chỉ xoá mục tên mã phiên) | `test_don_tep_cu_*` |
 | `/check_update` + `/download_setup` cổng chia đợt (1871-2011, 2182) | `update_gate.py` + `http_routes.py` | `http_check_update_*`, `test_cong_*`, `test_tai_bo_cai_*` |
 | `ps_bulk_result`/`send_report`/`collect_*` RAM (4474, 4925-5031) | `store.py` (MongoDB) + `http_routes.py` | `http_ps_bulk_*`, `http_send_report`, `http_collect_*`, `test_api_powershell_*` |
 | `FS_TOK`/`FS_PULL`/`FS_PUSH` RAM (697-717, 1395-1456) | `store.py` (`file_metadata` scope `fs_token`) | `http_fs_*` |
@@ -168,6 +170,7 @@ cài bằng tác vụ Task Scheduler tách rời, báo tiến độ qua `/ps_bul
 7. Kết quả bất đồng bộ + token truyền tệp lưu MongoDB (hub cũ để RAM).
 8. Cổng chia đợt cộng dồn kiểu HOẶC (`all` / máy / phòng / %); hub cũ: có danh sách phòng thì bỏ qua %.
 
-Chưa làm trong 3.3 (ghi để không quên): cảnh báo đổi RAM/ổ cứng → `incidents` (`check_hardware_changes`, GĐ incidents);
-Desktop tham gia room `t:<tid>:{ps|pty|watch}` qua socket có xác thực (GĐ4); API cấp phiên giao/thu bài + token
-truyền tệp cho Desktop (GĐ7); `/internal/*` + `/hubapi/*` cho hệ thi (GĐ9); dọn tệp cũ trong `<DATA_DIR>`.
+Chưa làm (ghi để không quên): GỬI email/Telegram khi có sự cố phần cứng (hệ cũ `send_alert_email_thread`; Core mới
+tạo sự cố + phát `incident_new` tới room `t:<tid>:incidents` — kênh thông báo làm ở GĐ8 tích hợp); Desktop tham gia room
+`t:<tid>:{ps|pty|watch|incidents}` qua socket có xác thực (GĐ4); API cấp phiên giao/thu bài + token truyền tệp cho Desktop
+(GĐ7); `/internal/*` + `/hubapi/*` cho hệ thi (GĐ9).

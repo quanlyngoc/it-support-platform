@@ -58,6 +58,7 @@ Cập nhật lần cuối: 02/10/2026 tối (3.3 legacy_adapter xong; Sổ tay s
 | 3.3 (đưa lên dịch vụ) | Người vận hành chạy `dich_vu_core.ps1 -Lenh CapNhat` (02/10/2026 18:20) | `KiemTra`: bản `ac6d8a9` = main, có `DATA_DIR`, ping CSDL 53 ms; `/check_update` → `0.0.0.0`; `/update` → 200; 7 dịch vụ hệ cũ Running. Hai lần dừng/bật 18:20 + 18:21 là lệnh STOP có chủ đích (nhật ký NSSM), không phải sập |
 | — | Core dừng êm khi NSSM gửi Ctrl+C (commit `d2aaaa8`): không còn ~30 dòng traceback `KeyboardInterrupt` trong `core-err.log` mỗi lần dừng | Thử: tắt phần chặn → stderr có traceback; bật → stderr trống, mã thoát 0. Có hiệu lực ở lần `CapNhat` kế |
 | 0.6 + 0.7 (chuẩn bị) | `platform-deployment/ops/`: `sao_luu_csdl_cu.py` (API backup SQLite từ kết nối `mode=ro` — CSDL cũ chạy WAL, `-wal` 36 MB > tệp chính 30 MB nên chép thô là mất dữ liệu; giữ 14 bản + `may_<ngày>.csv`), `canh_bao_online.py` (mỗi phút đọc `/internal/machines`, Telegram khi rớt ≥ max(5, 10%), bỏ máy tắt có chủ ý + canary; báo khi mất hub 2 lần liên tiếp + khi hồi), `lay_cau_hinh_cu.py`, `cai_dat_ops.ps1` (CaiDat/KiemTra/Go) | 9 test mới trong `qa/test_ops.py`; chạy thật (không gửi Telegram): sao lưu 889 máy 29 MB ≈ 1 s, `-shm` hệ cũ không đổi; hub trả 48 online/48 còn kênh lệnh; trigger lặp mỗi phút mặc định vô hạn trên WS2019. Sổ tay 0.6/0.7 thêm "Cách nhanh" (artifact bản 4) |
+| 3.3 (bổ sung) | Thay đổi phần cứng → sự cố (`hardware.py`, `writer._hardware`): THÊM/MẤT/TRÁO ĐỔI RAM, Ổ CỨNG, HẾT PIN CMOS theo đúng quy tắc hệ cũ; so trong RAM (nạp nền từ CSDL lúc khởi động), chỉ chạm CSDL khi có thay đổi; chống trùng sự cố đang chờ; phát `incident_new` tới `t:<tid>:incidents`. Dọn tệp cũ (`cleanup.py`, 6 giờ/lần): work/fs_tmp 48 giờ, collect 168 giờ, CHỈ mục tên mã phiên, không đụng `updates/` | 12 test mới (145 xanh) + Atlas: validator `incidents` nhận tài liệu sự cố. Chưa gửi email/Telegram cho sự cố (GĐ8). Cần `CapNhat` để dịch vụ chạy |
 | 0.6 + 0.7 | **Đã cài** (người vận hành chạy `cai_dat_ops.ps1 -Lenh CaiDat`, 03/10/2026 00:15–00:20) | Sao lưu `database_20261003.db` 29 MB / 889 máy + `may_20261003.csv`; tin thử Telegram gửi được (script dừng ngay nếu lỗi, đã qua bước sau đó); baseline có dòng mỗi phút (00:16 → nay), hub_loi 0; kho bí mật đã khoá (tài khoản thường bị từ chối). `KiemTra` bằng tài khoản thường suy trạng thái từ độ mới của baseline/bản sao vì không xem được tác vụ SYSTEM |
 | 3.1 | Hợp đồng agent v2: `platform-core/tests/contract_v2/HOP_DONG.md` (luật sống còn A1–A11, thông số, 18 route HTTP, 15 sự kiện socket, 15 action lệnh) + 45 fixture + `test_contract_v2.py` | 3 test kiểm fixture xanh; 45 test hợp đồng `xfail strict` chờ 3.3 |
 
@@ -72,8 +73,9 @@ Cập nhật lần cuối: 02/10/2026 tối (3.3 legacy_adapter xong; Sổ tay s
    học không (Sổ tay 0.8 dùng chính số liệu này).
 3. **Canary 1 máy (3.5 → 3.8)** theo Sổ tay đã sửa: chọn máy thử không dạy, người trực có mặt; ghi tên máy vào
    `D:\Backup\baseline\canary_hosts.txt` TRƯỚC khi sửa Caddy (để 0.7 không báo máy đó "rớt"); khối Caddy ở 3.6 đã kiểm sẵn.
-4. Phần còn lại của 3.3 ghi ở `HOP_DONG.md` mục H "Chưa làm": cảnh báo đổi RAM/ổ cứng → `incidents`; dọn tệp cũ trong
-   `DATA_DIR`; API phiên giao/thu bài + token truyền tệp cho Desktop (GĐ7); `/internal/*` cho hệ thi (GĐ9).
+4. Phần còn lại ghi ở `HOP_DONG.md` mục H "Chưa làm": gửi email/Telegram cho sự cố (GĐ8); Desktop vào room có xác thực
+   (GĐ4); API phiên giao/thu bài + token truyền tệp cho Desktop (GĐ7); `/internal/*` cho hệ thi (GĐ9).
+   (Cảnh báo phần cứng → `incidents` và dọn tệp cũ: XONG 03/10/2026, chờ `CapNhat` lên dịch vụ.)
 5. GĐ4 Desktop chờ người vận hành cài Node.js 24 LTS + Rust + VS Build Tools trên máy phát triển.
 
 ## Việc cần người vận hành (Claude không có quyền Administrator)

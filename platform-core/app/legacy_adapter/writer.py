@@ -19,6 +19,7 @@ from datetime import UTC, datetime
 from bson import ObjectId
 from pymongo.database import Database
 
+from app.legacy_adapter.hardware import CMOS, ThayDoi, disk_doi, het_pin_cmos, ram_doi
 from app.legacy_adapter.identity import is_placeholder, mac12, room_from_hostname_raw, valid_serial
 from app.legacy_adapter.state import Host, LegacyState
 from app.tenants.repo import repo_for
@@ -45,12 +46,16 @@ class Writer:
         self.events = repo_for(db, tenant_id, "machine_events")
         self.archive = repo_for(db, tenant_id, "computers_archive")
         self.usage = repo_for(db, tenant_id, "usage_stats")
+        self.incidents = repo_for(db, tenant_id, "incidents")
         self.hwid: dict[str, tuple[str, str]] = {}      # HOST → (serial hợp lệ cuối, mac12)
         self.serial_owner: dict[str, set[str]] = {}
         self.mac_owner: dict[str, set[str]] = {}
         self.ids: dict[str, ObjectId] = {}
         self.overrides: dict[str, str] = {}             # HOST → phòng ép tay (computers.room_override)
         self._mevt_seen: dict[tuple, float] = {}
+        self.hw_last: dict[str, tuple[str, str]] = {}   # HOST → (ram, disk) thật lần trước — so trong RAM
+        self.cmos_bao: dict[str, bool] = {}              # HOST → đang báo hết pin CMOS (chỉ xét lúc chuyển trạng thái)
+        self.on_incident: Callable[[dict], object] | None = None  # adapter gắn để phát realtime cho Desktop
         self.primed = False
         self.last_usage = state.clock()
 
@@ -59,13 +64,16 @@ class Writer:
         """Nạp 1 lần lúc khởi động: thiếu bước này thì tráo phần cứng xảy ra TRONG lúc Core tắt sẽ lọt lưới."""
         n = 0
         for d in self.computers.find({"legacy_hostname": {"$type": "string"}},
-                                     {"legacy_hostname": 1, "serial": 1, "mac": 1, "room_override": 1}):
+                                     {"legacy_hostname": 1, "serial": 1, "mac": 1, "room_override": 1, "ram": 1,
+                                      "disk": 1}):
             host = d["legacy_hostname"]
             self.ids[host] = d["_id"]
             self._remember(host, str(d.get("serial") or "") if valid_serial(d.get("serial")) else "",
                            mac12(d.get("mac")))
             if d.get("room_override"):
                 self.overrides[host] = str(d["room_override"])
+            if d.get("ram") or d.get("disk"):
+                self.hw_last[host] = (str(d.get("ram") or ""), str(d.get("disk") or ""))
             n += 1
         self.primed = True
         return n
@@ -89,6 +97,7 @@ class Writer:
             for h in batch:
                 if h.online:
                     self._identity(h)
+                    self._hardware(h)
             self.computers.bulk_upsert([self._upsert(h) for h in batch])
             for h in batch:  # chỉ hạ cờ SAU khi ghi thành công — Atlas lỗi thì nhịp sau ghi lại
                 h.state_dirty, h.written_at = False, now
@@ -192,6 +201,38 @@ class Writer:
             snap = {k: v for k, v in doc.items() if k not in ("_id", "tenant_id")}
             self.archive.insert_one({**snap, "original_id": doc["_id"], "archived_at": datetime.now(UTC),
                                      "reason": f"trung {by} voi {new_host}"})
+
+    # ------------------------------------------------------------------ thay đổi phần cứng → sự cố
+    def _hardware(self, h: Host) -> None:
+        """RAM / ổ cứng đổi hoặc hết pin CMOS → sự cố PENDING (quy tắc của hệ cũ, xem hardware.py).
+        So trong RAM; chỉ chạm CSDL khi THẬT SỰ có thay đổi (hệ cũ truy vấn mỗi nhịp tim)."""
+        ram, disk = str(h.hb.get("ram") or ""), str(h.hb.get("disk") or "")
+        cu = self.hw_last.get(h.host)
+        if cu:
+            for td in (ram_doi(cu[0], ram), disk_doi(cu[1], disk)):
+                if td:
+                    self._incident(h, td)
+        self.hw_last[h.host] = (ram if not is_placeholder(ram) else (cu[0] if cu else ""),
+                                disk if not is_placeholder(disk) else (cu[1] if cu else ""))
+        het = het_pin_cmos(h.hb.get("cmos_battery"))
+        if het and not self.cmos_bao.get(h.host):
+            self._incident(h, CMOS)
+        self.cmos_bao[h.host] = het
+
+    def _incident(self, h: Host, td: ThayDoi) -> bool:
+        """Tạo sự cố, trừ khi máy đã có sự cố CÙNG LOẠI đang chờ/đang xử lý (chống trùng như hệ cũ)."""
+        dang_mo = {"$in": ["PENDING", "PROCESSING"]}
+        if self.incidents.count({"hostname": h.host, "category": td.loai, "status": dang_mo}):
+            return False
+        doc = {"hostname": h.host, "device_id": self.ids.get(h.host), "room_name": self.room_of(h.host, h.hostname),
+               "title": td.tieu_de, "description": td.mo_ta[:2000], "category": td.loai, "status": "PENDING",
+               "source": "SYSTEM_WATCHDOG", "reporter_name": "SYSTEM_WATCHDOG", "created_at": datetime.now(UTC)}
+        self.incidents.insert_one(doc)
+        log.warning("SU-CO %s: %s", h.host, td.tieu_de)
+        if self.on_incident:
+            self.on_incident({"hostname": h.host, "room_name": doc["room_name"], "title": td.tieu_de,
+                              "description": doc["description"], "created_at": doc["created_at"].isoformat()})
+        return True
 
     # ------------------------------------------------------------------ phút sử dụng
     def _usage(self) -> None:

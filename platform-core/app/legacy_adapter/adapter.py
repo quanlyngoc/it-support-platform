@@ -18,6 +18,7 @@ from bson import ObjectId
 from pymongo.database import Database
 
 from app.config.settings import Settings
+from app.legacy_adapter.cleanup import don_tep_cu
 from app.legacy_adapter.identity import is_official_room, mac12, norm_host, norm_mac, room_from_hostname_raw
 from app.legacy_adapter.state import LegacyState
 from app.legacy_adapter.store import Store
@@ -194,6 +195,7 @@ class LegacyAdapter:
             return None
         if self._writer is None:
             self._writer = Writer(self.db, tid, self.state)
+            self._writer.on_incident = lambda d: self.emit("incident_new", d, f"t:{tid}:incidents")
         return self._writer
 
     def writer_tick(self) -> int:
@@ -243,7 +245,15 @@ class LegacyAdapter:
         self.started = True
         self.sio.start_background_task(run_forever, self.writer_tick, self.sio.sleep, 2.0, "ghi computers")
         self.sio.start_background_task(run_forever, self.retry_tick, self.sio.sleep, 2.0, "gửi lại lệnh")
+        self.sio.start_background_task(run_forever, self.cleanup_tick, self.sio.sleep, 6 * 3600.0, "dọn tệp cũ")
         log.info("Bộ tương thích agent v2 chạy cho tổ chức %s (dữ liệu %s)", self.s.LEGACY_TENANT_CODE, self.root)
+
+    def cleanup_tick(self) -> dict[str, int]:
+        """Dọn tệp tạm quá hạn trong kho tệp (6 giờ/lần, như hệ cũ). Trả số mục đã xoá theo kho."""
+        da_xoa = don_tep_cu(self.root)
+        if da_xoa:
+            log.info("Dọn tệp cũ: %s", da_xoa)
+        return da_xoa
 
     # ------------------------------------------------------------------ tiện ích cho API/hệ thi
     def room_of(self, host: str) -> str:

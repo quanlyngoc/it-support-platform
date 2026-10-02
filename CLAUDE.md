@@ -149,6 +149,8 @@ CLI/server in tiếng Việt phải gọi `app.utils.console.utf8_stdio()` trư�
 - Online: RAM `LegacyState`; bộ ghi nền (2 s/nhịp) ghi `computers` khi đổi trạng thái + định kỳ 60 s/máy (tối đa 60
   máy/nhịp, giãn đều), `usage_stats` +1 phút/máy/60 s. KHÔNG ghi Mongo mỗi nhịp tim. Không bao giờ xoá máy; tráo phần
   cứng → `machine_events` + `computers_archive`. Giá trị tạm `N/A`/`...` không đè dữ liệu thật.
+  Đổi RAM/ổ cứng/hết pin CMOS → `incidents` (`hardware.py`, quy tắc hệ cũ; so trong RAM, chống trùng sự cố đang chờ).
+  Dọn kho tệp 6 giờ/lần (`cleanup.py`): CHỈ mục tên mã phiên hex, không đụng `updates/`.
 - Cổng cập nhật: `settings` `update.all|hosts|rollout_rooms|rollout_percent` (mặc định tắt hết) + bộ cài phải khớp
   `manifest.json`; kho bộ cài `<DATA_DIR>/<MÃ>/updates/`. Kho tệp khác: `<DATA_DIR>/<MÃ>/{work,collect,fs_tmp}`.
 - Nhật ký: `geventwebsocket.handler` ghi MỌI request ở INFO (bỏ qua `log_output`) → `app/server.py` hạ về WARNING;
