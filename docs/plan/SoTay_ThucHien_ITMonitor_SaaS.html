@@ -403,6 +403,13 @@ Copy-Item D:\Caddy\Caddyfile D:\Backup\Moc0\Caddyfile</pre></li>
     <li><label><input type="checkbox" data-id="r0-6"><span class="t">0.6 Sao lưu CSDL hệ cũ hằng ngày (script độc lập)</span></label>
       <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>0,5 ngày</b></span></div>
       <dl class="f">
+        <dt>Cách nhanh</dt><dd><b>Đã có script cài tự động (02/10/2026)</b> — làm luôn cả 0.6 và 0.7 trong một lần, PowerShell
+          <span class="click">Run as Administrator</span>:
+<pre><button class="copy" type="button">Chép</button>Set-ExecutionPolicy -Scope Process Bypass -Force; & D:\ITSupportPlatform\platform-deployment\ops\cai_dat_ops.ps1 -Lenh CaiDat</pre>
+          Script sao lưu bằng API backup của SQLite từ kết nối <b>chỉ đọc</b> (CSDL hệ cũ chạy WAL — tệp <code>-wal</code> có lúc lớn
+          hơn tệp chính nên chép tệp thô sẽ mất dữ liệu), kiểm <code>integrity_check</code>, giữ 14 bản + ảnh chụp danh sách máy
+          <code>may_&lt;ngày&gt;.csv</code>. Đo thật: 889 máy, 29 MB, ≈ 1 giây. Mã nguồn + test:
+          <code>platform-deployment\ops\sao_luu_csdl_cu.py</code>. Các thao tác tay bên dưới giữ lại để đối chiếu.</dd>
         <dt>Mục đích</dt><dd>Suốt thời gian chuyển đổi, luôn có bản sao không quá 24 giờ; đồng thời là ảnh chụp danh sách máy để đối chiếu (bài học 10.21). Script chỉ đọc CSDL, không sửa mã hệ cũ.</dd>
         <dt>Thao tác</dt><dd><ol>
           <li>Tạo <code>D:\Backup\tools\backup_sqlite.py</code>:
@@ -426,6 +433,11 @@ print('OK', dst)</pre></li>
     <li><label><input type="checkbox" data-id="r0-7"><span class="t">0.7 Cảnh báo tự động khi số máy online tụt (script độc lập)</span></label>
       <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>1 ngày</b></span><span class="chip safe">CHỈ ĐỌC</span></div>
       <dl class="f">
+        <dt>Cách nhanh</dt><dd>Cùng lệnh với 0.6 (<code>cai_dat_ops.ps1 -Lenh CaiDat</code>): tự lấy token nội bộ + Telegram từ hệ cũ
+          (chỉ đọc) vào <code>D:\ITSupportPlatformSecrets</code> (khoá quyền SYSTEM + Administrators), đăng ký tác vụ chạy mỗi phút,
+          gửi tin thử Telegram. Bản Python (<code>platform-deployment\ops\canh_bao_online.py</code>, có test) thay cho bản
+          PowerShell bên dưới và thêm: <b>báo ngay khi không gọi được hub 2 lần liên tiếp</b>, báo khi hub hồi lại. Kiểm bất cứ lúc
+          nào: <code>cai_dat_ops.ps1 -Lenh KiemTra</code>.</dd>
         <dt>Mục đích</dt><dd>Luật §0.8: phải biết ngay khi máy rớt bất thường trong mọi đợt thay đổi. Script đọc <code>/internal/machines</code> của hub (chỉ đọc, đã có sẵn), phân biệt máy <b>tắt có chủ ý</b> (trường <code>tat_sach</code>) với máy <b>rớt</b>, và gửi Telegram. Đồng thời ghi lịch sử mỗi phút làm số liệu baseline.</dd>
         <dt>Cần có trước</dt><dd>Bot Telegram và chat ID đang dùng cho cảnh báo của hệ cũ; token nội bộ (<code>internal_api_token</code>) do người quản trị cấp.</dd>
         <dt>Thao tác</dt><dd><ol>

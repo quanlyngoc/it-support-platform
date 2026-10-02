@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Test cho hook rào chỉ đọc (.claude/hooks/guard_readonly.py). Chạy: python -m pytest platform-deployment/qa -q"""
 import importlib.util
 import pathlib

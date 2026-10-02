@@ -55,6 +55,9 @@ Cập nhật lần cuối: 02/10/2026 tối (3.3 legacy_adapter xong; Sổ tay s
 | 3.3 | `app/legacy_adapter/` (state · adapter · fastpath · http_routes · socket_handlers · writer · store · update_gate · identity · api · contract) — commit `db637ac` | 45/45 test hợp đồng xanh; test cô lập 07b chạy thật; unit A1–A10; Atlas: Writer ghi 30 máy/lượt. Thử tải: xem dòng "Thử tải 3.3" |
 | 3.3 (thử tải) | Core cổng 7019 + DB tạm `itm_loadtest`, giả lập agent 2.7.5.3 (nhịp tim 2 s + poll 1,6–3 s + websocket register/ping/ACK), mọi tiến trình thử BelowNormal | 300 agent/90 s: qua Flask 28,5% một lõi, p99 ≈ 510 ms → thêm đường nhanh WSGI: **5%, p99 ≈ 3 ms**; tắt nhật ký truy cập gevent-websocket (≈ 10 GB/ngày). **900 agent/30 phút (ĐẠT điều kiện Sổ tay 3.3):** 810 nghìn nhịp tim (450/s) + 704 nghìn poll (391/s), **0 lỗi, 0 mã ≠ 200**, 900/900 socket không rớt; p50/p95/p99 nhịp tim 1,4/6/14 ms; CPU Core TB 22,5% (max 29,5%) một lõi; RAM 226 → 224 MB (không rò); CPU toàn máy TB 17,5%. Atlas: 900 `computers`, 26.700 phút `usage_stats`, 0 `machine_events`; ngắt socket → 900 máy offline ngay. DB tạm đã xoá |
 | — | Sổ tay + Lộ trình theo thực tế (commit `90fe9f0`): `D:\ITSupportPlatform`, Atlas, Core cùng máy; canary A11 lọc IP + 19 đường dẫn — đã `caddy adapt` + `validate` trên bản sao Caddyfile (đứng trước `@hub`, `path` gộp HOẶC); 3.2 không bắt buộc; 3.4–3.8 viết lại với lệnh PowerShell + `/api/legacy/*`; docx dựng lại; artifact cập nhật (bản 3) | `docs/plan/*`, https://claude.ai/artifact/6YS1eX45UvaRHQGGQD3T9G |
+| 3.3 (đưa lên dịch vụ) | Người vận hành chạy `dich_vu_core.ps1 -Lenh CapNhat` (02/10/2026 18:20) | `KiemTra`: bản `ac6d8a9` = main, có `DATA_DIR`, ping CSDL 53 ms; `/check_update` → `0.0.0.0`; `/update` → 200; 7 dịch vụ hệ cũ Running. Hai lần dừng/bật 18:20 + 18:21 là lệnh STOP có chủ đích (nhật ký NSSM), không phải sập |
+| — | Core dừng êm khi NSSM gửi Ctrl+C (commit `d2aaaa8`): không còn ~30 dòng traceback `KeyboardInterrupt` trong `core-err.log` mỗi lần dừng | Thử: tắt phần chặn → stderr có traceback; bật → stderr trống, mã thoát 0. Có hiệu lực ở lần `CapNhat` kế |
+| 0.6 + 0.7 (chuẩn bị) | `platform-deployment/ops/`: `sao_luu_csdl_cu.py` (API backup SQLite từ kết nối `mode=ro` — CSDL cũ chạy WAL, `-wal` 36 MB > tệp chính 30 MB nên chép thô là mất dữ liệu; giữ 14 bản + `may_<ngày>.csv`), `canh_bao_online.py` (mỗi phút đọc `/internal/machines`, Telegram khi rớt ≥ max(5, 10%), bỏ máy tắt có chủ ý + canary; báo khi mất hub 2 lần liên tiếp + khi hồi), `lay_cau_hinh_cu.py`, `cai_dat_ops.ps1` (CaiDat/KiemTra/Go) | 9 test mới trong `qa/test_ops.py`; chạy thật (không gửi Telegram): sao lưu 889 máy 29 MB ≈ 1 s, `-shm` hệ cũ không đổi; hub trả 48 online/48 còn kênh lệnh; trigger lặp mỗi phút mặc định vô hạn trên WS2019. Sổ tay 0.6/0.7 thêm "Cách nhanh" (artifact bản 4) |
 | 3.1 | Hợp đồng agent v2: `platform-core/tests/contract_v2/HOP_DONG.md` (luật sống còn A1–A11, thông số, 18 route HTTP, 15 sự kiện socket, 15 action lệnh) + 45 fixture + `test_contract_v2.py` | 3 test kiểm fixture xanh; 45 test hợp đồng `xfail strict` chờ 3.3 |
 
 ## Đang làm
@@ -63,14 +66,13 @@ Cập nhật lần cuối: 02/10/2026 tối (3.3 legacy_adapter xong; Sổ tay s
 
 ## BƯỚC TIẾP THEO
 
-1. **Người vận hành: đưa mã 3.3 lên dịch vụ** — PowerShell Run as Administrator:
-   `Set-ExecutionPolicy -Scope Process Bypass -Force; & D:\ITSupportPlatform\platform-deployment\nssm\dich_vu_core.ps1 -Lenh CapNhat`
-   (tự thêm `DATA_DIR=D:\ITSupportPlatformData`). Sau đó Claude kiểm bằng `-Lenh KiemTra` + `/check_update` trả `0.0.0.0`.
-   Caddy chưa trỏ gì về Core nên KHÔNG có máy trạm nào bị ảnh hưởng.
-2. **Điều kiện vào canary chưa đủ:** Sổ tay GĐ3 bắt buộc bước **0.6** (sao lưu SQLite hằng ngày) và **0.7** (cảnh báo online
-   tụt qua Telegram) đang chạy — cả hai CHƯA làm (`D:\Backup` chưa tồn tại). Claude soạn sẵn script (chỉ đọc hệ cũ) vào
-   `platform-deployment/ops/`, người vận hành tạo task Task Scheduler.
-3. **Canary 1 máy (3.5 → 3.8)** theo Sổ tay đã sửa: chọn máy thử không dạy, người trực có mặt; khối Caddy ở 3.6 đã kiểm sẵn.
+1. **Người vận hành: cài 0.6 + 0.7** (điều kiện bắt buộc trước canary) — PowerShell Run as Administrator:
+   `Set-ExecutionPolicy -Scope Process Bypass -Force; & D:\ITSupportPlatform\platform-deployment\ops\cai_dat_ops.ps1 -Lenh CaiDat`
+   Đạt khi in đủ [ĐẠT] (sao lưu thử, tin thử Telegram tới nhóm, baseline có dòng). Sau đó Claude kiểm bằng `-Lenh KiemTra`.
+2. Theo dõi baseline vài ngày (`D:\Backup\baseline\online_<ngày>.csv`) để biết ngưỡng cảnh báo có gây báo động giả giờ tan
+   học không (Sổ tay 0.8 dùng chính số liệu này).
+3. **Canary 1 máy (3.5 → 3.8)** theo Sổ tay đã sửa: chọn máy thử không dạy, người trực có mặt; ghi tên máy vào
+   `D:\Backup\baseline\canary_hosts.txt` TRƯỚC khi sửa Caddy (để 0.7 không báo máy đó "rớt"); khối Caddy ở 3.6 đã kiểm sẵn.
 4. Phần còn lại của 3.3 ghi ở `HOP_DONG.md` mục H "Chưa làm": cảnh báo đổi RAM/ổ cứng → `incidents`; dọn tệp cũ trong
    `DATA_DIR`; API phiên giao/thu bài + token truyền tệp cho Desktop (GĐ7); `/internal/*` cho hệ thi (GĐ9).
 5. GĐ4 Desktop chờ người vận hành cài Node.js 24 LTS + Rust + VS Build Tools trên máy phát triển.
@@ -82,10 +84,10 @@ Cập nhật lần cuối: 02/10/2026 tối (3.3 legacy_adapter xong; Sổ tay s
 - [x] 2.11: dịch vụ `PlatformCore` đã cài (02/10/2026). Khi có mã mới cần chạy trên dịch vụ: PowerShell **Run as Administrator** →
       `Set-ExecutionPolicy -Scope Process Bypass -Force; & D:\ITSupportPlatform\platform-deployment\nssm\dich_vu_core.ps1 -Lenh CapNhat`
       (máy chủ thiếu System32 trong PATH nên KHÔNG gõ `powershell -File ...`; Claude không tự làm được vì cần dừng dịch vụ).
-- [ ] `dich_vu_core.ps1 -Lenh CapNhat` để dịch vụ chạy mã 3.3 (xem BƯỚC TIẾP THEO 1).
+- [x] `dich_vu_core.ps1 -Lenh CapNhat` — dịch vụ chạy mã 3.3 (02/10/2026 18:20).
+- [ ] Bước 0.6, 0.7: `platform-deployment\ops\cai_dat_ops.ps1 -Lenh CaiDat` (xem BƯỚC TIẾP THEO 1).
 - [ ] 3.5–3.9: canary bằng Caddy — chỉ làm sau khi 0.6 + 0.7 chạy và có người trực (3.2 không còn bắt buộc).
 - [ ] Cài Node.js 24 LTS, Rust, VS Build Tools trên máy phát triển desktop-app (GĐ4).
-- [ ] Bước 0.6, 0.7 (sao lưu hằng ngày, cảnh báo online tụt) trên máy chủ hệ cũ.
 
 ## Hoãn bảo mật (làm ở giai đoạn hoàn thiện, trước khi chạy thật)
 
@@ -96,6 +98,9 @@ Cập nhật lần cuối: 02/10/2026 tối (3.3 legacy_adapter xong; Sổ tay s
 - [ ] Rà mọi nhãn `HOAN_BAO_MAT` trong mã (`rg HOAN_BAO_MAT D:\ITSupportPlatform`).
 - [ ] Bí mật chuyển ra ngoài repo (`D:\ITSupportPlatformSecrets`), khoá quyền thư mục; bật gitleaks pre-commit (Sổ tay 2.4).
 - [ ] Luật Bảo vệ dữ liệu cá nhân 2025: kiểm region Atlas và thoả thuận xử lý dữ liệu.
+- [ ] **Hệ cũ** dùng token `/internal/*` = giá trị MẶC ĐỊNH ghi cứng trong `D:\NetworkInventory\app.py` `_internal_token()`
+      (không đặt env `INTERNAL_API_TOKEN` lẫn `settings.internal_api_token`; ThiHSK dùng cùng giá trị). Khi hoàn thiện: đặt token
+      riêng cho hub + ThiHSK + `D:\ITSupportPlatformSecrets\internal_token.txt` cùng lúc. Claude KHÔNG sửa hệ cũ — chỉ ghi nhận.
 
 ## Ghi chú hạ tầng
 
