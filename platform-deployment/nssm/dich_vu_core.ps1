@@ -28,6 +28,8 @@ param(
     # HOAN_BAO_MAT: giai đoạn dựng thử dùng chung .env của thư mục phát triển; khi chạy thật chuyển ra thư mục bí mật riêng
     [string]$TepEnv = 'D:\ITSupportPlatform\platform-core\.env',
     [int]$Cong = 7009,
+    # Kho tệp của Core (bộ cài agent, giao/thu bài, truyền tệp) — chia theo mã tổ chức bên trong
+    [string]$KhoDuLieu = 'D:\ITSupportPlatformData',
     [string]$Nssm = 'C:\Program Files\NSSM\nssm.exe',
     [string]$Uv = '',
     [switch]$BoQuaThuTuHoi
@@ -40,7 +42,8 @@ $Py = Join-Path $CoreDir '.venv\Scripts\python.exe'
 $LogDir = Join-Path $ThuMucChay 'logs'
 $HealthUrl = "http://127.0.0.1:$Cong/api/health"
 $RegParams = "HKLM:\SYSTEM\CurrentControlSet\Services\$TenDV\Parameters"
-$EnvMongMuon = @("DOTENV_PATH=$TepEnv", 'PYTHONIOENCODING=utf-8', 'PYTHONUNBUFFERED=1', 'HOST=127.0.0.1', "PORT=$Cong")
+$EnvMongMuon = @("DOTENV_PATH=$TepEnv", 'PYTHONIOENCODING=utf-8', 'PYTHONUNBUFFERED=1', 'HOST=127.0.0.1', "PORT=$Cong",
+    "DATA_DIR=$KhoDuLieu")
 [System.Net.WebRequest]::DefaultWebProxy = New-Object System.Net.WebProxy  # gọi 127.0.0.1 trực tiếp, không qua proxy hệ thống
 
 function Buoc([string]$m) { Write-Host "`n==> $m" -ForegroundColor Cyan }
@@ -201,6 +204,8 @@ switch ($Lenh) {
             Write-Host "    Chạy: $($p.Application) $($p.AppParameters)"
             Write-Host "    Thư mục: $($p.AppDirectory)"
             Write-Host "    Biến môi trường: $(@($p.AppEnvironmentExtra | Where-Object { $_ }) -join ' · ')"
+            $thieu = @($EnvMongMuon | Where-Object { @($p.AppEnvironmentExtra) -notcontains $_ })
+            if ($thieu) { Canh "Dịch vụ thiếu biến: $($thieu -join ', ') → chạy -Lenh CapNhat (tự bổ sung)." }
         }
         Buoc 'Phiên bản mã'
         $chay = Get-Commit $ThuMucChay
@@ -287,13 +292,17 @@ switch ($Lenh) {
         $cu = Get-Commit $ThuMucChay
         $moi = Get-Commit $NguonRepo 'main'
         Write-Host "    Đang chạy $cu → main $moi"
-        if ($cu -eq $moi) { Dat 'Đã là bản mới nhất, không làm gì.'; exit 0 }
+        $envHt = @((Get-ItemProperty $RegParams -ErrorAction SilentlyContinue).AppEnvironmentExtra)
+        $envThieu = @($EnvMongMuon | Where-Object { $envHt -notcontains $_ })
+        if ($cu -eq $moi -and -not $envThieu) { Dat 'Đã là bản mới nhất, không làm gì.'; exit 0 }
 
         Buoc 'Dừng dịch vụ'
         $null = Invoke-Ngoai $Nssm @('stop', $TenDV) -Im
         for ($i = 0; $i -lt 30 -and (Get-DichVu).Status -ne 'Stopped'; $i++) { Start-Sleep -Seconds 1 }
         if ((Get-DichVu).Status -ne 'Stopped') { Dung 'Dịch vụ không dừng sau 30 s — chưa đổi gì.' }
         Dat 'Đã dừng'
+        Invoke-Nssm set $TenDV AppEnvironmentExtra @EnvMongMuon  # đồng bộ biến môi trường theo bản script mới
+        New-Item -ItemType Directory -Force -Path $KhoDuLieu | Out-Null
 
         Buoc "Lấy mã mới + cài thư viện"
         $g = Find-Git

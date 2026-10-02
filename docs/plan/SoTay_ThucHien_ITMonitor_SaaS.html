@@ -227,7 +227,15 @@ section > h2 .pp{margin-left:auto;font-size:12.5px;font-weight:500;color:var(--m
   Chỉ bắt đầu khi phương án đã được phê duyệt. Các đoạn mã là <b>khung mẫu</b> để đội phát triển hoàn thiện, không phải mã chạy ngay.</p>
   <div class="note warn" style="margin-top:14px"><b>Cập nhật theo quyết định 02/10/2026</b>
     Desktop viết bằng <b>Tauri 2 + React + Vite</b> · Windows Agent là <b>phần mềm .exe có bộ cài</b> cài trên máy trạm ·
-    <b>Claude đọc mã nguồn và tài liệu hiện có (chỉ đọc) và xây mới hoàn toàn</b> trong <code>D:\Platform</code>, không sửa cấu trúc mã nguồn dự án hiện tại.</div>
+    <b>Claude đọc mã nguồn và tài liệu hiện có (chỉ đọc) và xây mới hoàn toàn</b> trong <code>D:\ITSupportPlatform</code>, không sửa cấu trúc mã nguồn dự án hiện tại.</div>
+  <div class="note crit" style="margin-top:10px"><b>Thực tế triển khai (cập nhật tối 02/10/2026) — đọc trước GĐ1–GĐ3</b>
+    Thư mục gốc là <code>D:\ITSupportPlatform</code> (không phải <code>D:\Platform</code>). Giai đoạn dựng thử dùng <b>MongoDB Atlas</b>
+    (ADR-0013) thay cho cụm MongoDB nội bộ của GĐ1, nên GĐ1 hoãn. Core chạy <b>ngay trên máy chủ hiện tại</b> thành dịch vụ NSSM
+    <code>PlatformCore</code>, từ bản sao <code>D:\ITSupportPlatformRun</code>, nghe <code>127.0.0.1:7009</code> — mọi chỗ ghi
+    <code>itm-core.phenikaamec.local:7009</code> hiểu là <code>127.0.0.1:7009</code>. Quản lý dịch vụ:
+    <code>platform-deployment\nssm\dich_vu_core.ps1 -Lenh KiemTra|CapNhat|Go</code>. Tiến độ thật: <code>docs\TIEN_DO.md</code>.
+    Bước 3.6 đã <b>sửa điều kiện canary</b>: lọc theo IP + đường dẫn agent, không theo User-Agent (agent tự gửi
+    <code>Mozilla/5.0</code> ở <code>/check_update</code>, <code>/download_setup</code>).</div>
   <div class="meta">
     <span>Căn cứ: <b>SPEC V2 + tài liệu Lộ trình</b></span>
     <span>Hệ hiện tại: <b>server 2.7.3.1 · agent 2.7.5.3 · 889 máy</b></span>
@@ -270,7 +278,7 @@ section > h2 .pp{margin-left:auto;font-size:12.5px;font-weight:500;color:var(--m
       <li>Không bước nào chạm máy trạm (Caddy, agent, luật mạng) khi <b>chưa có cảnh báo online tụt và sao lưu</b> (bước 0.6, 0.7).</li>
       <li><b>Mỗi lần chỉ đổi một biến</b>: đổi server thì giữ agent; đổi agent thì giữ server.</li>
       <li>Mọi thay đổi chạm máy trạm phải có <b>lệnh quay lui đã diễn tập</b> và người trực trong 30 phút sau thay đổi.</li>
-      <li><b>Dự án cũ chỉ đọc:</b> Claude không sửa, tạo, xoá tệp trong <code>D:\NetworkInventory</code>, <code>D:\ExaminationSystem</code>, <code>D:\Agent</code>; mã mới chỉ ở <code>D:\Platform</code>.</li>
+      <li><b>Dự án cũ chỉ đọc:</b> Claude không sửa, tạo, xoá tệp trong <code>D:\NetworkInventory</code>, <code>D:\ExaminationSystem</code>, <code>D:\Agent</code>; mã mới chỉ ở <code>D:\ITSupportPlatform</code>.</li>
     </ol></div>
   <div class="note warn"><b>Nút dừng khẩn (in ra, dán cạnh màn hình trực)</b>
     <ul>
@@ -329,7 +337,7 @@ section > h2 .pp{margin-left:auto;font-size:12.5px;font-weight:500;color:var(--m
           <li>§1.3: thêm danh sách tính năng đang chạy được giữ (View desktop + VNC relay, nhật ký thay đổi máy, xuất cấu hình, cập nhật agent theo đợt, watchdog).</li>
           <li>§7.3: chốt "mã tổ chức + tài khoản + mật khẩu". §9.3: đổi sang <b>Tauri 2 + React + Vite</b> (thay Next.js). §69: tên và tham số bộ cài agent .exe (G11 của tài liệu Lộ trình).</li>
           <li>§52: thêm <code>expires_at</code>, <code>issued_by</code>, <code>sig</code> vào envelope. §54: cấm MinIO, mô tả StorageService.</li>
-          <li>Thêm chương "Mô hình xây dựng": Claude xây mới hoàn toàn trong <code>D:\Platform</code>, dự án cũ chỉ đọc (G10 của tài liệu Lộ trình).</li>
+          <li>Thêm chương "Mô hình xây dựng": Claude xây mới hoàn toàn trong <code>D:\ITSupportPlatform</code>, dự án cũ chỉ đọc (G10 của tài liệu Lộ trình).</li>
           <li>Thêm chương mới "Chuyển đổi" (bộ tương thích agent cũ, canary theo dải IP, quay lui) và chương "Phụ thuộc hệ thi" (<code>/internal/*</code>, <code>MONITOR_INTERNAL_URL</code>, <code>INTERNAL_API_TOKEN</code>, <code>MONITOR_MAPS_DIR</code>).</li>
           <li>§74: thay thứ tự Phase bằng GĐ0–GĐ11 (bảng H4 của tài liệu Lộ trình).</li>
         </ol></dd>
@@ -421,13 +429,13 @@ print('OK', dst)</pre></li>
         <dt>Mục đích</dt><dd>Luật §0.8: phải biết ngay khi máy rớt bất thường trong mọi đợt thay đổi. Script đọc <code>/internal/machines</code> của hub (chỉ đọc, đã có sẵn), phân biệt máy <b>tắt có chủ ý</b> (trường <code>tat_sach</code>) với máy <b>rớt</b>, và gửi Telegram. Đồng thời ghi lịch sử mỗi phút làm số liệu baseline.</dd>
         <dt>Cần có trước</dt><dd>Bot Telegram và chat ID đang dùng cho cảnh báo của hệ cũ; token nội bộ (<code>internal_api_token</code>) do người quản trị cấp.</dd>
         <dt>Thao tác</dt><dd><ol>
-          <li>Tạo thư mục <code>D:\PlatformSecrets</code>. Chuột phải → <span class="click">Properties</span> → <span class="click">Security</span> → <span class="click">Advanced</span> → <span class="click">Disable inheritance</span> → <span class="click">Convert inherited permissions…</span> → xoá mọi dòng trừ <b>SYSTEM</b> và <b>Administrators</b> → <span class="click">OK</span>.</li>
+          <li>Tạo thư mục <code>D:\ITSupportPlatformSecrets</code>. Chuột phải → <span class="click">Properties</span> → <span class="click">Security</span> → <span class="click">Advanced</span> → <span class="click">Disable inheritance</span> → <span class="click">Convert inherited permissions…</span> → xoá mọi dòng trừ <b>SYSTEM</b> và <b>Administrators</b> → <span class="click">OK</span>.</li>
           <li>Tạo 3 tệp văn bản trong đó: <code>internal_token.txt</code>, <code>telegram_token.txt</code>, <code>telegram_chat.txt</code>, mỗi tệp một dòng giá trị.</li>
           <li>Tạo <code>D:\Backup\tools\canh_bao_online.ps1</code> (lưu dạng <b>UTF-8 with BOM</b>):
 <pre><button class="copy" type="button">Chép</button>param([switch]$Thu)
 $ErrorActionPreference = 'Stop'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$S = 'D:\PlatformSecrets'; $W = 'D:\Backup\baseline'; New-Item -ItemType Directory -Force $W | Out-Null
+$S = 'D:\ITSupportPlatformSecrets'; $W = 'D:\Backup\baseline'; New-Item -ItemType Directory -Force $W | Out-Null
 $tok  = (Get-Content "$S\internal_token.txt" -Raw).Trim()
 $bot  = (Get-Content "$S\telegram_token.txt" -Raw).Trim()
 $chat = (Get-Content "$S\telegram_chat.txt" -Raw).Trim()
@@ -506,13 +514,13 @@ for r in sorted(m): print(r, sorted(m[r]))"</pre></li>
     <li><label><input type="checkbox" data-id="r0-11"><span class="t">0.11 Thiết lập không gian xây mới cho Claude (dự án cũ chỉ đọc)</span></label>
       <div class="m2"><span>Người làm: <b>Q, H</b></span><span>Thời lượng: <b>2 giờ</b></span></div>
       <dl class="f">
-        <dt>Mục đích</dt><dd>Claude đọc được toàn bộ mã nguồn và tài liệu cũ nhưng không thể ghi vào đó; mọi mã mới chỉ sinh ra trong <code>D:\Platform</code>.</dd>
+        <dt>Mục đích</dt><dd>Claude đọc được toàn bộ mã nguồn và tài liệu cũ nhưng không thể ghi vào đó; mọi mã mới chỉ sinh ra trong <code>D:\ITSupportPlatform</code>.</dd>
         <dt>Thao tác</dt><dd><ol>
-          <li>Tạo thư mục <code>D:\Platform</code> (repo ở bước 2.1 sẽ clone vào đây; nếu thư mục đã có nội dung thì clone vào <code>D:\Platform\repo</code> và mở Claude Code tại đó).</li>
-          <li>Mở VS Code tại <code>D:\Platform</code> → mở Claude Code.</li>
+          <li>Tạo thư mục <code>D:\ITSupportPlatform</code> (repo ở bước 2.1 sẽ clone vào đây; nếu thư mục đã có nội dung thì clone vào <code>D:\ITSupportPlatform\repo</code> và mở Claude Code tại đó).</li>
+          <li>Mở VS Code tại <code>D:\ITSupportPlatform</code> → mở Claude Code.</li>
           <li>Thêm thư mục cũ để đọc: gõ <code>/add-dir D:\NetworkInventory</code>, rồi <code>/add-dir D:\ExaminationSystem</code>, <code>/add-dir D:\Agent</code>.</li>
           <li>Gõ <code>/permissions</code> → thêm luật <b>Deny</b> cho thao tác <b>Edit</b> và <b>Write</b> vào ba thư mục trên (theo hướng dẫn cú pháp hiện trên màn hình).</li>
-          <li>Đặt tệp <code>CLAUDE.md</code> ở gốc <code>D:\Platform</code> bằng khối "CLAUDE.md" (mục K của tài liệu Lộ trình). Tệp này nêu rõ danh sách nguồn chỉ đọc và quy tắc viết lại.</li>
+          <li>Đặt tệp <code>CLAUDE.md</code> ở gốc <code>D:\ITSupportPlatform</code> bằng khối "CLAUDE.md" (mục K của tài liệu Lộ trình). Tệp này nêu rõ danh sách nguồn chỉ đọc và quy tắc viết lại.</li>
           <li>Thử rào: yêu cầu Claude tạo tệp <code>D:\NetworkInventory\thu.txt</code> → phải bị từ chối. Chạy <code>git -C D:\NetworkInventory status</code> → không có thay đổi mới.</li>
         </ol></dd>
         <dt>Kiểm tra đạt</dt><dd>Claude đọc được <code>D:\NetworkInventory\app.py</code>; lệnh ghi vào thư mục cũ bị chặn.</dd>
@@ -649,13 +657,13 @@ rs.status().members.map(m =&gt; m.name + "  " + m.stateStr)</pre></li>
       <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>0,5 ngày</b></span></div>
       <dl class="f">
         <dt>Thao tác</dt><dd><ol>
-          <li>Trên <code>itm-core</code> tạo <code>D:\PlatformSecrets\mongodump.yaml</code> (thư mục đã khoá quyền):
+          <li>Trên <code>itm-core</code> tạo <code>D:\ITSupportPlatformSecrets\mongodump.yaml</code> (thư mục đã khoá quyền):
 <pre><button class="copy" type="button">Chép</button>uri: mongodb://itm_backup:&lt;mat-khau&gt;@mongo1.phenikaamec.local:27017,mongo2.phenikaamec.local:27017,mongo3.phenikaamec.local:27017/?replicaSet=rs0&amp;authSource=admin</pre></li>
           <li>Tạo <code>D:\MongoBackup\backup.ps1</code>:
 <pre><button class="copy" type="button">Chép</button>$ErrorActionPreference = 'Stop'
 $dst = 'D:\MongoBackup'; $day = Get-Date -Format 'yyyyMMdd'
 $dump = Get-ChildItem 'C:\Program Files\MongoDB\Tools' -Recurse -Filter mongodump.exe | Select-Object -First 1
-&amp; $dump.FullName --config 'D:\PlatformSecrets\mongodump.yaml' --readPreference secondary --gzip --archive="$dst\itm_$day.gz"
+&amp; $dump.FullName --config 'D:\ITSupportPlatformSecrets\mongodump.yaml' --readPreference secondary --gzip --archive="$dst\itm_$day.gz"
 if ($LASTEXITCODE -ne 0) { throw "mongodump loi $LASTEXITCODE" }
 Get-ChildItem $dst -Filter 'itm_*.gz' | Sort-Object LastWriteTime -Descending | Select-Object -Skip 14 | Remove-Item
 robocopy $dst '\\&lt;may-sao-luu&gt;\MongoBackup' 'itm_*.gz' /MIR /R:2 /W:5 | Out-Null
@@ -681,7 +689,7 @@ if ($LASTEXITCODE -ge 8) { throw "robocopy loi $LASTEXITCODE" }</pre></li>
       <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>0,5 ngày</b></span></div>
       <dl class="f">
         <dt>Thao tác</dt><dd><ol>
-          <li>Trên <code>itm-core</code>: tạo <code>D:\Platform</code>, <code>D:\PlatformData</code>, <code>D:\Platform\logs</code>; chép <code>nssm.exe</code> vào <code>C:\Program Files\NSSM</code> và thêm thư mục này vào PATH hệ thống (<code>sysdm.cpl</code> → <span class="click">Advanced</span> → <span class="click">Environment Variables</span> → <b>Path</b> → <span class="click">Edit</span> → <span class="click">New</span>).</li>
+          <li>Trên <code>itm-core</code>: tạo <code>D:\ITSupportPlatform</code>, <code>D:\ITSupportPlatformData</code>, <code>D:\ITSupportPlatform\logs</code>; chép <code>nssm.exe</code> vào <code>C:\Program Files\NSSM</code> và thêm thư mục này vào PATH hệ thống (<code>sysdm.cpl</code> → <span class="click">Advanced</span> → <span class="click">Environment Variables</span> → <b>Path</b> → <span class="click">Edit</span> → <span class="click">New</span>).</li>
           <li>Cài Git for Windows và uv (lệnh ở bước 2.3).</li>
           <li>Trên máy quản trị: cài <b>MongoDB Compass</b>, kết nối bằng chuỗi <code>mongodb://itm_admin@mongo1.phenikaamec.local,mongo2.phenikaamec.local,mongo3.phenikaamec.local/?replicaSet=rs0&amp;authSource=admin</code>.</li>
         </ol></dd>
@@ -704,7 +712,7 @@ if ($LASTEXITCODE -ge 8) { throw "robocopy loi $LASTEXITCODE" }</pre></li>
         <dt>Thao tác</dt><dd><ol>
           <li>github.com → nút <span class="click">+</span> góc trên phải → <span class="click">New repository</span> → Owner: tài khoản/tổ chức của Trung tâm → Name <code>phenikaa-platform</code> → <span class="click">Private</span> → tích <span class="click">Add a README file</span> → <span class="click">Create repository</span>.</li>
           <li><span class="click">Settings</span> → <span class="click">Rules</span> → <span class="click">Rulesets</span> → <span class="click">New ruleset</span> → <span class="click">New branch ruleset</span> → Ruleset name <code>bao-ve-main</code> → Enforcement <span class="click">Active</span> → Target branches <span class="click">Include default branch</span> → tích <span class="click">Require a pull request before merging</span> và <span class="click">Require status checks to pass</span> → <span class="click">Create</span>.</li>
-          <li>Trên máy phát triển: GitHub Desktop → <span class="click">File</span> → <span class="click">Clone repository…</span> → chọn <code>phenikaa-platform</code> → Local path <code>D:\Platform</code> → <span class="click">Clone</span>.</li>
+          <li>Trên máy phát triển: GitHub Desktop → <span class="click">File</span> → <span class="click">Clone repository…</span> → chọn <code>phenikaa-platform</code> → Local path <code>D:\ITSupportPlatform</code> → <span class="click">Clone</span>.</li>
         </ol></dd>
         <dt>Kiểm tra đạt</dt><dd>Đẩy thẳng lên <code>main</code> bị từ chối; tạo Pull Request thì được.</dd>
       </dl></li>
@@ -713,7 +721,7 @@ if ($LASTEXITCODE -ge 8) { throw "robocopy loi $LASTEXITCODE" }</pre></li>
       <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>2 giờ</b></span></div>
       <dl class="f">
         <dt>Thao tác</dt><dd><ol>
-          <li>PowerShell trong <code>D:\Platform</code>:
+          <li>PowerShell trong <code>D:\ITSupportPlatform</code>:
 <pre><button class="copy" type="button">Chép</button>'platform-core','platform-agent','desktop-app','platform-master','platform-deployment','docs\adr' |
   ForEach-Object { New-Item -ItemType Directory -Force $_ | Out-Null }
 'qa','caddy','nssm','build','updater','runner' | ForEach-Object { New-Item -ItemType Directory -Force "platform-deployment\$_" | Out-Null }</pre></li>
@@ -751,7 +759,7 @@ logs/
 <pre><button class="copy" type="button">Chép</button>powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 <span class="c"># đóng và mở lại PowerShell</span>
 uv python install 3.14
-cd D:\Platform
+cd D:\ITSupportPlatform
 uv init --app platform-core
 cd platform-core
 uv python pin 3.14
@@ -767,11 +775,11 @@ uv add --dev pytest ruff pyright</pre></li>
       <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>2 giờ</b></span></div>
       <dl class="f">
         <dt>Thao tác</dt><dd><ol>
-          <li>Tạo <code>D:\PlatformSecrets\core.env</code> (thư mục đã khoá quyền ở bước 0.7):
+          <li>Tạo <code>D:\ITSupportPlatformSecrets\core.env</code> (thư mục đã khoá quyền ở bước 0.7):
 <pre><button class="copy" type="button">Chép</button>MONGO_URI=mongodb://core_app:&lt;mat-khau&gt;@mongo1.phenikaamec.local,mongo2.phenikaamec.local,mongo3.phenikaamec.local/?replicaSet=rs0&amp;authSource=admin
 MONGO_DB=itm_core
 MASTER_KEY_B64=&lt;32 byte ngẫu nhiên, base64&gt;
-CORE_SIGNING_KEY=D:\PlatformSecrets\core_ed25519.pem
+CORE_SIGNING_KEY=D:\ITSupportPlatformSecrets\core_ed25519.pem
 PORT=7009</pre>
             Sinh <code>MASTER_KEY_B64</code>: <code>python -c "import os,base64;print(base64.b64encode(os.urandom(32)).decode())"</code>.</li>
           <li>Cài pre-commit: <code>uv tool install pre-commit</code>. Tạo <code>.pre-commit-config.yaml</code> ở gốc repo:
@@ -940,13 +948,13 @@ jobs:
       <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>0,5 ngày</b></span></div>
       <dl class="f">
         <dt>Thao tác</dt><dd><ol>
-          <li>Trên <code>itm-core</code>: clone repo vào <code>D:\Platform</code>, <code>cd D:\Platform\platform-core</code>, <code>uv sync --no-dev</code>.</li>
+          <li>Trên <code>itm-core</code>: clone repo vào <code>D:\ITSupportPlatform</code>, <code>cd D:\ITSupportPlatform\platform-core</code>, <code>uv sync --no-dev</code>.</li>
           <li>PowerShell quyền Administrator: <code>nssm install PlatformCore</code>.</li>
-          <li>Tab <b>Application</b>: Path <code>D:\Platform\platform-core\.venv\Scripts\python.exe</code> · Startup directory <code>D:\Platform\platform-core</code> · Arguments <code>-m app.server</code>.</li>
+          <li>Tab <b>Application</b>: Path <code>D:\ITSupportPlatform\platform-core\.venv\Scripts\python.exe</code> · Startup directory <code>D:\ITSupportPlatform\platform-core</code> · Arguments <code>-m app.server</code>.</li>
           <li>Tab <b>Details</b>: Display name <code>Phenikaa Platform Core</code> · Startup type <span class="click">Automatic (Delayed Start)</span>.</li>
-          <li>Tab <b>Log on</b>: <span class="click">Local System account</span>. Tab <b>I/O</b>: Output <code>D:\Platform\logs\core-out.log</code> · Error <code>D:\Platform\logs\core-err.log</code>.</li>
+          <li>Tab <b>Log on</b>: <span class="click">Local System account</span>. Tab <b>I/O</b>: Output <code>D:\ITSupportPlatform\logs\core-out.log</code> · Error <code>D:\ITSupportPlatform\logs\core-err.log</code>.</li>
           <li>Tab <b>File rotation</b>: tích <span class="click">Rotate files</span>, <span class="click">Rotate while service is running</span>, giới hạn <code>10485760</code> bytes.</li>
-          <li>Tab <b>Environment</b>: <code>DOTENV_PATH=D:\PlatformSecrets\core.env</code>. Tab <b>Exit actions</b>: <span class="click">Restart application</span>, delay 5000 ms → <span class="click">Install service</span>.</li>
+          <li>Tab <b>Environment</b>: <code>DOTENV_PATH=D:\ITSupportPlatformSecrets\core.env</code>. Tab <b>Exit actions</b>: <span class="click">Restart application</span>, delay 5000 ms → <span class="click">Install service</span>.</li>
           <li><code>nssm start PlatformCore</code>, sau đó <b>luôn</b> <code>nssm status PlatformCore</code> (không tin errorlevel).</li>
           <li>Tường lửa <code>itm-core</code>: mở TCP 7009 chỉ cho IP máy chủ Caddy hiện tại (cách làm bước 1.5).</li>
         </ol></dd>
@@ -984,24 +992,21 @@ jobs:
         <dt>Kiểm tra đạt</dt><dd>Mỗi endpoint/sự kiện có ít nhất một fixture và một test hợp đồng (đang đỏ, chờ bước 3.3).</dd>
       </dl></li>
 
-    <li><label><input type="checkbox" data-id="r3-2"><span class="t">3.2 Thu log thật của máy thử qua Caddy (1 ngày)</span></label>
-      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>1 ngày</b></span><span class="chip sys">SỬA CADDY</span></div>
+        <li><label><input type="checkbox" data-id="r3-2"><span class="t">3.2 Thu log thật của máy thử qua Caddy — KHÔNG BẮT BUỘC</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>bỏ qua được</b></span><span class="chip sys">SỬA CADDY</span></div>
       <dl class="f">
-        <dt>Mục đích</dt><dd>Lấy User-Agent, đường dẫn, tần suất thật của agent (cần cho điều kiện canary ở 3.6) mà không ghi log của 888 máy còn lại.</dd>
-        <dt>Thao tác</dt><dd><ol>
-          <li>Sao lưu: chép <code>D:\Caddy\Caddyfile</code> thành <code>Caddyfile.bak-&lt;ngày&gt;-log</code>.</li>
-          <li>Trong khối site <code>:5443</code> thêm (thay IP máy thử):
-<pre><button class="copy" type="button">Chép</button>@khong_phai_may_thu not client_ip 10.x.y.15/32
+        <dt>Đã thay bằng</dt><dd>Đọc toàn bộ mã agent 2.7.5.3 (chỉ đọc, 02/10/2026): agent chỉ gọi 19 đường dẫn ghi ở
+          <code>platform-core\tests\contract_v2\HOP_DONG.md</code> mục A11, và tự gửi <code>User-Agent: Mozilla/5.0</code> ở
+          <code>/check_update</code>, <code>/download_setup</code>. Điều kiện canary (3.6) lọc theo <b>IP + đường dẫn</b> nên không
+          cần biết User-Agent. Bỏ bước này là bớt một lần sửa Caddy.</dd>
+        <dt>Chỉ làm khi</dt><dd>Máy thử chạy agent khác 2.7.5.3, hoặc ở 3.6 thấy máy thử vẫn gọi đường dẫn lạ về hub cũ. Khi đó
+          sao lưu <code>Caddyfile</code>, trong khối <code>:5443</code> thêm (thay IP máy thử), validate → reload, 1 ngày sau gỡ:
+<pre><button class="copy" type="button">Chép</button>@khong_phai_may_thu not client_ip 10.21.30.250/32
 log_skip @khong_phai_may_thu
 log {
     output file D:\Caddy\capture_maythu.log
     format json
-}</pre></li>
-          <li><code>cd D:\Caddy</code> → <code>.\caddy.exe validate --config .\Caddyfile</code> → <code>.\caddy.exe reload --config .\Caddyfile</code>.</li>
-          <li>Sau 1 ngày: gỡ khối vừa thêm, validate, reload. Đọc tệp log: đếm theo <code>request.uri</code>, ghi lại <code>request.headers.User-Agent</code>.</li>
-        </ol></dd>
-        <dt>Kiểm tra đạt</dt><dd>Biết User-Agent của agent khi gọi HTTP và khi mở websocket; không chứa chữ <code>Mozilla</code>.</dd>
-        <dt>Nếu lỗi</dt><dd><code>validate</code> báo lỗi cú pháp: không reload, sửa lại. Có bất kỳ dấu hiệu máy rớt: chép bản <code>.bak</code> đè lại, reload.</dd>
+}</pre></dd>
       </dl></li>
 
     <li><label><input type="checkbox" data-id="r3-3"><span class="t">3.3 Viết legacy_adapter</span></label>
@@ -1019,58 +1024,89 @@ log {
         <dt>Kiểm tra đạt</dt><dd>Toàn bộ test <code>contract_v2</code> xanh; test tải giả lập 900 agent gửi nhịp tim mỗi 2 giây trong 30 phút: CPU Core dưới 50%, không rò bộ nhớ.</dd>
       </dl></li>
 
-    <li><label><input type="checkbox" data-id="r3-4"><span class="t">3.4 Cập nhật agent cũ phục vụ từ Core</span></label>
-      <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>3 ngày</b></span></div>
+        <li><label><input type="checkbox" data-id="r3-4"><span class="t">3.4 Cập nhật agent cũ phục vụ từ Core</span></label>
+      <div class="m2"><span>Người làm: <b>C</b>, <b>H</b></span><span>Thời lượng: <b>khi có bản agent mới</b></span></div>
       <dl class="f">
+        <dt>Đã có trong mã</dt><dd><code>app\legacy_adapter\update_gate.py</code>: <code>/check_update</code> mặc định trả
+          <code>{"version":"0.0.0.0","hash":"","size":0}</code>; chỉ mời cập nhật khi bộ cài khớp <code>manifest.json</code>
+          (SHA-256 + size) VÀ máy lọt một cổng: <code>update.all</code> · <code>update.hosts</code> · <code>update.rollout_rooms</code> ·
+          <code>update.rollout_percent</code>. Mặc định tắt hết. Đặt cổng bằng <code>PUT /api/legacy/update_gate</code> (quyền
+          <code>agent.update</code>).</dd>
         <dt>Thao tác</dt><dd><ol>
-          <li>Chép <code>Client_Management.exe</code>, <code>manifest.json</code>, <code>version.txt</code> từ <code>D:\Backup\Moc0\updates</code> vào kho tệp của Core (<code>D:\PlatformData\updates\</code>).</li>
-          <li><code>/check_update</code> và <code>/download_setup</code> trả đúng định dạng cũ; kiểm SHA-256 + size từ manifest.</li>
-          <li>Cổng chia đợt đọc từ <code>settings</code>: <code>update.rollout_rooms</code>, <code>update.rollout_percent</code>, <code>update.all</code>. <b>Mặc định tất cả tắt.</b></li>
+          <li>Chỉ khi phát hành bản agent <b>mới hơn 2.7.5.3</b>: chép <code>Client_Management.exe</code>, <code>manifest.json</code>,
+            <code>version.txt</code> của bản phát hành vào <code>D:\ITSupportPlatformData\PHENIKAA\updates\</code>. Agent chỉ cập nhật
+            khi bản trên server LỚN HƠN bản đang chạy (client.py dòng 705), nên bản 2.7.5.2 đang nằm ở
+            <code>D:\NetworkInventory\updates</code> không có tác dụng với máy 2.7.5.3 — không cần chép. (<code>D:\Backup\Moc0</code>
+            chưa tồn tại vì bước 0.6 chưa làm.)</li>
+          <li>Canary cập nhật: <code>{"hosts":["A6-xxx-yy"]}</code> → chờ máy về đúng version ≥ 10 phút (luật §0.5) → phòng → %.</li>
         </ol></dd>
-        <dt>Kiểm tra đạt</dt><dd>Máy thử (sau bước 3.6) gọi <code>/check_update</code> nhận "không có bản mới" khi các cổng tắt.</dd>
+        <dt>Kiểm tra đạt</dt><dd>Máy thử (sau bước 3.6) gọi <code>/check_update</code> nhận <code>"version":"0.0.0.0"</code> khi các
+          cổng tắt.</dd>
       </dl></li>
 
-    <li><label><input type="checkbox" data-id="r3-5"><span class="t">3.5 Chuẩn bị trước khi chuyển máy thử</span></label>
-      <div class="m2"><span>Người làm: <b>H, Q</b></span><span>Thời lượng: <b>0,5 ngày</b></span></div>
+        <li><label><input type="checkbox" data-id="r3-5"><span class="t">3.5 Chuẩn bị trước khi chuyển máy thử</span></label>
+      <div class="m2"><span>Người làm: <b>H</b>, <b>Q</b></span><span>Thời lượng: <b>0,5 ngày</b></span></div>
       <dl class="f">
+        <dt>Cần có trước</dt><dd>Dịch vụ <code>PlatformCore</code> chạy bản có <code>legacy_adapter</code>:
+          <code>dich_vu_core.ps1 -Lenh KiemTra</code> báo "Bản đang chạy" = main và <code>[ĐẠT] Kết nối CSDL</code>.</dd>
         <dt>Thao tác</dt><dd><ol>
-          <li>Thêm hostname máy thử vào <code>D:\Backup\baseline\canary_hosts.txt</code> (script 0.7 sẽ không báo động khi máy này "biến mất" khỏi hub cũ).</li>
-          <li>Báo người phụ trách phòng có máy thử: máy sẽ hiện offline trên web cũ.</li>
-          <li>Thêm site Caddy <code>:7443</code> cho Desktop/kiểm thử trỏ về Core. Cấu hình hiện tại tắt automatic HTTPS, nên phải <b>chép đúng dòng <code>tls …</code> đang có trong khối <code>:5443</code></b> sang khối mới, nếu không cổng 7443 sẽ chạy HTTP thường:
-<pre><button class="copy" type="button">Chép</button>:7443 {
-    tls &lt;chép nguyên dòng tls của khối :5443&gt;
-    reverse_proxy itm-core.phenikaamec.local:7009
-}</pre>
-            validate → reload; mở tường lửa 7443 cho máy quản trị.</li>
+          <li>Chọn máy thử không phục vụ giảng dạy; ghi tên máy + IP (xem trên web cũ). Báo người phụ trách phòng: máy sẽ hiện
+            <b>offline trên web cũ</b> trong lúc thử.</li>
+          <li>Khi đã có bước 0.7: thêm tên máy vào danh sách miễn cảnh báo (máy "biến mất" khỏi hub cũ là có chủ đích).</li>
+          <li>Chưa cần cổng <code>:7443</code>: Core nghe <code>127.0.0.1:7009</code>, kiểm ngay trên máy chủ. Cổng 7443 cho Desktop
+            làm ở GĐ4 (khi đó chép đúng dòng <code>tls …</code> của khối <code>:5443</code>).</li>
+          <li>Lấy token quản trị (PowerShell trên máy chủ, giữ cửa sổ này cho 3.6):
+<pre><button class="copy" type="button">Chép</button>$r = Invoke-RestMethod -Method Post http://127.0.0.1:7009/api/auth/login -ContentType 'application/json' `
+     -Body (@{tenant_code='PHENIKAA'; username='admin'; password='&lt;mật khẩu&gt;'} | ConvertTo-Json)
+$H = @{ Authorization = "Bearer $($r.token)" }
+Invoke-RestMethod http://127.0.0.1:7009/api/legacy/online -Headers $H</pre></li>
         </ol></dd>
-        <dt>Kiểm tra đạt</dt><dd><code>https://&lt;máy-chủ&gt;:7443/docs</code> mở được từ máy quản trị.</dd>
+        <dt>Kiểm tra đạt</dt><dd>Lệnh cuối trả <code>total_online : 0</code> (chưa máy nào vào Core).</dd>
       </dl></li>
 
-    <li><label><input type="checkbox" data-id="r3-6"><span class="t">3.6 Chuyển 1 máy thử sang Core bằng Caddy</span></label>
+        <li><label><input type="checkbox" data-id="r3-6"><span class="t">3.6 Chuyển 1 máy thử sang Core bằng Caddy</span></label>
       <div class="m2"><span>Người làm: <b>H</b> (C trực)</span><span>Thời lượng: <b>1 giờ + theo dõi</b></span><span class="chip s0">§0</span></div>
       <dl class="f">
-        <dt>Cần có trước</dt><dd>Bước 3.2–3.5 xong; ngoài giờ có lớp ở phòng chứa máy thử.</dd>
+        <dt>Cần có trước</dt><dd>Bước 3.5 xong; ngoài giờ có lớp ở phòng chứa máy thử; người trực có mặt.</dd>
         <dt>Thao tác</dt><dd><ol>
-          <li>Chép <code>D:\Caddy\Caddyfile</code> → <code>Caddyfile.bak-&lt;ngày&gt;-canary</code>.</li>
-          <li>Trong khối <code>:5443</code>, <b>trước</b> dòng <code>handle @hub</code>, thêm:
-<pre><button class="copy" type="button">Chép</button>@core_canary {
-    client_ip 10.x.y.15/32
-    not header User-Agent *Mozilla*
-}
-handle @core_canary {
-    reverse_proxy itm-core.phenikaamec.local:7009
-}</pre></li>
+          <li>Sao lưu: <code>Copy-Item D:\Caddy\Caddyfile D:\Caddy\Caddyfile.bak-&lt;ngày&gt;-canary</code></li>
+          <li>Trong khối <code>https://10.21.24.142:5443</code>, <b>ngay trước</b> dòng chú thích
+            <code># --- HUB (agent + realtime …) -&gt; 5009 ---</code>, thêm (thay <code>10.21.30.250</code> bằng IP máy thử):
+<pre><button class="copy" type="button">Chép</button>	# --- CANARY ITSupportPlatform: MAY THU -&gt; Core. Loc theo IP + DUONG DAN agent, KHONG theo User-Agent.
+	@core_canary {
+		client_ip 10.21.30.250/32
+		path /update /check_update /download_setup /client_log /offline /check_command/* /login_result/*
+		path /ps_auth_result/* /pty_auth_result/* /ps_bulk_result/* /send_report /collect_upload /collect_report
+		path /work_file/* /fs_recv /fs_recv_raw /fs_serve/* /fs_bridge/* /socket.io/*
+	}
+	handle @core_canary {
+		reverse_proxy 127.0.0.1:7009
+	}</pre>
+            Điều kiện = IP máy thử <b>VÀ</b> một trong 19 đường dẫn của agent; ba dòng <code>path</code> được Caddy gộp thành một
+            danh sách (HOẶC). <b>Không</b> lọc theo User-Agent (HOP_DONG A11). Khối này đã được thử <code>caddy adapt</code> +
+            <code>caddy validate</code> trên bản sao Caddyfile ngày 02/10/2026: hợp lệ, đứng trước <code>@hub</code>.</li>
           <li>Kiểm và nạp:
 <pre><button class="copy" type="button">Chép</button>cd D:\Caddy
 .\caddy.exe validate --config .\Caddyfile
 .\caddy.exe adapt --config .\Caddyfile --pretty &gt; .\adapt_check.json
+Select-String -Path .\adapt_check.json -Pattern '127.0.0.1:7009','127.0.0.1:5009' | Select-Object LineNumber, Line
 .\caddy.exe reload --config .\Caddyfile</pre>
-            Mở <code>adapt_check.json</code>, tìm <code>core_canary</code>: khối này phải nằm trước khối chứa <code>/socket.io/*</code> của <code>@hub</code>.</li>
-          <li>Trong 2 phút: <code>https://&lt;máy-chủ&gt;:7443/docs</code> → API danh sách thiết bị → máy thử <b>online</b>; trên web cũ máy thử <b>offline</b>.</li>
-          <li>Thử lệnh qua <code>/docs</code> (nút <span class="click">Try it out</span>): PowerShell <code>hostname; whoami</code> → trả tên máy và <code>nt authority\system</code>. Thử giao một tệp nhỏ, mở VNC.</li>
+            Dòng <code>127.0.0.1:7009</code> phải có <code>LineNumber</code> <b>nhỏ hơn</b> dòng <code>127.0.0.1:5009</code> (Caddy bỏ tên
+            <code>@core_canary</code> khi adapt nên không tìm theo tên). <code>validate</code> báo lỗi → <b>không</b> reload.</li>
+          <li>Trong 2 phút (dùng <code>$H</code> của 3.5): <code>Invoke-RestMethod http://127.0.0.1:7009/api/legacy/online -Headers $H</code>
+            → máy thử có <code>channel = socket</code>; trên web cũ máy thử <b>offline</b>.</li>
+          <li>Thử lệnh (thay tên máy):
+<pre><button class="copy" type="button">Chép</button>$j = Invoke-RestMethod -Method Post http://127.0.0.1:7009/api/legacy/powershell -Headers $H -ContentType 'application/json' `
+     -Body (@{hostnames=@('A6-xxx-yy'); script='hostname; whoami'} | ConvertTo-Json)
+Start-Sleep 10
+(Invoke-RestMethod "http://127.0.0.1:7009/api/legacy/results/$($j.token)" -Headers $H).results</pre>
+            → <code>stdout</code> có tên máy và <code>nt authority\system</code>.</li>
         </ol></dd>
-        <dt>Kiểm tra đạt</dt><dd>Máy online trên Core, lệnh chạy, không có lỗi trong <code>core-err.log</code>.</dd>
-        <dt>Nếu lỗi</dt><dd>Máy không lên Core sau 5 phút: chép bản <code>.bak</code> đè <code>Caddyfile</code>, reload; máy phải về hub cũ trong 2 phút. Phân tích log rồi thử lại.</dd>
+        <dt>Kiểm tra đạt</dt><dd>Máy online trên Core (kênh socket), PowerShell trả kết quả, <code>D:\ITSupportPlatformRun\logs\core-err.log</code>
+          không có dòng mới (tệp này chỉ nhận cảnh báo/lỗi), <code>dich_vu_core.ps1 -Lenh KiemTra</code> đạt. Giao/thu tệp, VNC chưa thử ở
+          bước này (API Desktop tương ứng làm ở GĐ6–GĐ7).</dd>
+        <dt>Nếu lỗi</dt><dd>Máy không lên Core sau 5 phút, hoặc số online toàn trường tụt: chép bản <code>.bak</code> đè
+          <code>Caddyfile</code> → <code>.\caddy.exe reload --config .\Caddyfile</code>; máy phải về hub cũ trong 2 phút. Phân tích log rồi thử lại.</dd>
       </dl></li>
 
     <li><label><input type="checkbox" data-id="r3-7"><span class="t">3.7 Diễn tập quay lui</span></label>
@@ -1087,7 +1123,7 @@ handle @core_canary {
     <li><label><input type="checkbox" data-id="r3-8"><span class="t">3.8 Theo dõi 72 giờ</span></label>
       <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>3 ngày</b></span></div>
       <dl class="f">
-        <dt>Thao tác</dt><dd>Sáng và chiều mỗi ngày ghi: máy thử online trên Core? · số dòng lỗi mới trong <code>core-err.log</code> · RAM tiến trình Core (Task Manager → <span class="click">Details</span> → <code>python.exe</code>) · số máy online toàn trường so với baseline · một lệnh thử.</dd>
+        <dt>Thao tác</dt><dd>Sáng và chiều mỗi ngày ghi: máy thử online trên Core? · số dòng lỗi mới trong <code>core-err.log</code> · RAM tiến trình Core: <code>(Get-Process -Id (Get-NetTCPConnection -LocalPort 7009 -State Listen).OwningProcess).WorkingSet64/1MB</code> · số máy online toàn trường so với baseline · một lệnh thử.</dd>
         <dt>Kiểm tra đạt</dt><dd>Không lần nào máy thử mất kết nối quá 2 phút ngoài các lần khởi động lại máy; RAM Core không tăng đều theo thời gian.</dd>
       </dl></li>
 
@@ -1154,7 +1190,7 @@ pnpm -v</pre></li>
       <dl class="f">
         <dt>Mục đích</dt><dd>Dùng đúng mẫu chính thức của Tauri cho React: ứng dụng một trang build bằng Vite 8, không có máy chủ Node.</dd>
         <dt>Thao tác</dt><dd><ol>
-          <li><code>cd D:\Platform</code> → <code>pnpm create tauri-app</code>, trả lời:
+          <li><code>cd D:\ITSupportPlatform</code> → <code>pnpm create tauri-app</code>, trả lời:
             <div class="tbl"><table><tbody>
               <tr><td>Project name</td><td><code>desktop-app</code></td></tr>
               <tr><td>Identifier</td><td><code>vn.edu.phenikaa.itmonitor</code></td></tr>
@@ -1380,7 +1416,7 @@ export function connect(base: string, token: string) {
       <dl class="f">
         <dt>Thao tác</dt><dd><ul>
           <li>Giao diện: <code>put_stream(key, stream)</code>, <code>get_stream(key)</code>, <code>delete(key)</code>, <code>list(prefix)</code>.</li>
-          <li>Gốc <code>D:\PlatformData\tenants\&lt;tenant_id&gt;\{work,collected,thu,chat,report,temp}</code>; khoá luôn bắt đầu bằng <code>tenants/&lt;tenant_id&gt;/</code>; chặn <code>..</code> trong khoá.</li>
+          <li>Gốc <code>D:\ITSupportPlatformData\tenants\&lt;tenant_id&gt;\{work,collected,thu,chat,report,temp}</code>; khoá luôn bắt đầu bằng <code>tenants/&lt;tenant_id&gt;/</code>; chặn <code>..</code> trong khoá.</li>
           <li>Ghi <code>file_metadata</code> có <code>expires_at</code>: temp 48h, work 48h, collected 168h; worker dọn mỗi giờ.</li>
         </ul></dd>
       </dl></li>
@@ -1558,7 +1594,7 @@ if __name__ == "__main__":
           <li>Dừng dịch vụ Hub và UI của IT Monitor cũ (tên trong <code>QuanLyServerPhongMay.bat</code>): <code>nssm stop &lt;tên&gt;</code> rồi <code>nssm set &lt;tên&gt; Start SERVICE_DEMAND_START</code> (không tự chạy khi khởi động lại máy chủ, nhưng vẫn cài sẵn).</li>
           <li>Lưu <code>database.db</code> ở thời điểm chuyển vào <code>D:\Backup\Moc_Chuyen</code>.</li>
           <li>4 tuần: theo dõi số liệu hằng ngày so với baseline.</li>
-          <li>Sau 4 tuần ổn định: lưu trữ nguyên trạng thư mục hệ cũ (không sửa mã nguồn); <code>D:\Platform\CLAUDE.md</code> là tài liệu chính; giữ bản cài hệ cũ thêm 3 tháng rồi mới gỡ.</li>
+          <li>Sau 4 tuần ổn định: lưu trữ nguyên trạng thư mục hệ cũ (không sửa mã nguồn); <code>D:\ITSupportPlatform\CLAUDE.md</code> là tài liệu chính; giữ bản cài hệ cũ thêm 3 tháng rồi mới gỡ.</li>
         </ol></dd>
         <dt>Nếu lỗi</dt><dd>Quay lui toàn cục: chép Caddyfile trước bước 9.6, <code>nssm start</code> hai dịch vụ cũ, reload Caddy, trả biến hệ thi. Thống kê phát sinh trên Core trong thời gian đó có thể chép ngược sau.</dd>
       </dl></li>
@@ -1666,7 +1702,7 @@ def load_or_create():
       <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>3 ngày</b></span></div>
       <dl class="f">
         <dt>Thao tác</dt><dd><ol>
-          <li>Core ký envelope bằng khoá Ed25519 trong <code>D:\PlatformSecrets</code>; khoá công khai của Core đóng gói sẵn trong bộ cài agent.</li>
+          <li>Core ký envelope bằng khoá Ed25519 trong <code>D:\ITSupportPlatformSecrets</code>; khoá công khai của Core đóng gói sẵn trong bộ cài agent.</li>
           <li>Agent kiểm (khung mẫu):
 <pre><button class="copy" type="button">Chép</button>import json, base64, datetime
 def verify(env, core_pub):

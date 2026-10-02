@@ -232,7 +232,7 @@ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);font-si
     <ol>
       <li><b>Desktop Application viết bằng Tauri 2 + React + Vite</b> (TypeScript), thay cho Next.js trong đặc tả V2 (C9, F, J-GĐ4).</li>
       <li><b>Windows Agent là phần mềm .exe có bộ cài</b> để cài trên máy trạm: <code>Client_Manager.exe</code> + bộ cài Setup .exe cài im lặng được, nâng cấp đè tại chỗ lên agent hiện tại (G11).</li>
-      <li><b>Claude đọc mã nguồn và tài liệu hiện có ở chế độ chỉ đọc, xây mới hoàn toàn</b> trong thư mục riêng <code>D:\Platform</code>; không sửa cấu trúc mã nguồn của <code>D:\NetworkInventory</code>, <code>D:\ExaminationSystem</code>, <code>D:\Agent</code> (G10).</li>
+      <li><b>Claude đọc mã nguồn và tài liệu hiện có ở chế độ chỉ đọc, xây mới hoàn toàn</b> trong thư mục riêng <code>D:\ITSupportPlatform</code>; không sửa cấu trúc mã nguồn của <code>D:\NetworkInventory</code>, <code>D:\ExaminationSystem</code>, <code>D:\Agent</code> (G10).</li>
     </ol></div>
   <div class="verdict">
     <ol>
@@ -371,7 +371,7 @@ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);font-si
       <tr><td>D16</td><td><b>Hồ sơ tuân thủ</b> Luật Bảo vệ dữ liệu cá nhân 2025</td><td>Dữ liệu tên/email giảng viên, chat, nhật ký là dữ liệu cá nhân.</td><td><span class="sev m">Cần pháp chế</span></td><td>Trước GĐ11</td></tr>
       <tr><td>D17</td><td><b>Máy chủ mới</b> (Windows Server 2022/2025 hoặc Ubuntu 24.04 LTS)</td><td>WS2019 hết hỗ trợ mở rộng 09/01/2029; hệ mới không nên đặt trên OS sắp hết hạn.</td><td><span class="sev m">Nên</span></td><td>GĐ1</td></tr>
       <tr><td>D18</td><td><b>Dừng Khối A ở Pha 1</b></td><td>Pha 2 (dời tệp sang <code>D:\Agent</code>) sẽ thành việc làm bỏ đi vì Core mới thay vai Agent hub.</td><td><span class="sev m">Quyết định</span></td><td>GĐ0</td></tr>
-      <tr><td>D19</td><td><b>Claude xây mới trong <code>D:\Platform</code>, dự án cũ chỉ đọc</b> (G10)</td><td>Hệ đang chạy không bị đụng trong suốt dự án; quay lui luôn còn nguyên.</td><td><span class="sev h">Bắt buộc</span></td><td>GĐ0</td></tr>
+      <tr><td>D19</td><td><b>Claude xây mới trong <code>D:\ITSupportPlatform</code>, dự án cũ chỉ đọc</b> (G10)</td><td>Hệ đang chạy không bị đụng trong suốt dự án; quay lui luôn còn nguyên.</td><td><span class="sev h">Bắt buộc</span></td><td>GĐ0</td></tr>
       <tr><td>D20</td><td><b>Agent là phần mềm .exe có bộ cài</b>, cài im lặng, nâng cấp đè tại chỗ (G11)</td><td>Cài được trên máy mới lẫn thay thế agent cũ mà không để lại hai bản.</td><td><span class="sev h">Bắt buộc</span></td><td>GĐ10</td></tr>
       <tr><td>D21</td><td><b>Bảng tương đương chức năng agent 2.7.5.3 ↔ 3.0</b></td><td>Agent viết mới phải làm được mọi việc bản cũ đang làm trên 889 máy.</td><td><span class="sev h">Bắt buộc</span></td><td>GĐ10</td></tr>
     </tbody>
@@ -531,20 +531,23 @@ class TenantRepo:
   <h3>G6. Bộ tương thích agent cũ + canary bằng Caddy</h3>
   <p>Agent 2.7.5.x kết nối tới cùng địa chỉ HTTPS như hiện nay. Caddy quyết định gửi tới hub cũ hay Core mới theo <b>IP nguồn</b>.
   Agent không biết mình đang nói chuyện với server nào, nên không có gì phải cài trên máy trạm.</p>
-<pre><button class="copy" type="button">Chép</button><span class="c"># Caddyfile, trong khối site :5443 — đặt TRƯỚC "handle @hub"</span>
+<pre><button class="copy" type="button">Chép</button><span class="c"># Caddyfile, trong khối site :5443 — đặt TRƯỚC "handle @hub" (Core cùng máy: 127.0.0.1:7009)</span>
 @core_canary {
-    client_ip 10.x.y.15/32                 <span class="c"># bước 1: một máy thử</span>
-    <span class="c"># client_ip 10.x.y.0/24               # bước 2: thêm dải IP của một phòng</span>
-    not header User-Agent *Mozilla*        <span class="c"># CHỈ agent; trình duyệt của GV ngồi máy đó vẫn về web cũ</span>
+    client_ip 10.21.30.250/32              <span class="c"># bước 1: một máy thử; bước 2: thêm dải IP của một phòng</span>
+    path /update /check_update /download_setup /client_log /offline /check_command/* /login_result/*
+    path /ps_auth_result/* /pty_auth_result/* /ps_bulk_result/* /send_report /collect_upload /collect_report
+    path /work_file/* /fs_recv /fs_recv_raw /fs_serve/* /fs_bridge/* /socket.io/*
 }
 handle @core_canary {
-    reverse_proxy &lt;IP-VM-Core&gt;:7009
+    reverse_proxy 127.0.0.1:7009
 }
 <span class="c"># Quay lui: xoá khối trên → caddy validate → caddy reload (vài giây, không gián đoạn máy khác)</span></pre>
   <div class="note warn"><b>Ba điều kiện bắt buộc</b>
     (1) Giữ nguyên chứng thư TLS của cổng 5443, vì agent cũ ghim chứng thư (quyết định đã ghi: không xoay khoá máy chủ).
-    (2) Kiểm User-Agent thật của agent trong log Caddy trước khi dùng điều kiện <code>not header User-Agent *Mozilla*</code>.
-    (3) Kiểm thứ tự khối bằng <code>caddy adapt --pretty</code>: khối canary phải đứng trước khối <code>@hub</code>.</div>
+    (2) Lọc theo <b>IP + danh sách đường dẫn của agent</b>, KHÔNG theo User-Agent: agent 2.7.5.3 tự gửi
+    <code>User-Agent: Mozilla/5.0</code> ở <code>/check_update</code> và <code>/download_setup</code> (đo từ mã nguồn 02/10/2026,
+    HOP_DONG mục A11). Trình duyệt của GV ngồi máy đó vẫn về web cũ vì trang web không nằm trong danh sách đường dẫn.
+    (3) Kiểm thứ tự khối bằng <code>caddy adapt --pretty</code>: đích <code>127.0.0.1:7009</code> phải đứng trước <code>127.0.0.1:5009</code>.</div>
 
   <h3>G7. Lưu trữ tệp</h3>
   <p><code>StorageService</code> có 5 thao tác: <code>put_stream</code>, <code>get_stream</code>, <code>delete</code>, <code>list</code>, <code>presign</code> (khi dùng S3).
@@ -577,7 +580,7 @@ handle @core_canary {
   </table></div>
 
   <h3>G10. Mô hình xây dựng: Claude xây mới, dự án cũ chỉ đọc</h3>
-  <p>Toàn bộ nền tảng mới (5 project, kể cả agent) được Claude viết mới trong repo riêng <code>D:\Platform</code>. Claude đọc mã nguồn và tài liệu hiện có để hiểu hành vi cần giữ,
+  <p>Toàn bộ nền tảng mới (5 project, kể cả agent) được Claude viết mới trong repo riêng <code>D:\ITSupportPlatform</code>. Claude đọc mã nguồn và tài liệu hiện có để hiểu hành vi cần giữ,
   nhưng <b>không sửa, không tạo, không xoá</b> bất kỳ tệp nào trong thư mục của hệ đang chạy. Người vận hành vẫn là người thực hiện các thao tác trên máy chủ (Caddy, dịch vụ, cài đặt cần quyền Administrator).</p>
   <div class="tbl"><table>
     <thead><tr><th>Nguồn (chỉ đọc)</th><th>Đọc để lấy</th></tr></thead>
@@ -591,7 +594,7 @@ handle @core_canary {
       <tr><td>Đặc tả V3, tài liệu Lộ trình, Sổ tay thực hiện</td><td>Yêu cầu và thứ tự làm</td></tr>
     </tbody></table></div>
   <ul>
-    <li><b>Rào kỹ thuật:</b> Claude Code mở tại <code>D:\Platform</code>; thư mục cũ thêm bằng <code>/add-dir</code> chỉ để đọc; đặt luật <b>Deny</b> cho Edit/Write vào các thư mục cũ bằng <code>/permissions</code>.</li>
+    <li><b>Rào kỹ thuật:</b> Claude Code mở tại <code>D:\ITSupportPlatform</code>; thư mục cũ thêm bằng <code>/add-dir</code> chỉ để đọc; đặt luật <b>Deny</b> cho Edit/Write vào các thư mục cũ bằng <code>/permissions</code>.</li>
     <li><b>Viết lại, không chép nguyên khối:</b> mỗi module mới có bảng "hành vi cũ ↔ mã mới ↔ test" để chứng minh không sót.</li>
     <li><b>Mọi thay đổi qua Pull Request</b> có CI xanh; người duyệt là C/D/H theo phân công.</li>
     <li><b>Kiểm sau mỗi phiên làm việc:</b> <code>git -C D:\NetworkInventory status</code> không xuất hiện thay đổi mới do phiên đó.</li>
@@ -829,10 +832,10 @@ for r in sorted(m): print(r, sorted(m[r]))"</pre>
         <div class="d">Mỗi quyết định ở bước 1 là một tệp <code>docs/adr/ADR-000x-&lt;tên&gt;.md</code> gồm: bối cảnh, quyết định, phương án đã loại, hệ quả. Giúp người mới (và AI) hiểu vì sao.</div></li>
       <li><label><input type="checkbox" data-id="g0-9"><span class="t">Thiết lập không gian xây mới cho Claude (dự án cũ chỉ đọc)</span></label>
         <div class="d"><ol>
-          <li>Tạo thư mục <code>D:\Platform</code> (repo mới ở GĐ2 sẽ clone vào đây).</li>
-          <li>Mở Claude Code tại <code>D:\Platform</code>; thêm thư mục cũ để <b>đọc</b>: <code>/add-dir D:\NetworkInventory</code>, <code>/add-dir D:\ExaminationSystem</code>, <code>/add-dir D:\Agent</code>.</li>
+          <li>Tạo thư mục <code>D:\ITSupportPlatform</code> (repo mới ở GĐ2 sẽ clone vào đây).</li>
+          <li>Mở Claude Code tại <code>D:\ITSupportPlatform</code>; thêm thư mục cũ để <b>đọc</b>: <code>/add-dir D:\NetworkInventory</code>, <code>/add-dir D:\ExaminationSystem</code>, <code>/add-dir D:\Agent</code>.</li>
           <li>Gõ <code>/permissions</code> → thêm luật <b>Deny</b> cho thao tác Edit và Write vào ba thư mục đó.</li>
-          <li>Đặt <code>D:\Platform\CLAUDE.md</code> = khối CLAUDE.md ở <a href="#l">mục L</a>.</li>
+          <li>Đặt <code>D:\ITSupportPlatform\CLAUDE.md</code> = khối CLAUDE.md ở <a href="#l">mục L</a>.</li>
           <li>Thử: yêu cầu Claude tạo một tệp trong <code>D:\NetworkInventory</code> → phải bị từ chối; <code>git -C D:\NetworkInventory status</code> không đổi.</li>
         </ol></div></li>
     </ol>
@@ -935,14 +938,14 @@ db.createUser({ user: "itm_backup", pwd: passwordPrompt(), roles: ["backup"] })<
           <li>Vào github.com → nút <span class="click">+</span> góc trên phải → <span class="click">New repository</span>.</li>
           <li>Repository name <code>phenikaa-platform</code> → chọn <span class="click">Private</span> → tích <span class="click">Add a README file</span> → <span class="click">Add .gitignore: Python</span> → <span class="click">Create repository</span>.</li>
           <li><span class="click">Settings → Rules → Rulesets → New ruleset → New branch ruleset</span>: Target = nhánh mặc định; tích <span class="click">Require a pull request before merging</span> và <span class="click">Require status checks to pass</span> → <span class="click">Create</span>.</li>
-          <li>Mở GitHub Desktop → <span class="click">File → Clone repository…</span> → chọn <code>phenikaa-platform</code> → Local path <code>D:\Platform</code> → <span class="click">Clone</span>.</li>
+          <li>Mở GitHub Desktop → <span class="click">File → Clone repository…</span> → chọn <code>phenikaa-platform</code> → Local path <code>D:\ITSupportPlatform</code> → <span class="click">Clone</span>.</li>
         </ol></div></li>
       <li><label><input type="checkbox" data-id="g2-2"><span class="t">Cài uv và Python 3.14</span></label>
         <div class="d">
 <pre><button class="copy" type="button">Chép</button>powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 <span class="c"># đóng/mở lại PowerShell</span>
 uv python install 3.14
-cd D:\Platform
+cd D:\ITSupportPlatform
 uv init --app platform-core
 cd platform-core
 uv python pin 3.14
@@ -950,7 +953,7 @@ uv add flask apiflask flask-socketio gevent gevent-websocket pymongo pydantic ar
 uv add --dev pytest ruff pyright</pre>
           Nếu <code>uv add gevent</code> phải biên dịch từ mã nguồn hoặc lỗi trên 3.14: chạy <code>uv python pin 3.13</code> rồi <code>uv sync</code>, ghi lại vào ADR.</div></li>
       <li><label><input type="checkbox" data-id="g2-3"><span class="t">Bí mật ngoài repo ngay từ commit đầu (D14)</span></label>
-        <div class="d">Tạo <code>D:\PlatformSecrets\core.env</code> (chuỗi kết nối MongoDB, khoá chính AES, khoá ký Ed25519). Thêm vào <code>.gitignore</code>: <code>*.env</code>, <code>*.key</code>, <code>*.pem</code>.
+        <div class="d">Tạo <code>D:\ITSupportPlatformSecrets\core.env</code> (chuỗi kết nối MongoDB, khoá chính AES, khoá ký Ed25519). Thêm vào <code>.gitignore</code>: <code>*.env</code>, <code>*.key</code>, <code>*.pem</code>.
           Cài <code>pre-commit</code> (<code>uv tool install pre-commit</code>) với hook <code>gitleaks</code> để chặn commit có khoá/mật khẩu.</div></li>
       <li><label><input type="checkbox" data-id="g2-4"><span class="t">Tầng CSDL: kết nối, index, validator, dữ liệu gốc</span></label>
         <div class="d"><code>app/db/client.py</code>: <code>MongoClient(uri, replicaSet="rs0", w="majority", retryWrites=True)</code>, gọi <code>gevent.monkey.patch_all()</code> trước mọi import.
@@ -970,9 +973,9 @@ uv add --dev pytest ruff pyright</pre>
       <li><label><input type="checkbox" data-id="g2-10"><span class="t">Chạy Core thành dịch vụ Windows bằng NSSM</span></label>
         <div class="d"><ol>
           <li>PowerShell quyền Administrator: <code>nssm install PlatformCore</code> → cửa sổ NSSM mở ra.</li>
-          <li>Tab <b>Application</b>: Path <code>D:\Platform\platform-core\.venv\Scripts\python.exe</code>, Startup directory <code>D:\Platform\platform-core</code>, Arguments <code>-m app.server --port 7009</code>.</li>
+          <li>Tab <b>Application</b>: Path <code>D:\ITSupportPlatform\platform-core\.venv\Scripts\python.exe</code>, Startup directory <code>D:\ITSupportPlatform\platform-core</code>, Arguments <code>-m app.server --port 7009</code>.</li>
           <li>Tab <b>Details</b>: Display name <code>Phenikaa Platform Core</code>, Startup type <span class="click">Automatic (Delayed Start)</span>.</li>
-          <li>Tab <b>Log on</b>: <span class="click">Local System account</span>. Tab <b>I/O</b>: Output <code>D:\Platform\logs\core-out.log</code>, Error <code>D:\Platform\logs\core-err.log</code>.</li>
+          <li>Tab <b>Log on</b>: <span class="click">Local System account</span>. Tab <b>I/O</b>: Output <code>D:\ITSupportPlatform\logs\core-out.log</code>, Error <code>D:\ITSupportPlatform\logs\core-err.log</code>.</li>
           <li>Tab <b>File rotation</b>: tích <span class="click">Rotate files</span>, <span class="click">Rotate while service is running</span>, Restrict rotation to files bigger than <code>10485760</code> bytes.</li>
           <li>Tab <b>Exit actions</b>: <span class="click">Restart application</span>, Delay restart 5000 ms → bấm <span class="click">Install service</span>.</li>
           <li><code>nssm start PlatformCore</code> rồi <b>luôn</b> kiểm <code>nssm status PlatformCore</code> (không tin errorlevel, bài học 10.17).</li>
@@ -1055,7 +1058,7 @@ pnpm -v</pre></div></li>
         <div class="d">Vào <a href="https://rustup.rs" target="_blank" rel="noopener">rustup.rs</a> → tải <code>rustup-init.exe</code> (x64) → chạy → khi hiện lựa chọn <b>1) Proceed with standard installation</b> nhấn <kbd>Enter</kbd>.
           Đóng/mở PowerShell, kiểm <code>rustc -V</code> và <code>cargo -V</code>. WebView2 có sẵn trên Windows 11/Server 2022; kiểm trong <span class="click">Settings → Apps</span> có <b>Microsoft Edge WebView2 Runtime</b>.</div></li>
       <li><label><input type="checkbox" data-id="g4-5"><span class="t">Tạo desktop-app từ mẫu React + TypeScript (Vite) của Tauri</span></label>
-        <div class="d"><pre><button class="copy" type="button">Chép</button>cd D:\Platform
+        <div class="d"><pre><button class="copy" type="button">Chép</button>cd D:\ITSupportPlatform
 pnpm create tauri-app</pre>
           Trả lời:
           <div class="tbl"><table><tbody>
@@ -1146,7 +1149,7 @@ pnpm tauri signer generate -w "$env:USERPROFILE\.tauri\itmonitor.key"</pre>
     <p class="goal">Trình quản lý tệp 2 khung, giao bài, thu bài, nhật ký thu bài chạy qua StorageService.</p>
     <ol class="steps">
       <li><label><input type="checkbox" data-id="g7-1"><span class="t">StorageService bản cục bộ</span></label>
-        <div class="d">Gốc <code>D:\PlatformData\tenants\&lt;tenant_id&gt;\{work,collected,thu,chat,report,temp}</code>; truyền dạng luồng; metadata vào <code>file_metadata</code> có <code>expires_at</code>.</div></li>
+        <div class="d">Gốc <code>D:\ITSupportPlatformData\tenants\&lt;tenant_id&gt;\{work,collected,thu,chat,report,temp}</code>; truyền dạng luồng; metadata vào <code>file_metadata</code> có <code>expires_at</code>.</div></li>
       <li><label><input type="checkbox" data-id="g7-2"><span class="t">Trình quản lý tệp 2 khung</span></label>
         <div class="d">Mang các hành vi đã tinh chỉnh của <code>fbrowser.js</code>: giữ chỗ cuộn và chọn mục sau thao tác, nút Back về đúng vị trí, tự nén/giải nén thư mục, thanh % theo <code>fs_progress</code>.</div></li>
       <li><label><input type="checkbox" data-id="g7-3"><span class="t">Giao bài, thu bài, nhật ký thu</span></label>
@@ -1198,7 +1201,7 @@ pnpm tauri signer generate -w "$env:USERPROFILE\.tauri\itmonitor.key"</pre>
       <li><label><input type="checkbox" data-id="g9-6"><span class="t">Toàn bộ cổng 5443 về Core, hệ cũ chờ nóng 4 tuần</span></label>
         <div class="d">Khi mọi phòng đã ở Core: đổi định tuyến mặc định của 5443 sang Core (bỏ điều kiện IP). Hub/UI cũ vẫn chạy nhưng không nhận traffic, sẵn sàng quay lui.</div></li>
       <li><label><input type="checkbox" data-id="g9-7"><span class="t">Sau 4 tuần ổn định: dừng hệ cũ</span></label>
-        <div class="d">Dừng dịch vụ hub/UI cũ (không gỡ cài đặt trong 3 tháng); lưu trữ <code>database.db</code> cuối cùng. Thư mục hệ cũ lưu trữ nguyên trạng, không sửa; <code>D:\Platform\CLAUDE.md</code> (<a href="#l">mục L</a>) là tài liệu chính từ GĐ2.</div></li>
+        <div class="d">Dừng dịch vụ hub/UI cũ (không gỡ cài đặt trong 3 tháng); lưu trữ <code>database.db</code> cuối cùng. Thư mục hệ cũ lưu trữ nguyên trạng, không sửa; <code>D:\ITSupportPlatform\CLAUDE.md</code> (<a href="#l">mục L</a>) là tài liệu chính từ GĐ2.</div></li>
     </ol>
     <div class="box gate"><b>Cổng kiểm thử</b><ul><li>Mỗi đợt: online đủ sau 30 phút.</li><li>Toàn trường: 2 tuần liên tục online không thấp hơn baseline, không sự cố mất máy, hệ thi chạy trọn ít nhất một kỳ thi.</li></ul></div>
     <div class="box back"><b>Quay lui</b>Theo đợt: bớt dải IP. Toàn cục: trỏ 5443 về hub cũ (dữ liệu cũ còn nguyên tới thời điểm chuyển; thống kê phát sinh trên Core trong thời gian đó có thể chép ngược bằng script nếu cần).</div>
@@ -1270,7 +1273,7 @@ pnpm tauri signer generate -w "$env:USERPROFILE\.tauri\itmonitor.key"</pre>
       <tr><td>R11</td><td>gevent chưa ổn định trên Python 3.14</td><td><span class="sev l">Thấp</span></td><td><span class="sev l">Thấp</span></td><td>Dùng Python 3.13 (một dòng cấu hình)</td></tr>
       <tr><td>R12</td><td>Một VM Core là điểm hỏng duy nhất</td><td><span class="sev l">Thấp</span></td><td><span class="sev h">Cao</span></td><td>NSSM tự bật lại, VM dự phòng đã cài sẵn, Caddy trỏ sang khi cần; giai đoạn sau dùng change streams để chạy 2 instance</td></tr>
       <tr><td>R13</td><td>Agent viết mới thiếu hành vi so với 2.7.5.3</td><td><span class="sev m">Trung bình</span></td><td><span class="sev h">Rất cao</span></td><td>Bảng tương đương chức năng + test; test hợp đồng v2; chạy song song trên máy thử 2 tuần; canary 2–3 máy; giữ bộ cài 2.7.5.3 để quay về</td></tr>
-      <tr><td>R14</td><td>Claude sửa nhầm mã nguồn hệ đang chạy</td><td><span class="sev l">Thấp</span></td><td><span class="sev h">Cao</span></td><td>Repo riêng <code>D:\Platform</code>; thư mục cũ chỉ đọc; luật Deny ghi; kiểm <code>git status</code> thư mục cũ sau mỗi phiên</td></tr>
+      <tr><td>R14</td><td>Claude sửa nhầm mã nguồn hệ đang chạy</td><td><span class="sev l">Thấp</span></td><td><span class="sev h">Cao</span></td><td>Repo riêng <code>D:\ITSupportPlatform</code>; thư mục cũ chỉ đọc; luật Deny ghi; kiểm <code>git status</code> thư mục cũ sau mỗi phiên</td></tr>
     </tbody>
   </table></div>
 </section>
@@ -1278,7 +1281,7 @@ pnpm tauri signer generate -w "$env:USERPROFILE\.tauri\itmonitor.key"</pre>
 <!-- ============================ K ============================ -->
 <section id="l">
   <h2><span class="k">L</span>Kết quả tổng thể sau chuyển đổi</h2>
-  <p class="sub">Hình dung hệ thống sau GĐ9–GĐ10, và CLAUDE.md của repo mới <code>D:\Platform</code>.</p>
+  <p class="sub">Hình dung hệ thống sau GĐ9–GĐ10, và CLAUDE.md của repo mới <code>D:\ITSupportPlatform</code>.</p>
   <div class="tbl"><table>
     <thead><tr><th>Khía cạnh</th><th>Hiện tại</th><th>Sau chuyển đổi</th></tr></thead>
     <tbody>
@@ -1298,11 +1301,11 @@ pnpm tauri signer generate -w "$env:USERPROFILE\.tauri\itmonitor.key"</pre>
   </table></div>
 
   <h3>CLAUDE.md mục tiêu</h3>
-  <p>Khối dưới đây là <code>CLAUDE.md</code> đặt ở gốc repo mới <code>D:\Platform</code> <b>từ ngày đầu GĐ2</b>, để Claude và đội làm việc theo. <code>CLAUDE.md</code> của <code>D:\NetworkInventory</code> giữ nguyên, không sửa, vẫn là tài liệu của hệ đang chạy.</p>
+  <p>Khối dưới đây là <code>CLAUDE.md</code> đặt ở gốc repo mới <code>D:\ITSupportPlatform</code> <b>từ ngày đầu GĐ2</b>, để Claude và đội làm việc theo. <code>CLAUDE.md</code> của <code>D:\NetworkInventory</code> giữ nguyên, không sửa, vẫn là tài liệu của hệ đang chạy.</p>
   <div class="claude">
 <pre id="claudeMd"><button class="copy" type="button" data-target="claudeMdText">Chép toàn bộ</button><span id="claudeMdText"># Phenikaa IT Monitor 3.0 — Nền tảng SaaS đa tổ chức
 
-&gt; **CLAUDE.md của repo mới `D:\Platform`.** Đặt ở gốc repo từ ngày đầu Giai đoạn 2. Nền tảng được Claude
+&gt; **CLAUDE.md của repo mới `D:\ITSupportPlatform`.** Đặt ở gốc repo từ ngày đầu Giai đoạn 2. Nền tảng được Claude
 &gt; **xây mới hoàn toàn** tại đây. CLAUDE.md của hệ cũ (`D:\NetworkInventory`) giữ nguyên, không sửa, vẫn là tài liệu
 &gt; của hệ đang chạy cho tới khi hệ cũ được lưu trữ.
 &gt; Toàn bộ trao đổi trong dự án **bằng tiếng Việt**.
@@ -1326,7 +1329,7 @@ Bổ sung cho nền tảng mới:
 13. **Mọi đợt thay đổi ảnh hưởng máy trạm** (agent, Caddy, Internet Control, chứng thư) theo thứ tự:
     1 máy → 1 phòng → nhiều phòng → toàn trường, mỗi bước có **cổng kiểm thử** + **lệnh quay lui đã diễn tập**.
 14. **Dự án cũ CHỈ ĐỌC.** `D:\NetworkInventory`, `D:\ExaminationSystem`, `D:\Agent`, `D:\Caddy`, `D:\RemoteControl`:
-    Claude được đọc để hiểu hành vi, **không sửa, không tạo, không xoá** tệp ở đó. Mã mới chỉ nằm trong `D:\Platform`.
+    Claude được đọc để hiểu hành vi, **không sửa, không tạo, không xoá** tệp ở đó. Mã mới chỉ nằm trong `D:\ITSupportPlatform`.
     Thao tác vận hành trên máy chủ (Caddyfile, dịch vụ NSSM, cài đặt cần quyền Administrator) do người vận hành làm theo Sổ tay.
 
 ---
@@ -1341,7 +1344,7 @@ Bổ sung cho nền tảng mới:
 | CSDL | MongoDB Community 8.0.x, **replica set 3 node `rs0`**, `w=majority`; DB `itm_core` (Core) và `itm_master` (Master) TÁCH RIÊNG |
 | Desktop | **Tauri 2 + React 19 + Vite 8 + TypeScript** (ứng dụng một trang, mẫu chính thức của Tauri) · React Router 7 (hash router) · TanStack Query · socket.io-client · xterm.js · noVNC · Chart.js |
 | Agent | **Phần mềm .exe**: `Client_Manager.exe` (Python biên dịch bằng Nuitka 4.x, máy trạm không cần Python) + bộ cài `PhenikaaITMonitor-Agent-Setup-&lt;ver&gt;.exe` (Inno Setup 6.7, cài im lặng, nâng cấp tại chỗ); chạy bằng Task Scheduler quyền SYSTEM |
-| Cách xây dựng | Claude xây mới hoàn toàn trong `D:\Platform`; dự án cũ chỉ đọc (mục 13) |
+| Cách xây dựng | Claude xây mới hoàn toàn trong `D:\ITSupportPlatform`; dự án cũ chỉ đọc (mục 13) |
 | Reverse proxy | Caddy 2.11 (dịch vụ `CaddyServer`): `:5443` agent v2 + legacy; `:7443` Desktop + agent v3 |
 | Cổng nội bộ | Core `7009` · Master `7010` · MongoDB `27017` (chỉ mở giữa các node + Core) |
 | Tổ chức đầu tiên | `PHENIKAA` (on-prem tại trường). Tổ chức khác chỉ mở khi GĐ11 hoàn tất |
@@ -1350,7 +1353,7 @@ Bổ sung cho nền tảng mới:
 
 ---
 
-## 2. Cấu trúc monorepo `D:\Platform` (5 project theo đặc tả §4.1)
+## 2. Cấu trúc monorepo `D:\ITSupportPlatform` (5 project theo đặc tả §4.1)
 
 ```
 platform-core/        app/{api,auth,tenants,users,rbac,rooms,devices,agents,commands,realtime,
@@ -1460,7 +1463,7 @@ Ghim trong `.gitattributes`; kiểm bằng `uv run tools/check_eol.py`.
 
 ## 8. Lưu trữ tệp
 
-- `StorageService` (giao diện chung): `LocalFS` (on-prem, `D:\PlatformData`) hoặc `S3` (SeaweedFS / dịch vụ S3 trong nước).
+- `StorageService` (giao diện chung): `LocalFS` (on-prem, `D:\ITSupportPlatformData`) hoặc `S3` (SeaweedFS / dịch vụ S3 trong nước).
   KHÔNG dùng MinIO (đã ngừng bảo trì, archive 25/04/2026).
 - Khoá lưu trữ luôn có ranh giới tổ chức: `tenants/&lt;tenant_id&gt;/{work,collected,thu,chat,report,temp}/...`.
 - MongoDB chỉ giữ metadata (`file_metadata`); tệp lớn truyền dạng luồng, không nạp cả tệp vào RAM.
@@ -1533,7 +1536,7 @@ Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay l�
 ## 12. Git &amp; CI
 
 - Repo private `phenikaa-platform`; nhánh `main` được bảo vệ, mọi thay đổi qua Pull Request + CI xanh.
-- Bí mật KHÔNG vào repo: `.env` đặt ở `D:\PlatformSecrets\`; pre-commit `gitleaks` chặn khoá/mật khẩu.
+- Bí mật KHÔNG vào repo: `.env` đặt ở `D:\ITSupportPlatformSecrets\`; pre-commit `gitleaks` chặn khoá/mật khẩu.
 - CI: GitHub Actions, runner tự host Windows cho build Nuitka/Tauri + ký số.
 - Commit của Claude gắn dòng `Co-Authored-By` cuối message; tránh `reset --hard`, `push --force`.
 
@@ -1549,7 +1552,7 @@ Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay l�
 | `agent_build\client.py`, `TaoApp.iss`, `build_client.bat`, `publish_release.ps1`, `watchdog.ps1` | Hành vi agent 2.7.5.3, đóng gói, cài đặt |
 | `D:\ExaminationSystem\CLAUDE_THI.md`, `KE_HOACH_TACH_DOC_LAP.md` | Hợp đồng `/internal/*`, biến `MONITOR_*` |
 
-- Claude Code mở tại `D:\Platform`; thư mục cũ thêm bằng `/add-dir` chỉ để đọc; luật **Deny** Edit/Write cho thư mục cũ (`/permissions`).
+- Claude Code mở tại `D:\ITSupportPlatform`; thư mục cũ thêm bằng `/add-dir` chỉ để đọc; luật **Deny** Edit/Write cho thư mục cũ (`/permissions`).
 - **Viết lại, không chép nguyên khối.** Mỗi module có bảng "hành vi cũ ↔ mã mới ↔ test"; agent có bảng tương đương 2.7.5.3 ↔ 3.0.
 - Claude không chạy lệnh cần quyền Administrator (cài dịch vụ, sửa Caddy, tường lửa): ghi rõ lệnh để người vận hành chạy.
 - Hết mỗi phiên: `git -C D:\NetworkInventory status` không có thay đổi mới do phiên đó.
@@ -1600,7 +1603,7 @@ Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay l�
     <li>Envelope lệnh có hạn dùng và chữ ký (C12).</li>
     <li>Chia Phase 2 của đặc tả thành GĐ3 (server) và GĐ10 (agent).</li>
     <li>Desktop dùng React + Vite thay Next.js (quyết định của chủ đầu tư, 10/2026).</li>
-    <li>Toàn bộ nền tảng, kể cả agent, do Claude xây mới trong <code>D:\Platform</code>; dự án cũ chỉ đọc (G10).</li>
+    <li>Toàn bộ nền tảng, kể cả agent, do Claude xây mới trong <code>D:\ITSupportPlatform</code>; dự án cũ chỉ đọc (G10).</li>
   </ol>
 
   <h3>6. Kiến nghị</h3>
@@ -1610,7 +1613,7 @@ Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay l�
       Nếu bộ tương thích agent cũ không đạt cổng kiểm thử, dừng tại đó không gây thiệt hại vì hệ cũ nguyên vẹn; nền Core và MongoDB vẫn dùng lại được.</li>
     <li>Phê duyệt ngân sách hạ tầng (3 VM MongoDB + 1 VM Core + dự phòng), chứng thư ký mã, và nhân sự.</li>
     <li>Dừng "Khối A" ở Pha 1, không làm Pha 2.</li>
-    <li>Giao Claude xây mới trong <code>D:\Platform</code> theo đặc tả V3, mỗi giai đoạn qua Pull Request và cổng kiểm thử; mọi thao tác trên máy chủ do người vận hành thực hiện theo Sổ tay.</li>
+    <li>Giao Claude xây mới trong <code>D:\ITSupportPlatform</code> theo đặc tả V3, mỗi giai đoạn qua Pull Request và cổng kiểm thử; mọi thao tác trên máy chủ do người vận hành thực hiện theo Sổ tay.</li>
     <li>Nhờ bộ phận pháp chế rà soát yêu cầu của Luật Bảo vệ dữ liệu cá nhân 2025 trước khi mở cho tổ chức thứ hai.</li>
   </ol>
 

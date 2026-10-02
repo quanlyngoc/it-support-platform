@@ -51,15 +51,33 @@ def create_app(db=None, settings: Settings | None = None, async_mode: str | None
     return app
 
 
-def main() -> None:
-    from app.utils.console import utf8_stdio
+def _setup_logging() -> None:
+    """INFO (tóm tắt SYNC 60 s…) → stdout = core-out.log; WARNING trở lên → stderr = core-err.log.
+    Nhờ vậy "core-err.log có dòng mới" (Sổ tay 3.6/3.8) đúng nghĩa là có cảnh báo/lỗi."""
+    import sys
 
-    utf8_stdio()
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+    fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
+    out = logging.StreamHandler(sys.stdout)
+    out.setLevel(logging.INFO)
+    out.addFilter(lambda r: r.levelno < logging.WARNING)
+    err = logging.StreamHandler(sys.stderr)
+    err.setLevel(logging.WARNING)
+    root = logging.getLogger()
+    root.setLevel(logging.INFO)
+    for h in (out, err):
+        h.setFormatter(fmt)
+    root.handlers[:] = [out, err]
     # gevent-websocket ghi MỌI request ở mức INFO (bỏ qua log_output) → ≈ 840 dòng/giây với 900 máy ≈ 10 GB/ngày
     # (đúng lỗi server.log phình GB của hub cũ). Chỉ giữ cảnh báo/lỗi.
     for noisy in ("geventwebsocket.handler", "engineio.server", "socketio.server"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
+
+
+def main() -> None:
+    from app.utils.console import utf8_stdio
+
+    utf8_stdio()
+    _setup_logging()
     s = get_settings()
     app = create_app()
     app.extensions["legacy"].start()  # vòng nền: ghi computers theo lô + gửi lại lệnh chưa ACK
