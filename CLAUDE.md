@@ -42,6 +42,7 @@ Bổ sung cho nền tảng mới:
 | Cách xây dựng | Claude xây mới hoàn toàn trong `D:\ITSupportPlatform`; dự án cũ chỉ đọc (mục 13) |
 | Reverse proxy | Caddy 2.11 (dịch vụ `CaddyServer`): `:5443` agent v2 + legacy; `:7443` Desktop + agent v3 |
 | Cổng nội bộ | Core `7009` · Master `7010` · MongoDB `27017` (chỉ mở giữa các node + Core) |
+| Dịch vụ Core (dựng thử) | NSSM `PlatformCore`, chạy từ bản sao **`D:\ITSupportPlatformRun`** (nhánh `main`, KHÔNG phải thư mục phát triển), nghe `127.0.0.1:7009`; quản lý bằng `platform-deployment\nssm\dich_vu_core.ps1` |
 | Tổ chức đầu tiên | `PHENIKAA` (on-prem tại trường). Tổ chức khác chỉ mở khi GĐ11 hoàn tất |
 
 **IP thật của client** nằm ở `X-Forwarded-For` (Core đứng sau Caddy) → chỉ dùng helper `client_ip()`.
@@ -283,7 +284,7 @@ Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay l�
 | 02/10/2026 | 0.11 Không gian xây mới + rào chỉ đọc | Xong | `.claude/settings.json` + hook `guard_readonly.py` (có test) |
 | 02/10/2026 | 2.2 Khung 5 project, `.gitattributes`, `.gitignore`, ADR | Xong | `docs/adr/ADR-0001…0012` |
 | 02/10/2026 | 2.3–2.10 Nền platform-core | Xong (trừ CI chạy thật) | Atlas `itm_core` đã khởi tạo; tổ chức PHENIKAA + `admin`; 58 test + 3 test Atlas xanh; ruff/pyright sạch; CI viết sẵn, chờ repo GitHub |
-| 02/10/2026 | 2.11 Core thành dịch vụ NSSM | Chờ người vận hành | Cần quyền Administrator — lệnh trong Sổ tay 2.11 |
+| 02/10/2026 | 2.11 Core thành dịch vụ NSSM | Chờ người vận hành chạy script | Script `platform-deployment/nssm/dich_vu_core.ps1` (CaiDat/KiemTra/CapNhat/Go) + bản chạy `D:\ITSupportPlatformRun` đã chuẩn bị; Core nghe `127.0.0.1:7009` (`HOST`); kiểm CSDL `/api/health?db=1` |
 | 02/10/2026 | 3.1 Hợp đồng agent v2 | Xong | `tests/contract_v2/HOP_DONG.md` + 45 fixture (xfail strict chờ 3.3). Phát hiện: agent gửi UA `Mozilla/5.0` ở `/check_update`/`/download_setup` → sửa điều kiện canary 3.6 (mục A11) |
 | — | 3.3 legacy_adapter | Kế tiếp | Theo `docs/TIEN_DO.md` |
 

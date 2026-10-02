@@ -6,7 +6,7 @@
 > Kế hoạch đầy đủ: `docs/plan/SoTay_ThucHien_ITMonitor_SaaS.html` (số bước bên dưới theo Sổ tay;
 > tài liệu đó còn ghi `D:\Platform` — hiểu là `D:\ITSupportPlatform`).
 
-Cập nhật lần cuối: 02/10/2026 (kết thúc GĐ2 phần của Claude)
+Cập nhật lần cuối: 02/10/2026 (2.11 phần của Claude xong — chờ người vận hành chạy script cài dịch vụ)
 
 ## Cách mở phiên mới để làm tiếp
 
@@ -16,7 +16,7 @@ Cập nhật lần cuối: 02/10/2026 (kết thúc GĐ2 phần của Claude)
 4. Kiểm nhanh trạng thái trước khi làm tiếp (tất cả phải xanh):
    ```powershell
    cd D:\ITSupportPlatform\platform-core
-   uv run pytest -q                 # 61 passed, 2 skipped, 45 xfailed (xfail = hợp đồng agent v2 chờ 3.3)
+   uv run pytest -q                 # 62 passed, 2 skipped, 45 xfailed (xfail = hợp đồng agent v2 chờ 3.3)
    uv run ruff check .
    uv run pyright
    git -C D:\ITSupportPlatform status --short
@@ -50,6 +50,7 @@ Cập nhật lần cuối: 02/10/2026 (kết thúc GĐ2 phần của Claude)
 | 2.9 | `require_perm`, audit after_request (LAB/HSK/THI), OpenAPI `/docs`, `app/server.py` gevent | chạy thật cổng 7009 trên Atlas: login 0,5 s, `/me` 11 ms (đệm) |
 | 2.10 | 23 mục §4A.36 + §77 (`tests/isolation/test_spec_isolation.py`), CI `.github/workflows/ci.yml` | 21 xanh + 2 skip mức API (GĐ3, GĐ7) |
 | — | Công cụ QA: `platform-deployment/qa/check_routes.py`, `check_eol.py` (+ test của chính công cụ) | cả hai ĐẠT |
+| 2.11 (phần Claude) | Script dịch vụ `platform-deployment/nssm/dich_vu_core.ps1` (CaiDat/KiemTra/CapNhat/Go) + bản chạy `D:\ITSupportPlatformRun` (clone `main`, `uv sync --no-dev --locked`); `HOST` (mặc định 127.0.0.1); `/api/health?db=1` | Chạy thử bằng tài khoản thường cổng 7019: nghe 127.0.0.1, ping Atlas 456 ms, giết tiến trình con → launcher thoát (NSSM sẽ thấy), giết launcher → con chết theo, nhả cổng; tham số nssm truyền đúng (thay nssm bằng chương trình ghi tham số) |
 | 3.1 | Hợp đồng agent v2: `platform-core/tests/contract_v2/HOP_DONG.md` (luật sống còn A1–A11, thông số, 18 route HTTP, 15 sự kiện socket, 15 action lệnh) + 45 fixture + `test_contract_v2.py` | 3 test kiểm fixture xanh; 45 test hợp đồng `xfail strict` chờ 3.3 |
 
 ## Đang làm
@@ -71,8 +72,12 @@ Cập nhật lần cuối: 02/10/2026 (kết thúc GĐ2 phần của Claude)
 
 ## Việc cần người vận hành (Claude không có quyền Administrator)
 
-- [ ] Tạo repo GitHub riêng tư, cho đẩy mã lần đầu → CI tự chạy (kiểm lại phiên bản `actions/checkout`, `astral-sh/setup-uv` mới nhất).
-- [ ] 2.11: chạy Core thành dịch vụ NSSM `PlatformCore` (lệnh trong Sổ tay 2.11; `DOTENV_PATH` trỏ tới tệp `.env`).
+- [ ] Đẩy mã lần đầu: remote `origin` = github.com/quanlyngoc/it-support-platform đã đặt; người vận hành chạy
+      `git push -u origin main` → CI tự chạy (kiểm lại phiên bản `actions/checkout`, `astral-sh/setup-uv` mới nhất).
+- [ ] 2.11: PowerShell **Run as Administrator** →
+      `Set-ExecutionPolicy -Scope Process Bypass -Force; & D:\ITSupportPlatform\platform-deployment\nssm\dich_vu_core.ps1 -Lenh CaiDat`
+      (máy chủ thiếu System32 trong PATH nên KHÔNG gõ `powershell -File ...`). Đạt khi in đủ [ĐẠT] gồm "Kết nối CSDL"
+      và "Tự lên lại sau … s". Lên bản mới sau này: `-Lenh CapNhat` (Claude không tự làm được vì cần dừng dịch vụ).
 - [ ] 3.2, 3.5–3.9: các bước sửa Caddy (canary) — chỉ làm khi đã có legacy_adapter và có người trực.
 - [ ] Cài Node.js 24 LTS, Rust, VS Build Tools trên máy phát triển desktop-app (GĐ4).
 - [ ] Bước 0.6, 0.7 (sao lưu hằng ngày, cảnh báo online tụt) trên máy chủ hệ cũ.
@@ -93,6 +98,11 @@ Cập nhật lần cuối: 02/10/2026 (kết thúc GĐ2 phần của Claude)
 - Database: `itm_core` (Core, đã khởi tạo) · `itm_master` (chưa dùng, GĐ11) · test tạo `itm_test_<hex>` rồi tự xoá.
   Atlas còn sẵn `sample_mflix` (dữ liệu mẫu của Atlas, không liên quan).
 - Hiệu năng đo được: đăng nhập ≈ 0,5 s (≈ 8 lượt CSDL), kiểm phiên lần đầu ≈ 190 ms, có đệm ≈ 11 ms.
-- Chạy thử Core: `cd D:\ITSupportPlatform\platform-core; uv run python -m app.server` → `http://127.0.0.1:7009/docs`.
-  Cổng 7009 hiện trống trên máy chủ; chạy thử xong nhớ tắt (chỉ dừng tiến trình có `app.server` trong dòng lệnh).
+- Chạy thử Core khi phát triển: `cd D:\ITSupportPlatform\platform-core; $env:PORT='7019'; uv run python -m app.server`
+  → `http://127.0.0.1:7019/docs`. **Cổng 7009 dành cho dịch vụ `PlatformCore`** — chạy thử dùng cổng khác (7019),
+  xong nhớ tắt (chỉ dừng tiến trình có `app.server` trong dòng lệnh).
+- Dịch vụ `PlatformCore` chạy từ `D:\ITSupportPlatformRun` (bản sao `main`), nhật ký `D:\ITSupportPlatformRun\logs\core-*.log`.
+  Python của `.venv` là launcher (46 KB) gọi sang Python thật trong `%APPDATA%\uv\python\…` của tài khoản
+  `anh.nguyennhuhoang` — LocalSystem đọc được; đừng xoá Python 3.14 đó bằng `uv python uninstall`.
+  Khởi động lần đầu ≈ 13 s (biên dịch .pyc), ping Atlas lần đầu ≈ 0,5 s.
 - Console máy chủ dùng cp1252: CLI phải gọi `utf8_stdio()`; script thử bằng Python thì đặt `PYTHONIOENCODING=utf-8`.
