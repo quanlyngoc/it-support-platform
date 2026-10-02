@@ -1,0 +1,1721 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lộ trình IT Monitor SaaS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#F3F6F5; --surface:#FFFFFF; --surface-2:#E9EFED; --ink:#13201E; --ink-2:#34423F; --muted:#5B6966; --line:#D2DCD9;
+  --accent:#0B6E5F; --accent-ink:#FFFFFF; --accent-soft:#DCEEEA;
+  --amber:#8F5404; --amber-soft:#FBEACF; --red:#B42318; --red-soft:#FCE3E0; --green:#1D7438; --green-soft:#DDF1E2;
+  --blue:#1D4F91; --blue-soft:#E0EAF7; --code-bg:#102019; --code-ink:#D6E7E1; --code-dim:#8FB3A8;
+  --font:"Be Vietnam Pro", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  --mono:"JetBrains Mono", "Cascadia Mono", Consolas, "Courier New", monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0D1413; --surface:#141F1D; --surface-2:#1A2826; --ink:#E2EBE8; --ink-2:#C3D1CD; --muted:#93A4A0; --line:#2A3A37;
+    --accent:#4CC3AA; --accent-ink:#062420; --accent-soft:#12372F;
+    --amber:#F1AE55; --amber-soft:#3A2A0F; --red:#F27A6E; --red-soft:#3C1916; --green:#6FCF8E; --green-soft:#14301E;
+    --blue:#8DB6F0; --blue-soft:#15253B; --code-bg:#09110F; --code-ink:#D6E7E1; --code-dim:#7FA095;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0D1413; --surface:#141F1D; --surface-2:#1A2826; --ink:#E2EBE8; --ink-2:#C3D1CD; --muted:#93A4A0; --line:#2A3A37;
+  --accent:#4CC3AA; --accent-ink:#062420; --accent-soft:#12372F;
+  --amber:#F1AE55; --amber-soft:#3A2A0F; --red:#F27A6E; --red-soft:#3C1916; --green:#6FCF8E; --green-soft:#14301E;
+  --blue:#8DB6F0; --blue-soft:#15253B; --code-bg:#09110F; --code-ink:#D6E7E1; --code-dim:#7FA095;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15.5px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-underline-offset:2px}
+a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd,pre{font-family:var(--mono)}
+code{font-size:.86em;background:var(--surface-2);border:1px solid var(--line);padding:.05em .35em;border-radius:5px;word-break:break-word}
+kbd{font-size:.82em;background:var(--surface);border:1px solid var(--line);border-bottom-width:2px;padding:.05em .4em;border-radius:5px;white-space:nowrap}
+.shell{display:grid;grid-template-columns:250px minmax(0,1fr);gap:40px;max-width:1240px;margin:0 auto;padding-inline:24px;padding-block:0 80px}
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;max-height:100vh;overflow:auto;padding-block:28px 24px;font-size:13.5px}
+nav.toc .tt{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:10px}
+nav.toc ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+nav.toc a{display:grid;grid-template-columns:24px 1fr;gap:6px;color:var(--ink-2);text-decoration:none;padding:5px 8px;border-radius:7px;line-height:1.35}
+nav.toc a span:first-child{font-family:var(--mono);color:var(--muted);font-size:12px;padding-top:1px}
+nav.toc a:hover{background:var(--surface-2)}
+nav.toc a.on{background:var(--accent-soft);color:var(--ink)}
+nav.toc .prog{margin-top:18px;padding:12px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+nav.toc .prog b{font-variant-numeric:tabular-nums}
+.bar{height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+main{min-width:0;padding-top:28px}
+header.top{padding-block:8px 28px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600}
+h1{font-size:clamp(30px,4.2vw,44px);line-height:1.12;margin:.25em 0 .35em;letter-spacing:-.015em;text-wrap:balance;font-weight:700}
+.lead{font-size:17px;color:var(--ink-2);max-width:68ch;margin:0;overflow-wrap:anywhere}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:16px;font-size:13px;color:var(--muted)}
+.meta b{color:var(--ink-2);font-weight:600}
+section{padding-top:44px}
+section > h2{font-size:clamp(22px,2.6vw,28px);line-height:1.25;margin:0 0 6px;letter-spacing:-.01em;text-wrap:balance;display:flex;gap:12px;align-items:baseline}
+section > h2 .k{font-family:var(--mono);font-size:.6em;color:var(--accent);font-weight:600;border:1px solid var(--accent);border-radius:6px;padding:0 .45em;transform:translateY(-2px)}
+section > .sub{color:var(--muted);margin:0 0 18px;max-width:72ch}
+h3{font-size:18px;margin:28px 0 8px;line-height:1.35;text-wrap:balance}
+h4{font-size:15px;margin:18px 0 6px}
+p,li{max-width:76ch}
+ul,ol{padding-left:1.3em}
+li{margin:.25em 0}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
+.tile b{display:block;font-size:24px;line-height:1.2;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.tile span{font-size:12.5px;color:var(--muted)}
+.verdict{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:var(--r);padding:16px 18px 10px}
+.verdict ol{margin:6px 0 6px}
+.verdict li{margin:.45em 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+.card h4{margin-top:0}
+.note{border-radius:var(--r);padding:12px 14px;margin:14px 0;font-size:14.5px;background:var(--blue-soft);color:var(--ink)}
+.note.warn{background:var(--amber-soft)}
+.note.crit{background:var(--red-soft)}
+.note.ok{background:var(--green-soft)}
+.note > b:first-child{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
+.note.warn > b:first-child{color:var(--amber)} .note.crit > b:first-child{color:var(--red)} .note.ok > b:first-child{color:var(--green)} .note > b:first-child{color:var(--blue)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;letter-spacing:.03em;padding:2px 9px;border-radius:99px;white-space:nowrap;border:1px solid transparent}
+.chip.sys{background:var(--amber-soft);color:var(--amber);border-color:color-mix(in srgb,var(--amber) 35%,transparent)}
+.chip.s0{background:var(--red-soft);color:var(--red);border-color:color-mix(in srgb,var(--red) 35%,transparent)}
+.chip.safe{background:var(--green-soft);color:var(--green);border-color:color-mix(in srgb,var(--green) 35%,transparent)}
+.chip.par{background:var(--blue-soft);color:var(--blue);border-color:color-mix(in srgb,var(--blue) 35%,transparent)}
+.chip.dec{background:var(--surface-2);color:var(--ink-2);border-color:var(--line)}
+.sev{font-size:11px;font-weight:700;padding:1px 7px;border-radius:5px;white-space:nowrap}
+.sev.h{background:var(--red-soft);color:var(--red)} .sev.m{background:var(--amber-soft);color:var(--amber)} .sev.l{background:var(--blue-soft);color:var(--blue)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+th{background:var(--surface-2);font-weight:600;font-size:12.5px;letter-spacing:.02em;color:var(--ink-2);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td .muted{color:var(--muted)}
+.win{color:var(--green);font-weight:600}.lose{color:var(--red);font-weight:600}.mid{color:var(--amber);font-weight:600}
+pre{background:var(--code-bg);color:var(--code-ink);border-radius:var(--r);padding:14px 16px;overflow-x:auto;font-size:12.8px;line-height:1.55;margin:10px 0;position:relative}
+pre .c{color:var(--code-dim)}
+.copy{position:absolute;top:8px;right:8px;font:600 11.5px var(--font);background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:3px 9px;cursor:pointer}
+.copy:hover{background:rgba(255,255,255,.16)}
+/* Kiến trúc */
+.arch{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+.node{border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;background:var(--surface)}
+.node .nt{font-weight:700;font-size:15px}
+.node .ns{font-size:12.5px;color:var(--muted);font-family:var(--mono)}
+.node ul{margin:6px 0 0;padding-left:1.1em;font-size:13.5px}
+.node.core{grid-column:1/-1;border:2px solid var(--accent);background:var(--accent-soft)}
+.node.db{grid-column:1/-1;text-align:center}
+.flow{grid-column:1/-1;text-align:center;font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+/* Gantt */
+.gantt{display:grid;grid-template-columns:200px repeat(12,minmax(26px,1fr));font-size:12.5px;min-width:700px}
+.gantt div{padding:5px 4px;border-bottom:1px solid var(--line)}
+.gantt .h{font-weight:600;color:var(--muted);text-align:center;font-family:var(--mono);font-size:11.5px;background:var(--surface-2)}
+.gantt .lbl{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gantt .b{position:relative}
+.gantt .b i{position:absolute;inset:7px 0;border-radius:4px;background:var(--accent)}
+.gantt .b i.sys{background:var(--amber)} .gantt .b i.par{background:var(--blue)} .gantt .b i.s0{background:var(--red)}
+/* Đường găng */
+.path{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:12px 0}
+.path span{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:5px 10px;font-weight:600;font-size:13.5px}
+.path span.hot{border-color:var(--red);color:var(--red)}
+.path em{font-style:normal;color:var(--muted)}
+/* Giai đoạn & bước */
+.phase{min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:22px 0}
+.phase > header{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;justify-content:space-between}
+.phase h3{margin:0;font-size:19px}
+.phase h3 .gd{font-family:var(--mono);color:var(--accent);margin-right:6px}
+.phase .dur{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.phase .goal{margin:6px 0 10px;color:var(--ink-2)}
+.phase .pp{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+ol.steps{list-style:none;padding:0;margin:8px 0;counter-reset:s;display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+ol.steps > li{counter-increment:s;max-width:none;min-width:0;border:1px solid var(--line);border-radius:10px;padding:10px 12px 10px 12px;background:var(--bg)}
+ol.steps > li > label{display:grid;grid-template-columns:22px 34px minmax(0,1fr);gap:6px;align-items:start;cursor:pointer}
+ol.steps > li > label::before{content:counter(s);grid-column:2;grid-row:1;font-family:var(--mono);font-weight:600;color:var(--accent);font-size:13px;padding-top:2px}
+ol.steps > li > label input{grid-column:1;grid-row:1;margin:4px 0 0;width:16px;height:16px;accent-color:var(--accent)}
+ol.steps > li > label .t{grid-column:3;grid-row:1;font-weight:600}
+ol.steps > li.done > label .t{text-decoration:line-through;color:var(--muted)}
+ol.steps .d{margin:6px 0 0 62px;font-size:14px;color:var(--ink-2)}
+ol.steps .d p,ol.steps .d li{max-width:none}
+ol.steps .d ol,ol.steps .d ul{margin:4px 0;padding-left:1.2em}
+ol.steps .d pre{margin:8px 0}
+.box{border-radius:10px;padding:10px 12px;margin:10px 0 0;font-size:14px}
+.box.gate{background:var(--green-soft)} .box.back{background:var(--red-soft)} .box.cm{background:var(--blue-soft)}
+.box > b:first-child{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:2px}
+.box.gate > b:first-child{color:var(--green)} .box.back > b:first-child{color:var(--red)} .box.cm > b:first-child{color:var(--blue)}
+.box ul{margin:2px 0;padding-left:1.15em}
+.click{font-weight:600;color:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13px;color:var(--muted);margin:8px 0 4px}
+.cmp td:first-child{font-weight:600;white-space:nowrap}
+.claude pre{max-height:620px}
+.topbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.btn{font:600 13px var(--font);border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+@media (max-width:1000px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:0;padding-inline:16px}
+  nav.toc{position:static;max-height:none;border-bottom:1px solid var(--line);padding-block:20px 16px}
+  nav.toc ol{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:620px){
+  body{font-size:15px}
+  .g2,.g3,.arch{grid-template-columns:minmax(0,1fr)}
+  nav.toc ol{grid-template-columns:minmax(0,1fr)}
+  ol.steps .d{margin-left:0}
+  .chip{white-space:normal}
+  td,th{overflow-wrap:anywhere}
+  .tiles{grid-template-columns:minmax(0,1fr)}
+}
+</style>
+
+<div class="shell">
+<nav class="toc" aria-label="Mục lục">
+  <div class="tt">Mục lục</div>
+  <ol>
+    <li><a href="#a"><span>A</span><span>Kết luận nhanh</span></a></li>
+    <li><a href="#b"><span>B</span><span>Hiện trạng đo được</span></a></li>
+    <li><a href="#c"><span>C</span><span>Đánh giá bản đặc tả</span></a></li>
+    <li><a href="#d"><span>D</span><span>Bổ sung cần thiết</span></a></li>
+    <li><a href="#e"><span>E</span><span>3 phương án &amp; lợi ích</span></a></li>
+    <li><a href="#f"><span>F</span><span>Kiến trúc &amp; công nghệ 2026</span></a></li>
+    <li><a href="#g"><span>G</span><span>Thiết kế then chốt</span></a></li>
+    <li><a href="#h"><span>H</span><span>Đối chiếu yêu cầu đặc tả</span></a></li>
+    <li><a href="#i"><span>I</span><span>Thứ tự ưu tiên</span></a></li>
+    <li><a href="#j"><span>J</span><span>Các bước chi tiết</span></a></li>
+    <li><a href="#k"><span>K</span><span>Rủi ro &amp; biện pháp</span></a></li>
+    <li><a href="#l"><span>L</span><span>Kết quả &amp; CLAUDE.md</span></a></li>
+    <li><a href="#m"><span>M</span><span>Kết luận kỹ thuật</span></a></li>
+    <li><a href="#n"><span>N</span><span>Nguồn tham khảo</span></a></li>
+  </ol>
+  <div class="prog" aria-live="polite">
+    <div style="font-size:12px;color:var(--muted)">Tiến độ đánh dấu các bước (lưu trên trình duyệt này)</div>
+    <b id="progTxt">0 / 0</b>
+    <div class="bar"><i id="progBar"></i></div>
+  </div>
+</nav>
+
+<main>
+<header class="top">
+  <div class="eyebrow">Phân tích &amp; phương án tái cấu trúc · bản để cân nhắc · 02/10/2026</div>
+  <h1>Lộ trình IT Monitor SaaS</h1>
+  <p class="lead">Đối chiếu bản đặc tả <b>PHENIKAA_IT_MONITOR_SAAS_MULTI_TENANT_AI_SPEC_V2</b> với hệ thống đang chạy thật,
+  chọn phương án chuyển đổi an toàn, liệt kê từng bước làm cụ thể và mô tả hệ thống sau khi chuyển. Tài liệu chỉ để đọc và quyết định:
+  không có gì trên máy chủ bị thay đổi khi soạn tài liệu này.</p>
+  <div class="meta">
+    <span>Hệ đang chạy: <b>server 2.7.3.1 · agent 2.7.5.3</b></span>
+    <span>Quy mô: <b>889 máy · 19 phòng chính thức</b></span>
+    <span>Ràng buộc cao nhất: <b>§0 không mất kết nối máy trạm</b></span>
+    <span>Căn cứ: <b>SPEC V2 (80 chương)</b></span>
+  </div>
+  <div class="legend" aria-label="Chú giải nhãn">
+    <span class="chip s0">§0 KẾT NỐI</span><span>đụng tới đường kết nối máy trạm</span>
+    <span class="chip sys">TOÀN HỆ THỐNG</span><span>ảnh hưởng mọi phòng/mọi người dùng</span>
+    <span class="chip safe">KHÔNG ĐỤNG HỆ ĐANG CHẠY</span><span>làm tách biệt</span>
+    <span class="chip par">SONG SONG</span><span>làm cùng lúc với giai đoạn khác</span>
+  </div>
+</header>
+
+<!-- ============================ A ============================ -->
+<section id="a">
+  <h2><span class="k">A</span>Kết luận nhanh</h2>
+  <p class="sub">Đọc mục này nếu chỉ có 3 phút. Các mục sau giải thích vì sao.</p>
+  <div class="note warn"><b>Cập nhật theo quyết định của chủ đầu tư (02/10/2026)</b>
+    <ol>
+      <li><b>Desktop Application viết bằng Tauri 2 + React + Vite</b> (TypeScript), thay cho Next.js trong đặc tả V2 (C9, F, J-GĐ4).</li>
+      <li><b>Windows Agent là phần mềm .exe có bộ cài</b> để cài trên máy trạm: <code>Client_Manager.exe</code> + bộ cài Setup .exe cài im lặng được, nâng cấp đè tại chỗ lên agent hiện tại (G11).</li>
+      <li><b>Claude đọc mã nguồn và tài liệu hiện có ở chế độ chỉ đọc, xây mới hoàn toàn</b> trong thư mục riêng <code>D:\Platform</code>; không sửa cấu trúc mã nguồn của <code>D:\NetworkInventory</code>, <code>D:\ExaminationSystem</code>, <code>D:\Agent</code> (G10).</li>
+    </ol></div>
+  <div class="verdict">
+    <ol>
+      <li><b>Nên làm theo hướng của đặc tả, nhưng không viết lại rồi chuyển một lần.</b> Chọn <a href="#e">Phương án 2</a>:
+        xây nền tảng mới chạy song song với hệ cũ, chuyển dần từng phòng, hệ cũ luôn sẵn sàng để quay lui.</li>
+      <li><b>Chìa khoá an toàn là "Bộ tương thích agent cũ" trong Core mới.</b> Core mới nói được đúng giao thức của agent 2.7.5.x.
+        Khi đó, chuyển một phòng sang hệ mới chỉ là sửa định tuyến của Caddy theo dải IP của phòng đó.
+        Không cài lại gì trên 889 máy trạm, và quay lui mất vài giây (xem <a href="#g">G6</a>).</li>
+      <li><b>Triển khai tại trường trước</b> (on-prem, thiết kế sẵn đa tổ chức với tổ chức đầu tiên là <code>PHENIKAA</code>).
+        Chỉ lên cloud hoặc mở cho trường khác sau khi chạy ổn ít nhất một học kỳ.</li>
+      <li><b>Công nghệ chọn (10/2026):</b> Core Python 3.14 + Flask/APIFlask + Flask-SocketIO/gevent + PyMongo;
+        MongoDB 8.0 replica set 3 node; Desktop Tauri 2 + React 19 + Vite 8 + TypeScript;
+        Agent là phần mềm .exe (Python biên dịch bằng Nuitka 4.2 thành <code>Client_Manager.exe</code>, bộ cài Inno Setup 6.7 cài im lặng được) chạy bằng Task Scheduler như cơ chế đã chứng minh.</li>
+      <li><b>Bản đặc tả V2 cần sửa 17 điểm trước khi giao cho AI viết code</b> (<a href="#c">mục C</a>).
+        Ba điểm nặng nhất: định danh máy bằng MAC (sai với bài học 16/09), không có chiến lược chuyển đổi 889 máy,
+        bỏ sót nhiều tính năng đang chạy (View desktop/VNC, cập nhật agent theo đợt, nhật ký thay đổi máy).</li>
+      <li><b>Thứ tự:</b> chốt quyết định → hạ tầng MongoDB → nền Core (tổ chức, đăng nhập, phân quyền) → bộ tương thích agent cũ và canary 1 máy
+        → Desktop phát triển song song → chuyển từng phòng → agent 3.0 → Master/cloud. Đổi <b>server trước</b>, đổi <b>agent sau</b>,
+        không bao giờ đổi cả hai cùng lúc (<a href="#i">mục I</a>).</li>
+      <li><b>Ước lượng 10–12 tháng</b> với đội 2–3 người có AI hỗ trợ. Có thể dừng ở bất kỳ giai đoạn nào mà hệ cũ vẫn chạy bình thường. Kiến nghị phê duyệt trước gói GĐ0–GĐ3 (khoảng 4 tháng) có điểm quyết định đi tiếp ở cuối GĐ3.</li>
+      <li><b>Bám sát đặc tả:</b> từng chương §1–§78, 20 quy tắc AI và 9 Phase được đối chiếu ở <a href="#h">mục H</a>; kết luận chuyên môn ở <a href="#m">mục M</a>.</li>
+    </ol>
+  </div>
+  <div class="tiles" role="list" aria-label="Số liệu đo thật trên hệ hiện tại">
+    <div class="tile" role="listitem"><b>889</b><span>dòng máy trong bảng <code>computers</code></span></div>
+    <div class="tile" role="listitem"><b>152 + 16</b><span>route HTTP + socket handler trong <code>app.py</code> (6.123 dòng)</span></div>
+    <div class="tile" role="listitem"><b>4.160</b><span>dòng code agent <code>client.py</code> (2.7.5.3)</span></div>
+    <div class="tile" role="listitem"><b>24 bảng</b><span>SQLite, tệp <code>database.db</code> 29 MB</span></div>
+    <div class="tile" role="listitem"><b>125.286</b><span>dòng <code>usage_stats</code> (lớn nhất), 57.665 dòng <code>client_logs</code></span></div>
+    <div class="tile" role="listitem"><b>~437/giây</b><span>nhịp tim khi toàn trường bật (theo ghi chép hệ cũ)</span></div>
+  </div>
+</section>
+
+<!-- ============================ B ============================ -->
+<section id="b">
+  <h2><span class="k">B</span>Hiện trạng đo được</h2>
+  <p class="sub">Số liệu lấy trực tiếp từ mã nguồn, CSDL và log ngày 02/10/2026 (chỉ đọc, không sửa).</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Hạng mục</th><th>Hiện tại</th><th>Nhận xét</th></tr></thead>
+    <tbody>
+      <tr><td>Kiến trúc</td><td>Flask + Flask-SocketIO (gevent) + SQLite; tách vai UI 5008 / HUB 5009 sau Caddy 5443</td><td>Một khối mã lớn, hai tiến trình phải chia state qua DB (luật §0.3)</td></tr>
+      <tr><td>Mã nguồn server</td><td><code>app.py</code> 6.123 dòng, 152 route, 16 socket handler; <code>utils.py</code> 702; <code>workers.py</code> 308</td><td>Mọi tính năng dồn vào 1 tệp, khó kiểm thử từng phần</td></tr>
+      <tr><td>Agent</td><td><code>client.py</code> 4.160 dòng, bản 2.7.5.3, Nuitka + Inno Setup, Task Scheduler + watchdog</td><td>Cơ chế cài/cập nhật đã chứng minh qua nhiều đợt — tài sản phải giữ</td></tr>
+      <tr><td>CSDL</td><td>24 bảng SQLite, 29 MB. Lớn nhất: <code>usage_stats</code> 125.286 · <code>client_logs</code> 57.665 · <code>audit_log</code> 1.320 · <code>machine_events</code> 464</td><td>Dữ liệu nhỏ; chuyển sang MongoDB không phải bài toán dung lượng</td></tr>
+      <tr><td>Tải</td><td>Log <code>[SYNC]</code>: 4.100–7.100 lượt nhịp tim/phút lúc 70–300 máy bật; đỉnh ~437 lượt/giây khi toàn trường bật</td><td>Ghi CSDL theo từng nhịp tim là lãng phí, phải gom (G4)</td></tr>
+      <tr><td>Máy chủ</td><td>Windows Server 2019; dịch vụ NSSM; Caddy dịch vụ <code>CaddyServer</code></td><td>WS2019 hết hỗ trợ mở rộng ngày 09/01/2029 → hệ mới nên đặt trên OS mới</td></tr>
+      <tr><td>Hệ thi</td><td><code>D:\ExaminationSystem</code> (ThiHSK, ThiPM) gọi Monitor qua <code>/internal/*</code> trên localhost</td><td>Hợp đồng <code>/internal/*</code> phải giữ nguyên khi chuyển</td></tr>
+      <tr><td>Dự án dở dang</td><td>"Khối A" tách Agent hub (<code>D:\Agent</code>): Pha 0 xong, Pha 1 gần xong, Pha 2 (dời tệp) chưa làm</td><td>Core mới thay vai Agent hub → nên dừng Khối A ở Pha 1 (D18)</td></tr>
+      <tr><td>Kiểm thử</td><td><code>check_syntax.py</code>, <code>check_eol.py</code>; chưa có test tự động nghiệp vụ</td><td>Nền tảng đa tổ chức bắt buộc có test cô lập dữ liệu</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h4>Đang làm tốt, phải mang sang hệ mới</h4>
+      <ul>
+        <li>Cài/cập nhật agent qua Task Scheduler tách rời, watchdog 1 phút, kiểm <code>Client_Manager.exe</code> sau cài.</li>
+        <li>Cập nhật theo đợt: theo phòng, theo phần trăm, công tắc All Update, trang Update Client.</li>
+        <li>Lệnh có <code>command_id</code> + ACK + gửi lại 3 lần; agent chống chạy đúp.</li>
+        <li>Absolute Sync số online (ghi đè số tuyệt đối, cấm cộng dồn).</li>
+        <li>Cache RAM cho đường nóng (phòng của máy, khoá tài khoản, phiên đơn thiết bị).</li>
+        <li>Không tự xoá máy: <code>machine_events</code> + <code>computers_archive</code>.</li>
+        <li>Đăng nhập 1 thiết bị, giới hạn IP theo tài khoản, nhật ký tách hệ LAB/HSK/THI.</li>
+        <li>Thumbnail màn hình qua RFB từ winvnc (vượt được SEB), VNC qua relay agent-gọi-ra.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Điểm nghẽn mà tái cấu trúc giải quyết</h4>
+      <ul>
+        <li>SQLite là C-extension: giữ khoá ghi qua điểm nhường gevent làm treo cả hub (bài học 10.16).</li>
+        <li>UI/HUB hai tiến trình: state RAM không chia được, đã gây lệnh "rơi vào hư không" (13/09).</li>
+        <li>Trình duyệt giữ JS cũ (<code>fbrowser.js</code>, <code>chatbox.js</code>, favicon): nhiều lần "sửa rồi không ăn".</li>
+        <li>Web không nháy được taskbar khi có tin nhắn (giới hạn trình duyệt).</li>
+        <li>Một tệp 6.123 dòng: sửa một chỗ dễ vỡ chỗ khác, không có test tự động.</li>
+        <li>Chỉ phục vụ được một tổ chức; không có định danh agent mạnh (máy nào gửi nhịp tim cũng được nhận).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ C ============================ -->
+<section id="c">
+  <h2><span class="k">C</span>Đánh giá bản đặc tả V2</h2>
+  <p class="sub">Đặc tả đúng hướng ở phần lớn nội dung. Dưới đây là phần đúng cần giữ và 17 điểm cần sửa trước khi dùng làm "nguồn sự thật" cho AI viết code.</p>
+  <div class="note ok"><b>Giữ nguyên</b>
+    Modular monolith thay vì microservice · Core là nơi duy nhất chạm CSDL · agent tự gọi ra (outbound) · mọi lệnh đi Desktop → Core → Agent ·
+    MongoDB dùng chung một CSDL, phân tách bằng <code>tenant_id</code> (đúng khuyến nghị chính thức của MongoDB cho SaaS) ·
+    lớp Service/Repository bắt buộc nhận tenant · bộ 15 test cô lập · tách Platform-Master và Platform-Deployment · thứ tự Phase 1→9.
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>#</th><th>Mức</th><th>Vấn đề trong đặc tả</th><th>Vì sao quan trọng</th><th>Đề xuất sửa</th></tr></thead>
+    <tbody>
+      <tr><td>C1</td><td><span class="sev h">Nghiêm trọng</span></td><td>Định danh máy là <code>unique(tenant_id, mac)</code></td><td>MAC đến từ thân máy/card mạng, hostname đến từ ổ cứng. Tráo ổ, thay card, máy nhiều card mạng làm MAC đổi hoặc trùng. Hệ cũ từng mất 5 máy phòng 404 vì suy đoán định danh theo phần cứng.</td><td>Định danh = <code>agent_id</code> (GUID sinh khi enroll, lưu trên máy). MAC/serial/hostname chỉ là thuộc tính, index không unique. Giữ <code>machine_events</code>, <code>computers_archive</code>.</td></tr>
+      <tr><td>C2</td><td><span class="sev h">Nghiêm trọng</span></td><td>Không có chương chuyển đổi 889 máy đang chạy</td><td>Vi phạm §0: không có canary, không có đường quay lui, không nói agent cũ nói chuyện với Core mới thế nào.</td><td>Thêm chương "Chuyển đổi": bộ tương thích agent cũ + định tuyến canary theo dải IP tại Caddy + quay lui đã diễn tập (G6, J-GĐ3, J-GĐ9).</td></tr>
+      <tr><td>C3</td><td><span class="sev h">Nghiêm trọng</span></td><td>Bỏ sót tính năng đang chạy</td><td>Đặc tả cấm "thêm nghiệp vụ", nên AI sẽ không làm những gì không được ghi.</td><td>Ghi vào phạm vi: View desktop + VNC relay, nhật ký thay đổi máy, xuất cấu hình Excel, cập nhật agent theo đợt (Update Client, All Update), watchdog, bố trí View theo phòng.</td></tr>
+      <tr><td>C4</td><td><span class="sev m">Quan trọng</span></td><td>Schema viết hai lần (4A và 24–48) và lệch nhau</td><td><code>sessions</code> vs <code>web_sessions</code>; <code>audit_log</code> thiếu trong bảng 4A.4/4A.30; reaction <code>"LIKE"</code> vs emoji; collection platform "không tenant_id" nhưng schema lại có.</td><td>Chốt 4A là chuẩn duy nhất, xoá 24–48, thêm <code>audit_log</code>, <code>machine_events</code>, <code>computers_archive</code>; reaction lưu emoji.</td></tr>
+      <tr><td>C5</td><td><span class="sev m">Quan trọng</span></td><td><code>online_state</code> ghi CSDL theo nhịp tim</td><td>~437 lần ghi/giây vô ích lúc đỉnh.</td><td>RAM + ghi khi đổi trạng thái + flush <code>last_seen</code> 60 giây (G4).</td></tr>
+      <tr><td>C6</td><td><span class="sev m">Quan trọng</span></td><td>Cấm Redis/MQ nhưng không nói cách chạy nhiều instance Core</td><td>Socket.IO nhiều instance cần kênh phát chung.</td><td>Giai đoạn đầu 1 instance + dự phòng nóng. Khi cần mở rộng ngang: dùng MongoDB change streams (có sẵn nhờ replica set).</td></tr>
+      <tr><td>C7</td><td><span class="sev m">Quan trọng</span></td><td>Coi Core chạy trên cloud là mặc định</td><td>Tính năng Ngắt Internet chặn web máy trạm sẽ chặn luôn kết nối tới Core trên cloud; WoL, VNC, giao/thu bài tệp lớn đi qua đường WAN.</td><td>On-prem trước. Khi lên cloud: whitelist cứng Core trong luật WFP, đặt relay tại trường cho VNC/tệp (D10, D11).</td></tr>
+      <tr><td>C8</td><td><span class="sev m">Quan trọng</span></td><td>API nội bộ cho HSK/ThiPM dựa trên localhost</td><td>Khi Core rời máy chủ hiện tại, hệ thi gọi không tới.</td><td>Giữ hợp đồng <code>/internal/*</code>; xác thực bằng API key theo tổ chức (HMAC) + allowlist IP (G8).</td></tr>
+      <tr><td>C9</td><td><span class="sev m">Quan trọng</span></td><td>Desktop chỉ định Next.js</td><td>Next.js thiết kế cho web có máy chủ Node; trong vỏ desktop phải ép xuất tĩnh, mất SSR/API routes/Server Actions và hay vướng đường dẫn khi chạy qua giao thức tài nguyên của Tauri.</td><td><b>Đã quyết (10/2026):</b> React + Vite + TypeScript, đúng mẫu chính thức của Tauri; mọi logic ở Core.</td></tr>
+      <tr><td>C10</td><td><span class="sev m">Quan trọng</span></td><td>Chưa chọn Desktop Shell</td><td>Ảnh hưởng dung lượng bộ cài, RAM, cơ chế tự cập nhật.</td><td>Tauri 2 (F, E).</td></tr>
+      <tr><td>C11</td><td><span class="sev m">Quan trọng</span></td><td>Chưa chốt cách nhận diện tổ chức khi đăng nhập</td><td>Đặc tả yêu cầu chốt trước khi viết phần xác thực.</td><td>Mã tổ chức + tài khoản + mật khẩu; Desktop nhớ mã lần trước.</td></tr>
+      <tr><td>C12</td><td><span class="sev m">Quan trọng</span></td><td>Envelope lệnh thiếu hạn dùng và chữ ký</td><td>Agent mất mạng rồi nối lại có thể chạy lại lệnh cũ (vd. tắt máy). Không có cách chứng minh lệnh do Core phát.</td><td>Thêm <code>expires_at</code>, <code>issued_by</code>, <code>sig</code> Ed25519 (G3).</td></tr>
+      <tr><td>C13</td><td><span class="sev l">Nên sửa</span></td><td>Không nêu thuật toán băm mật khẩu, cách giữ secret</td><td>"Hash" chung chung dễ bị hiểu thành SHA-256 thường.</td><td>Argon2id; token phiên chỉ lưu SHA-256; secret mã hoá AES-256-GCM với khoá ngoài CSDL.</td></tr>
+      <tr><td>C14</td><td><span class="sev l">Nên sửa</span></td><td>Không đề cập pháp lý dữ liệu cá nhân</td><td>Luật Bảo vệ dữ liệu cá nhân 91/2025/QH15 có hiệu lực từ 01/01/2026.</td><td>Ưu tiên hạ tầng trong nước, nhật ký truy cập, chính sách lưu giữ/xoá; nhờ pháp chế xác nhận (D16).</td></tr>
+      <tr><td>C15</td><td><span class="sev l">Nên sửa</span></td><td>Không nêu driver MongoDB</td><td>Motor (driver async cũ) đã ngừng phát triển: hết hỗ trợ 14/05/2026, chỉ vá lỗi nghiêm trọng tới 14/05/2027.</td><td>PyMongo 4 bản đồng bộ (hợp gevent).</td></tr>
+      <tr><td>C16</td><td><span class="sev l">Nên sửa</span></td><td>Lưu trữ đối tượng chưa chọn</td><td>MinIO bản cộng đồng đã ngừng bảo trì và bị archive ngày 25/04/2026.</td><td>On-prem: tệp cục bộ, sau đó SeaweedFS; cloud: S3 của nhà cung cấp trong nước.</td></tr>
+      <tr><td>C17</td><td><span class="sev l">Nên sửa</span></td><td>Không nói ký số bộ cài</td><td>Bộ cài chưa ký dễ bị SmartScreen/antivirus chặn. Dịch vụ ký của Microsoft (Artifact Signing) mới mở cho tổ chức ở Mỹ, Canada, EU, Anh.</td><td>Mua chứng thư ký mã OV/EV từ CA, lưu trên token/HSM (D12).</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ============================ D ============================ -->
+<section id="d">
+  <h2><span class="k">D</span>Bổ sung cần thiết ngoài đặc tả</h2>
+  <p class="sub">Những mục đặc tả không có nhưng phân tích thấy cần. Cột "Khi nào" cho biết phải xong trước giai đoạn nào.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>#</th><th>Bổ sung</th><th>Vì sao cần</th><th>Mức</th><th>Khi nào</th></tr></thead>
+    <tbody>
+      <tr><td>D1</td><td><b>Bộ tương thích agent cũ</b> (Legacy Agent Adapter) trong Core</td><td>Chuyển 889 máy mà không cài lại agent. Tách "đổi server" khỏi "đổi agent".</td><td><span class="sev h">Bắt buộc</span></td><td>GĐ3</td></tr>
+      <tr><td>D2</td><td><b>Định tuyến canary theo dải IP phòng</b> tại Caddy</td><td>Chuyển 1 máy → 1 phòng → nhiều phòng chỉ bằng cấu hình, quay lui vài giây.</td><td><span class="sev h">Bắt buộc</span></td><td>GĐ3</td></tr>
+      <tr><td>D3</td><td><b>Quay lui được diễn tập</b> cho mọi bước chạm máy trạm</td><td>Một kế hoạch quay lui chưa chạy thử thì chưa chắc chạy được.</td><td><span class="sev h">Bắt buộc</span></td><td>GĐ3, GĐ9, GĐ10</td></tr>
+      <tr><td>D4</td><td><b>Bảng đối chiếu chức năng</b>: 152 route + 16 socket → API mới</td><td>Không có bảng này sẽ quên chức năng; mỗi dòng có trạng thái Đạt/Chưa.</td><td><span class="sev h">Bắt buộc</span></td><td>GĐ0 lập, GĐ9 phải 100% Đạt</td></tr>
+      <tr><td>D5</td><td><b>Tính năng đang chạy bị bỏ sót</b> (C3)</td><td>Người dùng đang dùng hằng ngày.</td><td><span class="sev h">Bắt buộc</span></td><td>GĐ5–GĐ8</td></tr>
+      <tr><td>D6</td><td><b>Định danh máy = <code>agent_id</code></b></td><td>Xem C1.</td><td><span class="sev h">Bắt buộc</span></td><td>GĐ2 (schema)</td></tr>
+      <tr><td>D7</td><td><b>Cảnh báo tự động khi số máy online tụt</b> (Telegram, đã có tích hợp)</td><td>Luật §0.8 yêu cầu theo dõi online trong mọi đợt phát hành; hiện phải nhìn bằng mắt.</td><td><span class="sev h">Bắt buộc</span></td><td>Trước GĐ3</td></tr>
+      <tr><td>D8</td><td><b>Sao lưu MongoDB + tệp + diễn tập khôi phục hằng tháng</b></td><td>Tệp không nằm trong CSDL; sao lưu chưa từng khôi phục thử thì chưa chắc dùng được.</td><td><span class="sev h">Bắt buộc</span></td><td>GĐ1</td></tr>
+      <tr><td>D9</td><td><b>Lệnh có hạn dùng + chữ ký</b> (C12)</td><td>Chống chạy lại lệnh cũ, chống giả lệnh.</td><td><span class="sev m">Nên</span></td><td>GĐ10 (agent 3.0)</td></tr>
+      <tr><td>D10</td><td><b>Relay tại trường</b> cho VNC và truyền tệp khi Core lên cloud</td><td>Không đẩy luồng màn hình và tệp bài thi lên Internet rồi kéo về.</td><td><span class="sev m">Khi lên cloud</span></td><td>GĐ11</td></tr>
+      <tr><td>D11</td><td><b>Whitelist Core trong luật Ngắt Internet</b></td><td>Không để tính năng chặn mạng cắt luôn kết nối quản lý.</td><td><span class="sev m">Nên làm sẵn</span></td><td>GĐ6</td></tr>
+      <tr><td>D12</td><td><b>Ký số bộ cài</b> agent + Desktop (chứng thư OV/EV)</td><td>Giảm bị chặn bởi SmartScreen/antivirus khi phát hành diện rộng.</td><td><span class="sev m">Nên</span></td><td>Trước GĐ10</td></tr>
+      <tr><td>D13</td><td><b>Chính sách lưu giữ dữ liệu</b>: <code>client_logs</code> 90 ngày, <code>audit_log</code> 180 ngày, <code>usage_stats</code> 5 năm, <code>machine_events</code> vĩnh viễn</td><td>Chặn phình dữ liệu, đáp ứng luật dữ liệu cá nhân.</td><td><span class="sev m">Nên</span></td><td>GĐ2</td></tr>
+      <tr><td>D14</td><td><b>Bí mật ngoài repo</b> + quét <code>gitleaks</code> trước mỗi commit</td><td>Hệ cũ đã lỡ đưa khoá vào repo; repo mới phải sạch từ đầu.</td><td><span class="sev h">Bắt buộc</span></td><td>GĐ2 ngày đầu</td></tr>
+      <tr><td>D15</td><td><b>Kiểm thử tự động + CI</b> (test cô lập tổ chức, test hợp đồng giao thức agent v2/v3)</td><td>Đa tổ chức mà không có test thì rò dữ liệu chỉ phát hiện khi đã xảy ra.</td><td><span class="sev h">Bắt buộc</span></td><td>GĐ2</td></tr>
+      <tr><td>D16</td><td><b>Hồ sơ tuân thủ</b> Luật Bảo vệ dữ liệu cá nhân 2025</td><td>Dữ liệu tên/email giảng viên, chat, nhật ký là dữ liệu cá nhân.</td><td><span class="sev m">Cần pháp chế</span></td><td>Trước GĐ11</td></tr>
+      <tr><td>D17</td><td><b>Máy chủ mới</b> (Windows Server 2022/2025 hoặc Ubuntu 24.04 LTS)</td><td>WS2019 hết hỗ trợ mở rộng 09/01/2029; hệ mới không nên đặt trên OS sắp hết hạn.</td><td><span class="sev m">Nên</span></td><td>GĐ1</td></tr>
+      <tr><td>D18</td><td><b>Dừng Khối A ở Pha 1</b></td><td>Pha 2 (dời tệp sang <code>D:\Agent</code>) sẽ thành việc làm bỏ đi vì Core mới thay vai Agent hub.</td><td><span class="sev m">Quyết định</span></td><td>GĐ0</td></tr>
+      <tr><td>D19</td><td><b>Claude xây mới trong <code>D:\Platform</code>, dự án cũ chỉ đọc</b> (G10)</td><td>Hệ đang chạy không bị đụng trong suốt dự án; quay lui luôn còn nguyên.</td><td><span class="sev h">Bắt buộc</span></td><td>GĐ0</td></tr>
+      <tr><td>D20</td><td><b>Agent là phần mềm .exe có bộ cài</b>, cài im lặng, nâng cấp đè tại chỗ (G11)</td><td>Cài được trên máy mới lẫn thay thế agent cũ mà không để lại hai bản.</td><td><span class="sev h">Bắt buộc</span></td><td>GĐ10</td></tr>
+      <tr><td>D21</td><td><b>Bảng tương đương chức năng agent 2.7.5.3 ↔ 3.0</b></td><td>Agent viết mới phải làm được mọi việc bản cũ đang làm trên 889 máy.</td><td><span class="sev h">Bắt buộc</span></td><td>GĐ10</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ============================ E ============================ -->
+<section id="e">
+  <h2><span class="k">E</span>Ba phương án và lợi ích khi thay đổi</h2>
+  <p class="sub">Cả ba đều dẫn tới hệ thống tốt hơn; khác nhau ở rủi ro mất kết nối và thời gian có giá trị đầu tiên.</p>
+  <div class="grid g3">
+    <div class="card"><h4>PA1 · Viết lại, chuyển một lần</h4>
+      <p>Viết toàn bộ 5 project theo đặc tả, khi xong thì phát agent mới cho cả trường và tắt hệ cũ.</p>
+      <p class="lose">Không khuyến nghị.</p></div>
+    <div class="card" style="border:2px solid var(--accent)"><h4>PA2 · Song song, chuyển từng phòng ✓</h4>
+      <p>Xây nền tảng mới bên cạnh hệ cũ. Core mới nói được giao thức agent cũ; chuyển từng phòng bằng định tuyến; đổi agent sau cùng.</p>
+      <p class="win">Khuyến nghị.</p></div>
+    <div class="card"><h4>PA3 · Tiến hoá tại chỗ</h4>
+      <p>Giữ Flask web, thêm <code>tenant_id</code> vào SQLite, tách <code>app.py</code> thành module dần dần.</p>
+      <p class="mid">An toàn nhưng không tới đích.</p></div>
+  </div>
+  <div class="tbl cmp"><table>
+    <thead><tr><th>Tiêu chí</th><th>PA1 · Viết lại một lần</th><th>PA2 · Song song ✓</th><th>PA3 · Tiến hoá tại chỗ</th></tr></thead>
+    <tbody>
+      <tr><td>Rủi ro mất kết nối</td><td class="lose">Rất cao: đổi server + agent cùng lúc cho 889 máy</td><td class="win">Thấp: đổi server trước theo từng phòng, agent giữ nguyên</td><td class="win">Thấp</td></tr>
+      <tr><td>Quay lui</td><td class="lose">Khó: phải cài lại agent cũ trên máy</td><td class="win">Vài giây: sửa Caddy</td><td class="win">git + restart</td></tr>
+      <tr><td>Có giá trị đầu tiên</td><td class="lose">Sau 10–12 tháng</td><td class="win">Tháng 3–4 (Core + canary + Desktop bản đầu)</td><td class="win">Ngay</td></tr>
+      <tr><td>Đáp ứng đặc tả (Desktop, MongoDB, đa tổ chức)</td><td class="win">Đầy đủ</td><td class="win">Đầy đủ</td><td class="lose">Không: vẫn web + SQLite</td></tr>
+      <tr><td>Công sức</td><td class="mid">Lớn</td><td class="mid">Lớn hơn PA1 khoảng 10–15% (bộ tương thích, chạy song song)</td><td class="win">Nhỏ hơn</td></tr>
+      <tr><td>Phù hợp luật §0</td><td class="lose">Vi phạm luật 5, 6</td><td class="win">Đúng cả 8 luật</td><td class="win">Đúng</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Nếu thay đổi theo PA2 thì được gì</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Góc nhìn</th><th>Lợi ích cụ thể</th></tr></thead>
+    <tbody>
+      <tr><td>Ổn định</td><td>Hết lỗi SQLite chặn hub gevent (PyMongo dùng I/O thuần Python). MongoDB replica set tự chuyển máy chủ CSDL khi một node hỏng. Hết bài toán chia state UI/HUB vì chỉ còn một Core.</td></tr>
+      <tr><td>An toàn vận hành</td><td>Chuyển phòng nào là chọn phòng đó, quay lui bằng cấu hình. Có cảnh báo online tụt tự động. Có test hợp đồng giao thức agent trước mỗi lần phát hành.</td></tr>
+      <tr><td>Bảo mật</td><td>Mỗi agent có danh tính riêng (enroll + khoá Ed25519) thay vì "ai gửi nhịp tim cũng được nhận". Lệnh có chữ ký và hạn dùng. Mật khẩu Argon2id, token phiên chỉ lưu bản băm, secret mã hoá.</td></tr>
+      <tr><td>Người dùng</td><td>Một ứng dụng desktop nhẹ (Tauri: bộ cài vài MB, RAM khoảng 30–50 MB). Thông báo hệ điều hành thật (nháy taskbar). Hết tình trạng trình duyệt giữ JS cũ vì giao diện đóng gói theo phiên bản và tự cập nhật có chữ ký.</td></tr>
+      <tr><td>Phát triển</td><td>Mã chia module; OpenAPI tự sinh, Desktop sinh kiểu dữ liệu từ đó (sai lệch API bị bắt lúc build). Có CI chạy test mỗi lần sửa.</td></tr>
+      <tr><td>Mở rộng</td><td>Phục vụ thêm trường/cơ sở khác trên cùng nền tảng mà dữ liệu tách biệt. Platform-Master quản lý giấy phép, phiên bản.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="grid g2">
+    <div class="note warn"><b>Cái giá phải trả</b>
+      10–12 tháng công sức; đội phải học TypeScript/React và một ít Rust (phần vỏ Tauri); thời gian dài chạy song song hai hệ;
+      thêm hạ tầng (3 VM MongoDB + 1 VM Core); chi phí chứng thư ký mã; đóng băng tính năng mới trên hệ cũ trong thời gian chuyển.</div>
+    <div class="note"><b>Nếu không thay đổi</b>
+      Hệ cũ vẫn chạy tốt cho một trường. Nhưng <code>app.py</code> tiếp tục phình, lỗi gevent + SQLite còn đó, không phục vụ được tổ chức thứ hai,
+      và máy chủ WS2019 hết hỗ trợ năm 2029. Nếu chưa cần SaaS cho trường khác trong 2 năm tới, PA3 là lựa chọn hợp lý để cân nhắc.</div>
+  </div>
+</section>
+
+<!-- ============================ F ============================ -->
+<section id="f">
+  <h2><span class="k">F</span>Kiến trúc mục tiêu và công nghệ 2026</h2>
+  <p class="sub">Phiên bản tra cứu tháng 10/2026. Mỗi lựa chọn có phương án dự phòng nếu gặp trở ngại.</p>
+  <div class="arch" aria-label="Sơ đồ kiến trúc mục tiêu">
+    <div class="node"><div class="nt">Desktop App</div><div class="ns">Tauri 2 · React 19 · Vite 8 · TS</div>
+      <ul><li>Máy quản trị / giảng viên</li><li>Gọi Core qua HTTPS + WSS</li></ul></div>
+    <div class="node"><div class="nt">Windows Agent (.exe)</div><div class="ns">Client_Manager.exe · Setup .exe · Task Scheduler</div>
+      <ul><li>889 máy trạm, cài bằng bộ cài .exe</li><li>Tự gọi ra Core (outbound)</li></ul></div>
+    <div class="flow">HTTPS / WSS qua Caddy 2.11 · <b>:5443</b> agent v2 (giữ nguyên) · <b>:7443</b> Desktop + agent v3</div>
+    <div class="node core"><div class="nt">Platform-Core</div><div class="ns">Python 3.14 · Flask 3.1 + APIFlask · Flask-SocketIO 5.6 + gevent · PyMongo 4</div>
+      <ul>
+        <li>REST + realtime · Tổ chức (tenant) · Đăng nhập/RBAC · Phòng/thiết bị · Lệnh + ACK · Tệp/Giao-thu bài · Chat · Sự cố · Báo cáo · Audit · Tích hợp (LDAP, SMTP, Telegram, Gemini, hệ thi)</li>
+        <li><b>legacy_adapter</b>: nói giao thức agent 2.7.5.x để chuyển đổi không cần cài lại máy trạm</li>
+      </ul></div>
+    <div class="node db"><div class="nt">MongoDB 8.0 · replica set 3 node</div><div class="ns">itm_core (Core) · itm_master (Master) · tệp: StorageService (cục bộ → S3)</div></div>
+    <div class="node"><div class="nt">Platform-Master</div><div class="ns">Python · DB riêng itm_master</div>
+      <ul><li>Vòng đời tổ chức, giấy phép, kích hoạt</li><li>Phiên bản, gói cập nhật (Ed25519, SHA-256)</li></ul></div>
+    <div class="node"><div class="nt">Platform-Deployment</div><div class="ns">uv · pnpm · Nuitka · Inno Setup · NSSM · Caddy · GitHub Actions</div>
+      <ul><li>Build, ký số, bộ cài, dịch vụ</li><li>Cổng QA trước phát hành</li></ul></div>
+  </div>
+
+  <div class="tbl"><table>
+    <thead><tr><th>Thành phần</th><th>Chọn</th><th>Phiên bản (10/2026)</th><th>Vì sao</th><th>Dự phòng</th></tr></thead>
+    <tbody>
+      <tr><td>Ngôn ngữ Core</td><td>Python</td><td>3.14 (bản vá 3.14.7)</td><td>Dòng đang được vá lỗi; 3.13 sang giai đoạn chỉ vá bảo mật từ 10/2026</td><td>3.13 nếu gevent/greenlet chưa có wheel 3.14 ổn định</td></tr>
+      <tr><td>Web/API</td><td>Flask + APIFlask</td><td>Flask 3.1 · APIFlask 3.1</td><td>Giữ kinh nghiệm Flask của đội; APIFlask tự sinh OpenAPI và validate bằng Pydantic</td><td>flask-openapi3 4.x</td></tr>
+      <tr><td>Realtime</td><td>Flask-SocketIO + gevent</td><td>5.6.1</td><td>Đã chịu tải 889 agent trên thực địa; agent cũ nói Socket.IO</td><td>Không đổi trong dự án này</td></tr>
+      <tr><td>CSDL</td><td>MongoDB Community</td><td>8.0.x (bản major)</td><td>Bản major có vòng đời dài; 8.2 là bản minor; 9.0 mới triển khai dần trên Atlas, bản Community chưa phát hành chính thức</td><td>Nâng 9.0 khi Community GA và đã có 1–2 bản vá</td></tr>
+      <tr><td>Driver</td><td>PyMongo (đồng bộ)</td><td>4.x</td><td>Hợp gevent (monkey-patch được); Motor đã hết hỗ trợ 14/05/2026</td><td>—</td></tr>
+      <tr><td>Mô hình dữ liệu</td><td>Pydantic + <code>$jsonSchema</code></td><td>Pydantic 2</td><td>Kiểm ở cả ứng dụng lẫn CSDL</td><td>—</td></tr>
+      <tr><td>Lưu trữ tệp</td><td>StorageService</td><td>Cục bộ → SeaweedFS / S3 trong nước</td><td>Đổi nơi lưu không phải sửa nghiệp vụ</td><td>Không dùng MinIO (archive 25/04/2026)</td></tr>
+      <tr><td>Reverse proxy</td><td>Caddy</td><td>2.11.x</td><td>Đang dùng; matcher <code>client_ip</code> cho canary theo phòng; reload không gián đoạn</td><td>—</td></tr>
+      <tr><td>Desktop shell</td><td>Tauri</td><td>2.x</td><td>Bộ cài 2–10 MB, RAM 30–50 MB (Electron 80–200 MB, 150–300 MB); dùng WebView2 có sẵn trên Windows 11/Server 2022; updater có chữ ký</td><td>Electron nếu đội không thể đụng Rust</td></tr>
+      <tr><td>Giao diện</td><td>React + Vite + TypeScript (ứng dụng một trang)</td><td>React 19 · Vite 8 · TS 5 · React Router 7</td><td>Quyết định 10/2026; mẫu React + TS chính thức của Tauri; Vite 8 build bằng Rolldown nhanh 10–30 lần; không có máy chủ Node nên không có bẫy xuất tĩnh</td><td>—</td></tr>
+      <tr><td>Thư viện UI</td><td>xterm.js · noVNC · Chart.js · socket.io-client</td><td>xterm 5 · noVNC 1.6 · Chart.js 4</td><td>Đã dùng ở hệ cũ, mang sang được</td><td>—</td></tr>
+      <tr><td>Agent</td><td>Phần mềm .exe: <code>Client_Manager.exe</code> (Python biên dịch bằng Nuitka, không cần cài Python trên máy trạm) + bộ cài Setup .exe</td><td>Nuitka 4.2 · Inno Setup 6.7</td><td>Máy trạm chỉ cần chạy một tệp .exe; cài im lặng cho triển khai hàng loạt; cơ chế Task Scheduler + watchdog đã chứng minh</td><td>Giữ phiên bản Python đang build agent cho bản 3.0 đầu (đổi một biến mỗi lần)</td></tr>
+      <tr><td>Công cụ</td><td>uv (Python) · pnpm (JS) · ruff · pyright · pytest · Playwright</td><td>uv 0.11+ · Node.js 24 LTS</td><td>Lockfile tái lập được; Node 24 là LTS (bảo trì tới 30/04/2028)</td><td>Node 26 khi lên LTS</td></tr>
+      <tr><td>CI/CD</td><td>GitHub Actions + runner Windows tự host</td><td>—</td><td>Build Nuitka/Tauri cần Windows + chứng thư ký</td><td>Build tay bằng script khi CI hỏng</td></tr>
+      <tr><td>Ký số</td><td>Chứng thư ký mã OV/EV</td><td>—</td><td>Microsoft Artifact Signing chưa mở cho tổ chức Việt Nam</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ============================ G ============================ -->
+<section id="g">
+  <h2><span class="k">G</span>Thiết kế then chốt</h2>
+  <p class="sub">Những quyết định kỹ thuật quyết định thành bại; nên đưa vào đặc tả V3 nguyên văn.</p>
+
+  <h3>G1. Ngữ cảnh tổ chức và lớp Repository bắt buộc</h3>
+  <p><code>tenant_id</code> được gắn vào <code>g.ctx</code> lúc xác thực. Nghiệp vụ không bao giờ tự đọc <code>tenant_id</code> từ request.
+  Mọi collection của tổ chức chỉ truy cập qua <code>TenantRepo</code>; một test quét mã nguồn sẽ báo lỗi nếu thấy <code>db.&lt;collection&gt;.find(</code> ngoài lớp repo.</p>
+<pre><button class="copy" type="button">Chép</button><span class="c"># platform-core/app/tenants/repo.py</span>
+class TenantRepo:
+    collection: str                              <span class="c"># vd. "computers"</span>
+    def __init__(self, db, tenant_id):
+        self.col, self.tid = db[self.collection], tenant_id
+    def _q(self, q=None):
+        q = dict(q or {}); q["tenant_id"] = self.tid; return q     <span class="c"># luôn ép tenant</span>
+    def find(self, q=None, **kw):  return self.col.find(self._q(q), **kw)
+    def get(self, _id):            return self.col.find_one(self._q({"_id": _id}))
+    def insert(self, doc):         return self.col.insert_one({**doc, "tenant_id": self.tid})
+    def update(self, _id, patch):  return self.col.update_one(self._q({"_id": _id}), {"$set": patch})
+
+<span class="c"># dùng trong route:  ComputerRepo(db, g.ctx.tenant_id).get(device_id)</span></pre>
+
+  <h3>G2. Định danh máy và enroll không cần ra tận nơi</h3>
+  <ol>
+    <li>Agent v3 lần đầu chạy sinh <code>agent_id</code> (GUID) và cặp khoá Ed25519; khoá riêng lưu <code>C:\ProgramData\PhenikaaIT\agent.key</code>, mã hoá DPAPI máy.</li>
+    <li>Với 889 máy đang có: agent v3 dùng kênh v2 (đã tin cậy trong mạng trường, đúng máy đang được quản lý) để gửi khoá công khai; Core ràng buộc vào thiết bị hiện có theo hostname + lịch sử. Không cần mã enroll gõ tay.</li>
+    <li>Máy mới / tổ chức mới: quản trị tạo mã enroll có hạn (<code>agent_enrollments</code>), đưa vào bộ cài.</li>
+    <li>Mỗi lần kết nối, Core gửi chuỗi ngẫu nhiên, agent ký bằng khoá riêng → Core xác minh → cho vào room <code>t:&lt;tenant&gt;:dev:&lt;device&gt;</code>.</li>
+  </ol>
+
+  <h3>G3. Envelope lệnh v3</h3>
+<pre><button class="copy" type="button">Chép</button>{
+  "command_id": "6f1c…",            <span class="c">// chống chạy đúp</span>
+  "tenant_id":  "…", "device_id": "…",
+  "type": "power.shutdown", "payload": {},
+  "issued_by": "user:…", "issued_at": "2026-10-02T08:00:00Z",
+  "expires_at": "2026-10-02T08:05:00Z",   <span class="c">// quá hạn: agent bỏ qua, báo EXPIRED</span>
+  "sig": "base64(Ed25519 của Core)"      <span class="c">// agent kiểm bằng khoá công khai ghim trong bộ cài</span>
+}
+<span class="c">// trạng thái: ACK → SUCCESS | FAILED | TIMEOUT | EXPIRED</span></pre>
+
+  <h3>G4. Trạng thái online không ghi CSDL mỗi nhịp tim</h3>
+  <ul>
+    <li>RAM: <code>ONLINE[tenant][device] = last_ts</code> (đường nóng ~437 lượt/giây).</li>
+    <li>Ghi <code>online_state</code> chỉ khi đổi trạng thái online ↔ offline; flush <code>last_seen</code> mỗi 60 giây theo lô.</li>
+    <li><code>usage_stats</code> cộng dồn trong RAM, ghi mỗi 5 phút bằng <code>$inc</code> upsert (không giữ transaction qua điểm nhường).</li>
+    <li>Sau restart Core: coi mọi máy offline, nhịp tim đầu tiên đưa về online trong vài giây (đúng như hệ cũ).</li>
+  </ul>
+
+  <h3>G5. Realtime</h3>
+  <ul>
+    <li>Namespace <code>/desktop</code> (trình duyệt/desktop) và <code>/agent</code> (agent v3, chỉ websocket). Agent v2 dùng namespace mặc định như cũ.</li>
+    <li>Room: <code>t:&lt;tenant&gt;:room:&lt;room&gt;</code>, <code>t:&lt;tenant&gt;:u:&lt;user&gt;</code>, <code>t:&lt;tenant&gt;:dev:&lt;device&gt;</code>. Không có room toàn cục → không thể phát nhầm sang tổ chức khác.</li>
+    <li>Giữ <code>max_decode_packets = 500</code>, gom <code>batch_device_update</code> kèm <code>room_stats</code> + <code>total_online</code> tuyệt đối.</li>
+  </ul>
+
+  <h3>G6. Bộ tương thích agent cũ + canary bằng Caddy</h3>
+  <p>Agent 2.7.5.x kết nối tới cùng địa chỉ HTTPS như hiện nay. Caddy quyết định gửi tới hub cũ hay Core mới theo <b>IP nguồn</b>.
+  Agent không biết mình đang nói chuyện với server nào, nên không có gì phải cài trên máy trạm.</p>
+<pre><button class="copy" type="button">Chép</button><span class="c"># Caddyfile, trong khối site :5443 — đặt TRƯỚC "handle @hub"</span>
+@core_canary {
+    client_ip 10.x.y.15/32                 <span class="c"># bước 1: một máy thử</span>
+    <span class="c"># client_ip 10.x.y.0/24               # bước 2: thêm dải IP của một phòng</span>
+    not header User-Agent *Mozilla*        <span class="c"># CHỈ agent; trình duyệt của GV ngồi máy đó vẫn về web cũ</span>
+}
+handle @core_canary {
+    reverse_proxy &lt;IP-VM-Core&gt;:7009
+}
+<span class="c"># Quay lui: xoá khối trên → caddy validate → caddy reload (vài giây, không gián đoạn máy khác)</span></pre>
+  <div class="note warn"><b>Ba điều kiện bắt buộc</b>
+    (1) Giữ nguyên chứng thư TLS của cổng 5443, vì agent cũ ghim chứng thư (quyết định đã ghi: không xoay khoá máy chủ).
+    (2) Kiểm User-Agent thật của agent trong log Caddy trước khi dùng điều kiện <code>not header User-Agent *Mozilla*</code>.
+    (3) Kiểm thứ tự khối bằng <code>caddy adapt --pretty</code>: khối canary phải đứng trước khối <code>@hub</code>.</div>
+
+  <h3>G7. Lưu trữ tệp</h3>
+  <p><code>StorageService</code> có 5 thao tác: <code>put_stream</code>, <code>get_stream</code>, <code>delete</code>, <code>list</code>, <code>presign</code> (khi dùng S3).
+  Khoá luôn bắt đầu bằng <code>tenants/&lt;tenant_id&gt;/</code>. Tệp truyền dạng luồng (không nạp cả tệp vào RAM, bài học 10.8). Hạn dùng ghi trong <code>file_metadata.expires_at</code>, worker dọn theo hạn.</p>
+
+  <h3>G8. Tích hợp hệ thi (ThiHSK, ThiPM)</h3>
+  <p>Giữ nguyên đường dẫn và định dạng <code>/internal/*</code>. Giai đoạn on-prem giữ <code>X-Internal-Token</code> + allowlist IP máy chủ hệ thi.
+  Khi lên cloud chuyển sang API key theo tổ chức: <code>X-ITM-Key-Id</code>, <code>X-ITM-Timestamp</code> (lệch tối đa 300 giây), <code>X-ITM-Signature</code> = HMAC-SHA256.
+  Hệ thi chỉ đổi biến môi trường địa chỉ + khoá, không đổi code.</p>
+
+  <h3>G9. Ánh xạ 24 bảng SQLite sang MongoDB</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>SQLite hiện tại</th><th class="n">Số dòng</th><th>MongoDB (<code>itm_core</code>)</th><th>Ghi chú chuyển</th></tr></thead>
+    <tbody>
+      <tr><td><code>computers</code></td><td class="n">889</td><td><code>computers</code> + <code>agents</code></td><td>Tạo <code>device_id</code>; <code>room_override</code>, <code>move_seat</code> giữ nguyên nghĩa</td></tr>
+      <tr><td><code>computers_archive</code>, <code>machine_events</code></td><td class="n">— / 464</td><td>cùng tên</td><td>Bất biến, chép nguyên</td></tr>
+      <tr><td><code>usage_stats</code></td><td class="n">125.286</td><td><code>usage_stats</code></td><td>Khoá <code>(tenant, device, date)</code>; chuyển theo lô 5.000</td></tr>
+      <tr><td><code>online_state</code></td><td class="n">—</td><td>RAM + <code>online_state</code></td><td>Không chuyển, tự dựng lại từ nhịp tim</td></tr>
+      <tr><td><code>client_logs</code></td><td class="n">57.665</td><td><code>client_logs</code> (TTL 90 ngày)</td><td>Chỉ chuyển 90 ngày gần nhất</td></tr>
+      <tr><td><code>incidents</code></td><td class="n">56</td><td><code>incidents</code></td><td>Trạng thái → PENDING/PROCESSING/DONE</td></tr>
+      <tr><td><code>app_users</code>, <code>ad_user_policies</code></td><td class="n">2 / 3</td><td><code>users</code>, <code>ad_user_policies</code></td><td>Mật khẩu cũ giữ băm cũ, tự nâng lên Argon2id lần đăng nhập kế</td></tr>
+      <tr><td><code>policies</code>, <code>policy_permissions</code>, <code>permissions</code></td><td class="n">2 / … / …</td><td><code>policies</code> (<code>permission_ids</code>), <code>permissions</code></td><td>Super Admin thành system policy</td></tr>
+      <tr><td><code>web_sessions</code>, <code>active_sessions</code></td><td class="n">—</td><td><code>sessions</code>, <code>active_sessions</code></td><td>Không chuyển; người dùng đăng nhập lại</td></tr>
+      <tr><td><code>settings</code></td><td class="n">—</td><td><code>settings</code> + <code>rooms</code></td><td><code>live_layout::&lt;room&gt;</code> → <code>rooms.live_layout</code>; secret mã hoá lại; sơ đồ thư mục <code>Maps\</code> → <code>rooms.map</code></td></tr>
+      <tr><td><code>chat_messages</code>, <code>chat_reads</code>, <code>chat_reactions</code></td><td class="n">0 / … / …</td><td>cùng tên</td><td><code>system</code> → <code>scope</code>; ảnh <code>ChatImages\</code> → StorageService</td></tr>
+      <tr><td><code>audit_log</code></td><td class="n">1.320</td><td><code>audit_log</code> (TTL 180 ngày)</td><td>Giữ cột <code>system</code></td></tr>
+      <tr><td><code>pushed_files</code></td><td class="n">—</td><td><code>pushed_files</code></td><td>—</td></tr>
+      <tr><td><code>thu_room_users</code>, <code>thu_sbd</code>, <code>exam_admins</code></td><td class="n">—</td><td>Không chuyển vào Core</td><td>Thuộc hệ thi (đã hợp nhất ở <code>admin.db</code> của ExaminationSystem)</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>G10. Mô hình xây dựng: Claude xây mới, dự án cũ chỉ đọc</h3>
+  <p>Toàn bộ nền tảng mới (5 project, kể cả agent) được Claude viết mới trong repo riêng <code>D:\Platform</code>. Claude đọc mã nguồn và tài liệu hiện có để hiểu hành vi cần giữ,
+  nhưng <b>không sửa, không tạo, không xoá</b> bất kỳ tệp nào trong thư mục của hệ đang chạy. Người vận hành vẫn là người thực hiện các thao tác trên máy chủ (Caddy, dịch vụ, cài đặt cần quyền Administrator).</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Nguồn (chỉ đọc)</th><th>Đọc để lấy</th></tr></thead>
+    <tbody>
+      <tr><td><code>D:\NetworkInventory\CLAUDE.md</code></td><td>Luật §0, quy ước, bài học 10.x đã trả giá</td></tr>
+      <tr><td><code>app.py</code>, <code>utils.py</code>, <code>workers.py</code>, <code>config.py</code></td><td>Hành vi 152 route + 16 socket, hợp đồng giao thức agent v2, nghiệp vụ</td></tr>
+      <tr><td><code>templates\*.html</code>, <code>fbrowser.js</code>, <code>chatbox.js</code>, <code>collectlog.js</code></td><td>Hành vi giao diện cần giữ khi viết lại trên React</td></tr>
+      <tr><td><code>agent_build\client.py</code>, <code>TaoApp.iss</code>, <code>build_client.bat</code>, <code>publish_release.ps1</code>, <code>watchdog.ps1</code></td><td>Hành vi agent 2.7.5.3, cách đóng gói và cài đặt</td></tr>
+      <tr><td><code>D:\ExaminationSystem\CLAUDE_THI.md</code>, <code>KE_HOACH_TACH_DOC_LAP.md</code></td><td>Hợp đồng <code>/internal/*</code>, biến <code>MONITOR_INTERNAL_URL</code>, <code>INTERNAL_API_TOKEN</code>, <code>MONITOR_MAPS_DIR</code></td></tr>
+      <tr><td><code>D:\Agent\*.md</code>, <code>D:\Caddy\Caddyfile</code></td><td>Lịch sử tách hub, định tuyến hiện tại</td></tr>
+      <tr><td>Đặc tả V3, tài liệu Lộ trình, Sổ tay thực hiện</td><td>Yêu cầu và thứ tự làm</td></tr>
+    </tbody></table></div>
+  <ul>
+    <li><b>Rào kỹ thuật:</b> Claude Code mở tại <code>D:\Platform</code>; thư mục cũ thêm bằng <code>/add-dir</code> chỉ để đọc; đặt luật <b>Deny</b> cho Edit/Write vào các thư mục cũ bằng <code>/permissions</code>.</li>
+    <li><b>Viết lại, không chép nguyên khối:</b> mỗi module mới có bảng "hành vi cũ ↔ mã mới ↔ test" để chứng minh không sót.</li>
+    <li><b>Mọi thay đổi qua Pull Request</b> có CI xanh; người duyệt là C/D/H theo phân công.</li>
+    <li><b>Kiểm sau mỗi phiên làm việc:</b> <code>git -C D:\NetworkInventory status</code> không xuất hiện thay đổi mới do phiên đó.</li>
+  </ul>
+
+  <h3>G11. Agent là phần mềm .exe cài trên máy trạm</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Thành phần</th><th>Thiết kế</th></tr></thead>
+    <tbody>
+      <tr><td>Tệp chạy</td><td><code>Client_Manager.exe</code>: Nuitka 4.2 <code>--standalone</code>, không cửa sổ console, có icon, FileVersion, CompanyName, ký số. Máy trạm không cần cài Python.</td></tr>
+      <tr><td>Bộ cài</td><td><code>PhenikaaITMonitor-Agent-Setup-&lt;phiên bản&gt;.exe</code> (đặc tả §69 gọi là "Phenikaa IT Monitor Agent Setup.exe"), Inno Setup 6.7, quyền Administrator, ký số.</td></tr>
+      <tr><td>Nâng cấp tại chỗ</td><td>Giữ <code>AppId</code> = <code>Phenikaa IT Inventory</code> (giá trị ngầm định của bộ cài cũ vì bộ cài cũ không khai báo AppId), thư mục <code>{autopf}\PhenikaaIT</code>, tên task <code>PhenikaaITMonitor</code> + <code>PhenikaaITMonitorWD</code> → cài đè lên 2.7.5.3, không để lại hai bản.</td></tr>
+      <tr><td>Việc bộ cài làm</td><td>Dừng agent cũ qua task → chép tệp → tạo/ghi đè 2 task (onstart SYSTEM, watchdog 1 phút) → ghi <code>C:\ProgramData\PhenikaaIT\agent.json</code> (địa chỉ máy chủ, mã enroll) → chạy task → kiểm <code>Client_Manager.exe</code> đang chạy → ghi log cài.</td></tr>
+      <tr><td>Tham số</td><td><code>/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SERVER=&lt;địa chỉ&gt; /ENROLL=&lt;mã&gt; /LOG="C:\ProgramData\PhenikaaIT\install.log"</code></td></tr>
+      <tr><td>Ba đường cài</td><td>(1) Máy đang có agent: cập nhật qua Core (màn Cập nhật Agent, cài qua task tách rời). (2) Máy mới lẻ: chạy Setup.exe bằng tài khoản quản trị. (3) Máy mới hàng loạt: lệnh cài im lặng qua PowerShell từ xa hoặc script khởi động của GPO.</td></tr>
+      <tr><td>Gỡ cài đặt</td><td><code>unins000.exe /VERYSILENT</code> trong thư mục cài: xoá 2 task và tệp; giữ <code>agent_id</code> trong <code>C:\ProgramData\PhenikaaIT</code> để cài lại không đổi danh tính.</td></tr>
+    </tbody></table></div>
+</section>
+<!-- ============================ H ============================ -->
+<section id="h">
+  <h2><span class="k">H</span>Đối chiếu yêu cầu của đặc tả</h2>
+  <p class="sub">Truy vết từng yêu cầu của bản đặc tả V2 tới giải pháp và giai đoạn thực hiện. Cột "Điều chỉnh" chỉ ra chỗ phương án đề xuất khác đặc tả và lý do; mọi điều chỉnh cần được phê duyệt khi ra đặc tả V3.</p>
+
+  <h3>H1. Theo chương của đặc tả</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Chương</th><th>Yêu cầu</th><th>Đáp ứng trong phương án</th><th>Giai đoạn</th><th>Điều chỉnh</th></tr></thead>
+    <tbody>
+      <tr><td>§1.3</td><td>Không thêm nghiệp vụ ngoài tài liệu</td><td>Không thêm billing, CRM, mobile, Kubernetes, Redis, MQ, microservice. Chỉ ghi bổ sung các tính năng <b>đang chạy</b> mà đặc tả bỏ sót</td><td>GĐ0</td><td>C3: đưa View desktop/VNC, nhật ký thay đổi máy, xuất cấu hình, cập nhật agent theo đợt vào phạm vi</td></tr>
+      <tr><td>§2</td><td>15 mục tiêu kiến trúc</td><td>Đáp ứng đủ: 1 Desktop (Tauri 2 + React/Vite/TS), Core SaaS đa tổ chức, agent tự gọi ra, Desktop/Agent không chạm MongoDB, cô lập tổ chức, Master, Deployment, modular monolith</td><td>GĐ2–GĐ11</td><td>Mục 3 (Core trên cloud): chạy tại trường trước, sẵn sàng cloud ở GĐ11</td></tr>
+      <tr><td>§3–4</td><td>Kiến trúc tổng thể, 5 project</td><td>Monorepo với đúng 5 tên project <code>platform-core</code>, <code>platform-agent</code>, <code>desktop-app</code>, <code>platform-master</code>, <code>platform-deployment</code></td><td>GĐ2</td><td>—</td></tr>
+      <tr><td>§4A.1–4A.3</td><td>Sở hữu dữ liệu, biên truy cập, cô lập tổ chức</td><td>Chỉ Core có tài khoản MongoDB; <code>TenantRepo</code> bắt buộc; test quét mã cấm truy vấn trần</td><td>GĐ2</td><td>—</td></tr>
+      <tr><td>§4A.4–4A.27</td><td>Bản đồ và schema 26 collection</td><td>Giữ đủ; thêm <code>audit_log</code>, <code>machine_events</code>, <code>computers_archive</code>; <code>rooms</code> thêm <code>live_layout</code></td><td>GĐ2</td><td>C1: <code>(tenant_id, mac)</code> thành index thường, định danh bằng <code>agent_id</code>; C4: thống nhất tên collection</td></tr>
+      <tr><td>§4A.28–4A.30</td><td>Quan hệ và index</td><td>Service kiểm cùng tổ chức trước khi ghi (device↔room, agent↔device…); index như đặc tả</td><td>GĐ2</td><td>Index <code>mac</code> không unique (C1)</td></tr>
+      <tr><td>§4A.31</td><td>TTL, lưu giữ</td><td>TTL cho <code>sessions</code>, <code>agent_enrollments</code>, <code>support_tokens</code>; <code>client_logs</code> 90 ngày, <code>audit_log</code> 180 ngày</td><td>GĐ2</td><td>D13 bổ sung thời hạn cụ thể</td></tr>
+      <tr><td>§4A.32</td><td>Tệp ở storage, MongoDB chỉ giữ metadata, khoá có ranh giới tổ chức</td><td><code>StorageService</code> (cục bộ → S3), khoá <code>tenants/&lt;id&gt;/…</code></td><td>GĐ7</td><td>Không dùng MinIO (C16)</td></tr>
+      <tr><td>§4A.33–4A.35</td><td>Khởi tạo CSDL, model, tầng service/repository</td><td><code>app/db/{client,indexes,validators,seeds,migrations}</code>; Pydantic model cho 24 thực thể; API → Service → Repository → MongoDB</td><td>GĐ2</td><td>—</td></tr>
+      <tr><td>§4A.36, §77</td><td>Bộ test cô lập tổ chức</td><td>15 test + 8 test của §77 chạy trong CI, chặn merge khi đỏ</td><td>GĐ2</td><td>—</td></tr>
+      <tr><td>§4A.37</td><td>Schema MongoDB là nguồn sự thật, không bê nguyên SQLite</td><td>Ánh xạ 24 bảng SQLite sang collection (G9), không chép cấu trúc bảng</td><td>GĐ9</td><td>—</td></tr>
+      <tr><td>§5</td><td>Module của platform-core</td><td>Giữ đúng cây <code>app/…</code> của đặc tả</td><td>GĐ2–GĐ8</td><td>Thêm module <code>legacy_adapter</code> (D1)</td></tr>
+      <tr><td>§6–7</td><td>Ngữ cảnh tổ chức, vòng đời tổ chức, cách nhận diện tổ chức</td><td><code>g.ctx</code> từ phiên; đăng nhập bằng mã tổ chức; tổ chức PHENIKAA tạo bằng lệnh khởi tạo, vòng đời đầy đủ ở Master</td><td>GĐ2, GĐ11</td><td>C11: chốt "mã tổ chức + tài khoản + mật khẩu"</td></tr>
+      <tr><td>§8</td><td>Agent: outbound, định danh, enroll, offline ~35 giây</td><td>Giai đoạn chuyển dùng giao thức cũ qua <code>legacy_adapter</code>; agent 3.0 có <code>agent_id</code> + Ed25519 + enroll</td><td>GĐ3, GĐ10</td><td>Chia Phase 2 của đặc tả làm hai bước vì §0 (đổi server trước, agent sau); agent viết mới, đóng gói .exe</td></tr>
+      <tr><td>§9–21</td><td>12 module Desktop</td><td>Xem H2</td><td>GĐ4–GĐ8</td><td>§9.3: React + Vite thay Next.js (quyết định của chủ đầu tư, 10/2026)</td></tr>
+      <tr><td>§22, §47, §66</td><td>Platform-Master: tổ chức, giấy phép, phiên bản, cập nhật, mã hỗ trợ</td><td>DB <code>itm_master</code> riêng; giữ thuật toán Ed25519/AES-GCM/SHA-256 của <code>master_server.py</code></td><td>GĐ11</td><td>Trong lúc chuyển, cập nhật agent cũ vẫn do Core phục vụ</td></tr>
+      <tr><td>§23, §67–69</td><td>Deployment, mô hình triển khai, phân phối</td><td>Desktop: bộ cài NSIS của Tauri; Agent: phần mềm .exe (<code>Client_Manager.exe</code> + bộ cài Setup .exe cài im lặng, G11) chạy bằng Task Scheduler; dịch vụ NSSM; Caddy; CI GitHub Actions</td><td>GĐ4, GĐ10, GĐ11</td><td>Thêm ký số (D12)</td></tr>
+      <tr><td>§24–48</td><td>Schema viết lần hai</td><td>Hợp nhất về chương 4A</td><td>GĐ0</td><td>C4</td></tr>
+      <tr><td>§49, §78</td><td>Cô lập ở tầng ứng dụng, repository, tham chiếu đối tượng, agent; 3 ranh giới</td><td>G1 (repo), G5 (room realtime có tiền tố tổ chức), G3 (envelope có <code>tenant_id</code>, <code>device_id</code>)</td><td>GĐ2, GĐ10</td><td>—</td></tr>
+      <tr><td>§50</td><td>Namespace API <code>/api/…</code>, tổ chức lấy từ phiên, không nhận <code>X-Tenant-Id</code></td><td>Giữ đúng 17 namespace; Core bỏ qua mọi header/tham số tổ chức do client gửi</td><td>GĐ2–GĐ8</td><td>—</td></tr>
+      <tr><td>§51–52</td><td>Giao tiếp HTTPS + WSS; envelope lệnh, ACK, kết quả</td><td>Namespace <code>/agent</code> chỉ websocket; ACK/kết quả như đặc tả</td><td>GĐ10</td><td>C12: thêm <code>expires_at</code>, <code>issued_by</code>, <code>sig</code></td></tr>
+      <tr><td>§53–62</td><td>Luồng realtime, PowerShell, tệp, giao/thu bài, chat, sự cố, báo cáo</td><td>Giữ nguyên luồng; báo cáo luôn lọc theo tổ chức</td><td>GĐ5–GĐ8</td><td>Thêm đệm kết quả sớm + poll dự phòng cho kết quả bất đồng bộ</td></tr>
+      <tr><td>§63</td><td>HSK/ThiPM là hệ ngoài, gọi <code>/internal/*</code></td><td>Giữ hợp đồng; xác thực token + allowlist (on-prem), HMAC theo tổ chức (cloud)</td><td>GĐ8, GĐ9</td><td>C8</td></tr>
+      <tr><td>§64–65</td><td>LDAP, SMTP, Telegram, Gemini chỉ ở Core</td><td>Đúng; secret mã hoá AES-256-GCM, không trả dạng rõ về Desktop</td><td>GĐ2, GĐ8</td><td>C13</td></tr>
+      <tr><td>§70–71</td><td>Mô hình tổ chức, dùng chung một CSDL</td><td>Đúng; không tạo CSDL riêng cho từng tổ chức</td><td>GĐ1–GĐ2</td><td>—</td></tr>
+      <tr><td>§72</td><td>Sao lưu MongoDB + tệp</td><td>Sao lưu hằng đêm + khôi phục thử hằng tháng</td><td>GĐ1</td><td>D8 bổ sung diễn tập khôi phục</td></tr>
+      <tr><td>§73</td><td>20 quy tắc cho AI</td><td>Xem H3</td><td>Mọi giai đoạn</td><td>—</td></tr>
+      <tr><td>§74</td><td>Thứ tự Phase 1–9</td><td>Xem H4</td><td>—</td><td>Thêm GĐ0, GĐ1, GĐ3, GĐ9 cho chuyển đổi</td></tr>
+      <tr><td>§75–76</td><td>8 bước cho mỗi API; 7 bước khi thêm field</td><td>Ghi thành quy trình bắt buộc trong CLAUDE.md mục tiêu (mục 3)</td><td>Mọi giai đoạn</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>H2. Từng hạng mục: chức năng và kỹ thuật áp dụng</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Hạng mục (đặc tả)</th><th>Chức năng chính</th><th>Kỹ thuật áp dụng</th><th>Giai đoạn</th></tr></thead>
+    <tbody>
+      <tr><td>Đăng nhập (§10)</td><td>Mã tổ chức, tài khoản Local/AD, TOTP, phiên, đăng xuất, hiển thị tổ chức và người dùng</td><td>Desktop: form + lưu phiên bằng plugin store của Tauri. Core: Argon2id, <code>ldap3</code> (LDAP/LDAPS), <code>pyotp</code>, token phiên lưu SHA-256, <code>active_sessions</code> một thiết bị, giới hạn IP/CIDR</td><td>GĐ2, GĐ4</td></tr>
+      <tr><td>Dashboard (§11)</td><td>Tổng máy, online, phiếu sự cố, cảnh báo phần cứng, theo phòng, tỉ lệ online, đồng hồ, điều khiển giọng nói</td><td>Chart.js; socket <code>/desktop</code>; số tuyệt đối <code>room_stats</code>/<code>total_online</code>; trạng thái online trong RAM của Core; Gemini qua REST ở Core</td><td>GĐ4, GĐ6</td></tr>
+      <tr><td>Phòng và sơ đồ (§12)</td><td>Danh sách, chi tiết, CPU/RAM/Disk realtime, thông tin phần cứng; sơ đồ zoom/pan/kéo/đổi cỡ/nhóm/undo/redo/nhập xuất Excel/lưu/Move PC</td><td>Sơ đồ vẽ bằng DOM/SVG trong React; sơ đồ lưu <code>rooms.map</code>; Excel do Core đọc/ghi bằng <code>openpyxl</code></td><td>GĐ5</td></tr>
+      <tr><td>Thiết bị (§13)</td><td>Xoá máy, chuyển máy, chuyển nhiều máy, chọn phòng đích, số ghế, ép phòng</td><td>Một hàm phân giải phòng có cache RAM; <code>machine_events</code>; không tự xoá máy</td><td>GĐ5</td></tr>
+      <tr><td>Điều khiển (§14)</td><td>WoL, relay đánh thức, peer mesh, tắt, khởi động lại, đăng nhập/xuất từ xa, chặn Internet/website/App-ID/cổng/IP</td><td>Agent: <code>shutdown</code>, WTS API, WFP App-ID; Core: dispatch + ACK + gửi lại; WoL qua agent cùng subnet; mã hoá AES-GCM cho đăng nhập</td><td>GĐ6</td></tr>
+      <tr><td>Terminal (§15)</td><td>PowerShell (lịch sử, dán, Ctrl+C, Tab), ConPTY (ANSI, resize), chạy hàng loạt (stdout/stderr, timeout, giới hạn output)</td><td>xterm.js; agent <code>pywinpty</code>; Core chuyển tiếp theo room; kết quả hàng loạt có đệm sớm + poll</td><td>GĐ6</td></tr>
+      <tr><td>Quản lý tệp (§16)</td><td>Hai khung máy chủ/máy trạm, tạo/đổi tên/chép/cắt/dán/undo/thùng rác/xoá hẳn/kéo thả/tải lên/tải về/ZIP/tiến độ</td><td>Token tệp do Core cấp; truyền dạng luồng; agent nén/giải nén; tiến độ qua <code>fs_progress</code></td><td>GĐ7</td></tr>
+      <tr><td>Giao/thu bài (§17)</td><td>Giao một/nhiều phòng, máy SV/GV, ghi đè, Desktop Public, xoá xếp hàng; thu bài, trạng thái ok/nofile/nofolder/fail/offline, ZIP, cấu trúc THU, nhật ký thu</td><td>StorageService; <code>pushed_files</code>; <code>file_metadata</code> có hạn dùng; worker dọn</td><td>GĐ7</td></tr>
+      <tr><td>Chat (§18)</td><td>Chat Admin–phòng, chưa đọc, huy hiệu, thông báo, âm thanh, toast, emoji, dán ảnh, xem ảnh, reaction, xoá; tách LAB/HSK</td><td><code>scope</code> LAB/HSK; ảnh nén JPEG lưu StorageService; thông báo hệ điều hành thật qua plugin notification</td><td>GĐ8</td></tr>
+      <tr><td>Sự cố (§19)</td><td>Tạo, bổ sung, xử lý, ghi chú IT, người xử lý, trạng thái, email, Telegram, sự cố từ watchdog, lọc, log máy trạm</td><td><code>incidents</code> với <code>source</code> USER/SYSTEM_WATCHDOG; SMTP; Telegram Bot API; realtime</td><td>GĐ8</td></tr>
+      <tr><td>Báo cáo (§20)</td><td>Lịch sử RAM/ổ đĩa, nhật ký sự cố, báo cáo ngày/tháng, xuất danh sách máy/sự cố, thống kê phòng/máy, thời gian sử dụng theo năm</td><td>Aggregation pipeline của MongoDB luôn có <code>$match tenant_id</code>; xuất Excel bằng <code>openpyxl</code></td><td>GĐ8</td></tr>
+      <tr><td>Quản trị nền tảng (§21)</td><td>Người dùng Local/AD, policy, quyền, người đang online, LDAP, mạng, SMTP, Telegram, Gemini, mật khẩu admin, nhật ký</td><td>RBAC theo policy; secret mã hoá; nhật ký tách LAB/HSK/THI</td><td>GĐ8</td></tr>
+      <tr><td>Bổ sung đang chạy (C3)</td><td>View desktop, VNC, nhật ký thay đổi máy, xuất cấu hình, cập nhật agent theo đợt</td><td>Luồng RFB trong agent; noVNC + relay; <code>machine_events</code>; <code>openpyxl</code>; cổng chia đợt theo phòng/phần trăm/All Update</td><td>GĐ5, GĐ8</td></tr>
+      <tr><td>Windows Agent (§8)</td><td>Đăng ký, nhịp tim, phần cứng, nhận/thực thi lệnh, ACK, tệp, PowerShell/ConPTY, giao/thu bài, log</td><td>Viết mới, đóng gói .exe: Python + Nuitka 4.2 + Inno Setup; python-socketio; WMI; <code>pywinpty</code>; WFP; UltraVNC; Task Scheduler + watchdog; Ed25519 (bản 3.0)</td><td>GĐ3, GĐ10</td></tr>
+      <tr><td>Platform-Master (§22)</td><td>Tổ chức, giấy phép, kích hoạt, phiên bản, gói cập nhật, mã hỗ trợ</td><td>Flask + MongoDB <code>itm_master</code>; Ed25519, AES-GCM, SHA-256</td><td>GĐ11</td></tr>
+      <tr><td>Platform-Deployment (§23)</td><td>Build, bộ cài agent/desktop, dịch vụ, updater, QA</td><td>uv, pnpm, Nuitka, Inno Setup, Tauri bundler (NSIS), NSSM, Caddy, GitHub Actions, ruff/pyright/pytest/Playwright</td><td>GĐ11</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>H3. 20 quy tắc cho AI (§73) và cách bảo đảm</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Quy tắc</th><th>Nội dung</th><th>Cách bảo đảm (không chỉ dựa vào "AI nhớ")</th></tr></thead>
+    <tbody>
+      <tr><td>1–5</td><td><code>tenant_id</code> bắt buộc; có ngữ cảnh tổ chức; client không ghi đè tổ chức; không truy vấn thiếu bộ lọc; không lấy theo <code>_id</code> mà không kiểm tổ chức</td><td><code>TenantRepo</code> tự ép <code>tenant_id</code>; validator <code>$jsonSchema</code> yêu cầu trường; test quét mã; 15 test cô lập trong CI</td></tr>
+      <tr><td>6–8</td><td>Desktop/Agent không chạm MongoDB; Desktop không gọi Agent trực tiếp</td><td>Chỉ Core có tài khoản MongoDB; tường lửa 27017 chỉ mở cho Core; Desktop chỉ biết địa chỉ Core</td></tr>
+      <tr><td>9</td><td>Mọi thao tác Windows: Desktop → Core → Agent</td><td>Agent chỉ nhận lệnh qua socket của Core; không mở cổng vào</td></tr>
+      <tr><td>10–11</td><td>Tích hợp nằm ở Core; HSK/ThiPM là hệ ngoài</td><td>Module <code>app/integrations/*</code>; hệ thi chỉ đi qua <code>/internal/*</code></td></tr>
+      <tr><td>12–13</td><td>Giấy phép/phiên bản ở Master; build/bộ cài ở Deployment</td><td>Hai project riêng, DB <code>itm_master</code> riêng</td></tr>
+      <tr><td>14–15</td><td>Không thêm microservice; không thêm nghiệp vụ</td><td>Review PR theo đặc tả V3; bảng đối chiếu chức năng là phạm vi duy nhất</td></tr>
+      <tr><td>16–17</td><td>Không lưu secret/mật khẩu dạng rõ</td><td>Argon2id; AES-256-GCM; gitleaks chặn commit; token chỉ lưu bản băm</td></tr>
+      <tr><td>18</td><td>Agent xác định tổ chức/thiết bị trước khi nhận lệnh</td><td>Agent v2: ánh xạ hostname trong <code>legacy_adapter</code> (chỉ tổ chức PHENIKAA); agent v3: challenge Ed25519 trước khi join room</td></tr>
+      <tr><td>19–20</td><td>Lệnh có <code>command_id</code>; ACK/gửi lại</td><td>Giữ cơ chế hệ cũ (8 giây, 3 lần, chống đúp ở agent); test hợp đồng</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>H4. Phase của đặc tả (§74) và giai đoạn của phương án</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Đặc tả</th><th>Phương án</th><th>Khác biệt và lý do</th></tr></thead>
+    <tbody>
+      <tr><td>—</td><td>GĐ0 Chuẩn bị, GĐ1 Hạ tầng</td><td>Thêm: cần quyết định, đặc tả V3, MongoDB replica set trước khi viết code</td></tr>
+      <tr><td>Phase 1 Platform foundation</td><td>GĐ2 Nền Core</td><td>Như đặc tả</td></tr>
+      <tr><td>Phase 2 Agent foundation</td><td>GĐ3 Tương thích agent cũ → GĐ10 Agent 3.0</td><td>Tách hai bước để không đổi server và agent cùng lúc (§0 luật 5, 6)</td></tr>
+      <tr><td>Phase 3 Desktop foundation</td><td>GĐ4</td><td>Làm song song GĐ2–GĐ3</td></tr>
+      <tr><td>Phase 4 Device/Room</td><td>GĐ5</td><td>Thêm View desktop, nhật ký thay đổi máy, xuất cấu hình</td></tr>
+      <tr><td>Phase 5 Remote</td><td>GĐ6</td><td>Thêm whitelist Core trong luật chặn Internet</td></tr>
+      <tr><td>Phase 6 File/Work</td><td>GĐ7</td><td>Như đặc tả</td></tr>
+      <tr><td>Phase 7 Chat/Incident/Reporting · Phase 8 Integration/Admin</td><td>GĐ8</td><td>Gộp; thêm màn Cập nhật Agent</td></tr>
+      <tr><td>—</td><td>GĐ9 Chuyển dữ liệu và chuyển toàn trường</td><td>Thêm: đặc tả không có chương chuyển đổi (C2)</td></tr>
+      <tr><td>Phase 9 Master/Deployment</td><td>GĐ11</td><td>Như đặc tả; thêm cloud và tổ chức thứ hai</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ============================ H ============================ -->
+<section id="i">
+  <h2><span class="k">I</span>Thứ tự ưu tiên: làm gì trước, cái gì ảnh hưởng toàn hệ thống</h2>
+  <p class="sub">Nguyên tắc xuyên suốt: <b>mỗi lần chỉ đổi một biến</b>. Đổi server trước (agent giữ nguyên), khi server mới ổn định mới đổi agent.</p>
+
+  <h3>Đường găng</h3>
+  <p>Chuỗi việc nối tiếp quyết định ngày xong của cả dự án. Chậm một mắt xích là chậm cả dự án; các việc ngoài chuỗi có thể làm song song.</p>
+  <div class="path" aria-label="Đường găng">
+    <span>GĐ0 Quyết định</span><em>→</em><span>GĐ1 MongoDB</span><em>→</em><span>GĐ2 Nền Core</span><em>→</em>
+    <span class="hot">GĐ3 Tương thích agent cũ + canary</span><em>→</em><span>chờ Desktop đủ chức năng (GĐ4–8)</span><em>→</em>
+    <span class="hot">GĐ9 Chuyển từng phòng</span><em>→</em><span class="hot">GĐ10 Agent 3.0</span><em>→</em><span>GĐ11 Master/cloud</span>
+  </div>
+
+  <div class="tbl"><div class="gantt" role="table" aria-label="Lịch dự kiến 12 tháng">
+    <div class="h" style="text-align:left">Giai đoạn</div><div class="h">T1</div><div class="h">T2</div><div class="h">T3</div><div class="h">T4</div><div class="h">T5</div><div class="h">T6</div><div class="h">T7</div><div class="h">T8</div><div class="h">T9</div><div class="h">T10</div><div class="h">T11</div><div class="h">T12</div>
+  </div></div>
+
+  <h3>9 quy tắc thứ tự</h3>
+  <ol>
+    <li><b>Quyết định và đặc tả V3 trước mọi dòng code.</b> AI viết theo đặc tả; đặc tả sai thì code sai hàng loạt.</li>
+    <li><b>Hạ tầng MongoDB (replica set) trước Core.</b> Đổi từ một node sang replica set về sau rất mất công.</li>
+    <li><b>Tổ chức (tenant) + Repository + đăng nhập/phân quyền trước mọi module nghiệp vụ.</b> Thêm <code>tenant_id</code> sau là viết lại.</li>
+    <li><b>Cảnh báo online tụt + sao lưu xong trước khi chạm tới bất kỳ máy trạm nào</b> (D7, D8).</li>
+    <li><b>Bộ tương thích agent cũ chạy được với 1 máy thử sớm</b> (tháng 3–4) để phát hiện vấn đề giao thức khi còn nhiều thời gian.</li>
+    <li><b>Chỉ chuyển phòng đang dạy khi Desktop đã đủ chức năng phòng đó dùng hằng ngày.</b> Máy đã chuyển sẽ không hiện trên web cũ.</li>
+    <li><b>Desktop làm theo tần suất dùng:</b> Dashboard/Phòng → Điều khiển → Giao/Thu bài → Chat/Sự cố → Báo cáo/Quản trị.</li>
+    <li><b>Hệ thi chuyển sau cùng trong GĐ9</b>, ngoài lịch thi, khi mọi phòng đã chạy trên Core.</li>
+    <li><b>Agent 3.0 chỉ phát hành khi 100% máy đã chạy ổn trên Core bằng giao thức cũ ít nhất 4 tuần.</b> Master/cloud/tổ chức thứ hai để cuối.</li>
+  </ol>
+
+  <h3>Hạng mục ảnh hưởng toàn hệ thống</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Hạng mục</th><th>Vì sao ảnh hưởng toàn hệ thống</th><th>Cách giảm rủi ro</th><th>Giai đoạn</th></tr></thead>
+    <tbody>
+      <tr><td><span class="chip s0">§0</span> Sửa Caddyfile cổng 5443</td><td>Mọi agent và mọi trình duyệt đi qua đây</td><td>Sao lưu tệp, <code>caddy validate</code>, <code>caddy adapt</code> kiểm thứ tự, <code>caddy reload</code> (không restart dịch vụ), quay lui đã diễn tập</td><td>GĐ3, GĐ9</td></tr>
+      <tr><td><span class="chip s0">§0</span> Bộ tương thích agent cũ</td><td>Sai một trường dữ liệu là máy hiện offline hoặc không nhận lệnh</td><td>Test hợp đồng v2 bằng traffic thật; canary 1 máy 72 giờ rồi 1 phòng</td><td>GĐ3</td></tr>
+      <tr><td><span class="chip sys">Toàn hệ</span> Chuyển dữ liệu SQLite → MongoDB</td><td>Tài khoản, phân quyền, lịch sử, sơ đồ phòng</td><td>Chạy thử trên bản sao, đối chiếu số dòng từng bảng, script chạy lại nhiều lần không sinh trùng</td><td>GĐ9</td></tr>
+      <tr><td><span class="chip sys">Toàn hệ</span> Đổi địa chỉ Monitor của ThiHSK/ThiPM</td><td>Mọi ca thi</td><td>Ngoài lịch thi; thử <code>/internal/ping</code>, <code>/internal/machines</code>; giữ cấu hình cũ để đổi lại</td><td>GĐ9</td></tr>
+      <tr><td><span class="chip s0">§0</span> Phát hành agent 3.0</td><td>889 máy</td><td>Đúng 8 luật §0: 2–3 máy → 1 phòng → nhiều phòng → toàn trường; nút dừng khẩn</td><td>GĐ10</td></tr>
+      <tr><td><span class="chip s0">§0</span> Luật Ngắt Internet có whitelist Core</td><td>Luật sai làm máy mất đường về Core khi đang chặn mạng</td><td>Thử trên 1 máy ở cả trạng thái chặn và mở</td><td>GĐ6</td></tr>
+      <tr><td><span class="chip s0">§0</span> Chứng thư TLS cổng 5443</td><td>Agent cũ ghim chứng thư</td><td>Không xoay khi còn agent v2</td><td>Luôn luôn</td></tr>
+      <tr><td><span class="chip sys">Toàn hệ</span> Tắt hub cũ</td><td>Mất đường quay lui</td><td>Chỉ sau 4 tuần ổn định; giữ bản cài 3 tháng</td><td>GĐ9</td></tr>
+      <tr><td><span class="chip sys">Toàn hệ</span> Bảo trì MongoDB</td><td>Core mất CSDL</td><td>Bảo trì lần lượt từng node, ngoài giờ học; luôn còn 2/3 node</td><td>GĐ1 trở đi</td></tr>
+      <tr><td><span class="chip sys">Toàn hệ</span> Phát hành Desktop tự cập nhật</td><td>Mọi người dùng quản trị</td><td>Kênh thử cho 2 người trước 3 ngày</td><td>GĐ4 trở đi</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="grid g2">
+    <div class="note ok"><b>Khi đã quyết định, nên làm sớm trên hệ hiện tại (rủi ro thấp)</b>
+      <ul>
+        <li>Lịch sao lưu <code>database.db</code> hằng ngày + "Xuất cấu hình" hằng tuần (snapshot danh sách máy, bài học 10.21).</li>
+        <li>Cảnh báo Telegram khi số máy online tụt quá 10% trong 5 phút (D7).</li>
+        <li>Đóng băng tính năng lớn trên hệ cũ; chỉ sửa lỗi.</li>
+        <li>Dừng Khối A ở Pha 1 (D18).</li>
+        <li>Đo baseline 1 tuần (online đỉnh, nhịp tim/phút, thời gian giao/thu bài).</li>
+        <li>Bật log truy cập Caddy 1 ngày để ghi User-Agent và đường dẫn thật của agent (chuẩn bị G6).</li>
+      </ul></div>
+    <div class="note"><b>Không làm hoặc để sau</b>
+      <ul>
+        <li>Microservice, Redis, message queue, Kubernetes (đặc tả cấm; quy mô 889 máy không cần).</li>
+        <li>CSDL riêng cho từng tổ chức.</li>
+        <li>Viết lại agent bằng ngôn ngữ khác; đổi Socket.IO sang giao thức khác.</li>
+        <li>Lên cloud trước khi on-prem ổn định một học kỳ.</li>
+        <li>Python free-threading (chưa cần, gevent đã đủ cho I/O).</li>
+        <li>Pha 2 của Khối A (dời tệp sang <code>D:\Agent</code>).</li>
+      </ul></div>
+  </div>
+</section>
+
+<!-- ============================ I ============================ -->
+<section id="j">
+  <h2><span class="k">J</span>Các bước thực hiện chi tiết</h2>
+  <p class="sub">Mỗi giai đoạn có mục tiêu, các bước (đánh dấu được, lưu trên trình duyệt này), cổng kiểm thử phải đạt trước khi sang giai đoạn sau, cách quay lui và nhận xét.
+  Hướng dẫn cài đặt viết cho Windows vì đội đang quen vận hành Windows. Thời lượng là ước lượng cho đội 2–3 người.</p>
+
+  <!-- GĐ0 -->
+  <article class="phase" data-phase="g0">
+    <header><h3><span class="gd">GĐ0</span>Chuẩn bị và quyết định</h3><span class="dur">Tuần 1–2</span></header>
+    <div class="chips"><span class="chip dec">QUYẾT ĐỊNH TOÀN HỆ THỐNG</span><span class="chip safe">KHÔNG ĐỤNG HỆ ĐANG CHẠY</span></div>
+    <p class="goal">Chốt hướng đi, sửa đặc tả thành V3, có mốc sao lưu và số liệu nền để so sánh về sau.</p>
+    <ol class="steps">
+      <li><label><input type="checkbox" data-id="g0-1"><span class="t">Họp chốt 8 quyết định và ghi biên bản</span></label>
+        <div class="d"><ol>
+          <li>Chọn Phương án 2 (song song, chuyển từng phòng).</li>
+          <li>Triển khai tại trường trước; cloud để GĐ11.</li>
+          <li>Desktop dùng Tauri 2.</li>
+          <li>MongoDB 8.0 replica set 3 node.</li>
+          <li>Đăng nhập bằng Mã tổ chức + tài khoản + mật khẩu.</li>
+          <li>Dừng Khối A ở Pha 1.</li>
+          <li>Ngân sách: 3 VM MongoDB + 1 VM Core, ổ lưu tệp, chứng thư ký mã OV/EV.</li>
+          <li>Phân công: 1 người Core + Agent, 1 người Desktop, 1 người hạ tầng + kiểm thử (có thể kiêm).</li>
+        </ol></div></li>
+      <li><label><input type="checkbox" data-id="g0-2"><span class="t">Đóng băng tính năng lớn trên hệ cũ</span></label>
+        <div class="d">Thông báo cho người dùng: trong thời gian chuyển đổi, hệ cũ chỉ sửa lỗi và vận hành. Mọi tính năng mới đưa vào backlog của hệ mới.</div></li>
+      <li><label><input type="checkbox" data-id="g0-3"><span class="t">Sửa đặc tả V2 thành V3</span></label>
+        <div class="d">Áp dụng 17 điểm ở <a href="#c">mục C</a>, 18 bổ sung ở <a href="#d">mục D</a>, thiết kế G1–G9. Xoá phần schema lặp (chương 24–48), giữ chương 4A làm chuẩn duy nhất. AI chỉ được dùng bản V3.</div></li>
+      <li><label><input type="checkbox" data-id="g0-4"><span class="t">Lập bảng đối chiếu chức năng (D4)</span></label>
+        <div class="d">Tệp Excel, mỗi dòng một route/sự kiện socket của hệ cũ (152 + 16) với các cột:
+          <i>Route cũ · Chức năng · Màn hình dùng · API mới · Module Desktop · Trạng thái (Chưa/Đang/Đạt) · Người kiểm</i>.
+          Lấy danh sách route bằng cách tìm <code>@app.route</code> và <code>@socketio.on</code> trong <code>app.py</code> (chỉ đọc).</div></li>
+      <li><label><input type="checkbox" data-id="g0-5"><span class="t">Sao lưu mốc 0</span></label>
+        <div class="d"><ol>
+          <li>Trên Dashboard, bấm <span class="click">Xuất cấu hình</span> → lưu tệp Excel vào <code>D:\Backup\Moc0_&lt;ngày&gt;\</code>.</li>
+          <li>Sao lưu CSDL đúng cách khi dịch vụ đang chạy (dùng API backup của SQLite, không copy tệp thô):
+<pre><button class="copy" type="button">Chép</button>python -c "import sqlite3; s=sqlite3.connect(r'D:\NetworkInventory\database.db'); d=sqlite3.connect(r'D:\Backup\Moc0\database.db'); s.backup(d); d.close()"</pre></li>
+          <li>Trong File Explorer, copy các thư mục <code>Maps\</code>, <code>updates\</code> và tệp <code>D:\Caddy\Caddyfile</code> vào cùng thư mục mốc 0.</li>
+        </ol></div></li>
+      <li><label><input type="checkbox" data-id="g0-6"><span class="t">Đo baseline trong 1 tuần</span></label>
+        <div class="d">Ghi vào bảng: số máy online đỉnh mỗi ngày (Dashboard); lượt nhịp tim/phút (dòng <code>[SYNC]</code> trong <code>logs\hub-server.log</code>);
+          thời gian giao 1 tệp 200 MB cho 1 phòng; thời gian thu bài 1 phòng; thời gian mở trang phòng. Đây là thước đo "không tệ hơn" khi chuyển.</div></li>
+      <li><label><input type="checkbox" data-id="g0-7"><span class="t">Lập bảng dải IP theo phòng (cho canary ở GĐ3)</span></label>
+        <div class="d">Chạy trên <b>bản sao</b> CSDL ở bước 5 để xem mỗi phòng có nằm gọn trong một dải /24 không:
+<pre><button class="copy" type="button">Chép</button>python -c "import sqlite3,collections; c=sqlite3.connect(r'D:\Backup\Moc0\database.db'); m=collections.defaultdict(set)
+for room,ip in c.execute('select room, ip from computers'):
+    if ip: m[room].add('.'.join(ip.split('.')[:3]))
+for r in sorted(m): print(r, sorted(m[r]))"</pre>
+          Phòng nào chỉ có một tiền tố → dùng <code>/24</code>; phòng chung dải với phòng khác → liệt kê từng IP <code>/32</code>.</div></li>
+      <li><label><input type="checkbox" data-id="g0-8"><span class="t">Viết ADR cho từng quyết định</span></label>
+        <div class="d">Mỗi quyết định ở bước 1 là một tệp <code>docs/adr/ADR-000x-&lt;tên&gt;.md</code> gồm: bối cảnh, quyết định, phương án đã loại, hệ quả. Giúp người mới (và AI) hiểu vì sao.</div></li>
+      <li><label><input type="checkbox" data-id="g0-9"><span class="t">Thiết lập không gian xây mới cho Claude (dự án cũ chỉ đọc)</span></label>
+        <div class="d"><ol>
+          <li>Tạo thư mục <code>D:\Platform</code> (repo mới ở GĐ2 sẽ clone vào đây).</li>
+          <li>Mở Claude Code tại <code>D:\Platform</code>; thêm thư mục cũ để <b>đọc</b>: <code>/add-dir D:\NetworkInventory</code>, <code>/add-dir D:\ExaminationSystem</code>, <code>/add-dir D:\Agent</code>.</li>
+          <li>Gõ <code>/permissions</code> → thêm luật <b>Deny</b> cho thao tác Edit và Write vào ba thư mục đó.</li>
+          <li>Đặt <code>D:\Platform\CLAUDE.md</code> = khối CLAUDE.md ở <a href="#l">mục L</a>.</li>
+          <li>Thử: yêu cầu Claude tạo một tệp trong <code>D:\NetworkInventory</code> → phải bị từ chối; <code>git -C D:\NetworkInventory status</code> không đổi.</li>
+        </ol></div></li>
+    </ol>
+    <div class="box gate"><b>Cổng kiểm thử</b><ul><li>Biên bản 8 quyết định đã duyệt.</li><li>Đặc tả V3, bảng đối chiếu chức năng, bảng baseline, bảng dải IP đã có.</li><li>Mốc sao lưu 0 khôi phục thử được trên máy khác.</li></ul></div>
+    <div class="box cm"><b>Nhận xét</b>Giai đoạn rẻ nhất nhưng quyết định nhiều nhất. Rút ngắn GĐ0 thường phải trả giá ở GĐ9.</div>
+  </article>
+
+  <!-- GĐ1 -->
+  <article class="phase" data-phase="g1">
+    <header><h3><span class="gd">GĐ1</span>Hạ tầng MongoDB và máy chủ Core</h3><span class="dur">Tuần 2–5</span></header>
+    <div class="chips"><span class="chip safe">KHÔNG ĐỤNG HỆ ĐANG CHẠY</span></div>
+    <p class="goal">Có cụm MongoDB 3 node chạy xác thực, có sao lưu tự động đã khôi phục thử, có VM cho Core.</p>
+    <ol class="steps">
+      <li><label><input type="checkbox" data-id="g1-1"><span class="t">Chuẩn bị 4 máy (VM)</span></label>
+        <div class="d">3 VM MongoDB: mỗi VM 4 vCPU, 16 GB RAM, SSD 200 GB. 1 VM Core: 8 vCPU, 16 GB RAM, SSD 200 GB + ổ dữ liệu tệp (dung lượng theo thư mục <code>WorkFiles</code>/<code>Collected</code>/<code>THU</code> hiện tại × 3).
+          Hệ điều hành: Windows Server 2022/2025 (theo hướng dẫn dưới) hoặc Ubuntu 24.04 LTS (khuyên cho MongoDB nếu đội có người quản trị Linux).
+          Join domain <code>phenikaamec.local</code> để đồng bộ giờ từ máy chủ AD; kiểm bằng <code>w32tm /query /status</code>.</div></li>
+      <li><label><input type="checkbox" data-id="g1-2"><span class="t">Tải và cài MongoDB 8.0 trên từng node</span></label>
+        <div class="d"><ol>
+          <li>Mở <a href="https://www.mongodb.com/try/download/community" target="_blank" rel="noopener">mongodb.com/try/download/community</a>.
+            Chọn <span class="click">Version: 8.0.x</span> (bản mới nhất của dòng 8.0), <span class="click">Platform: Windows x64</span>, <span class="click">Package: msi</span> → bấm <span class="click">Download</span>.</li>
+          <li>Chạy tệp .msi → <span class="click">Next</span> → tích <span class="click">I accept the terms…</span> → <span class="click">Next</span> → chọn <span class="click">Complete</span>.</li>
+          <li>Màn <b>Service Configuration</b>: giữ tích <span class="click">Install MongoD as a Service</span>, chọn <span class="click">Run service as Network Service user</span>,
+            Service Name <code>MongoDB</code>, Data Directory <code>D:\MongoDB\data</code>, Log Directory <code>D:\MongoDB\log</code> → <span class="click">Next</span>.</li>
+          <li>Màn <b>Install MongoDB Compass</b>: bỏ tích trên VM máy chủ (Compass cài trên máy quản trị) → <span class="click">Next</span> → <span class="click">Install</span> → <span class="click">Finish</span>.</li>
+          <li>Tải thêm <b>MongoDB Shell</b> (<a href="https://www.mongodb.com/try/download/shell" target="_blank" rel="noopener">mongodb.com/try/download/shell</a>, gói MSI) và <b>Database Tools</b>
+            (<a href="https://www.mongodb.com/try/download/database-tools" target="_blank" rel="noopener">mongodb.com/try/download/database-tools</a>, gói MSI), cài với tuỳ chọn mặc định.</li>
+        </ol></div></li>
+      <li><label><input type="checkbox" data-id="g1-3"><span class="t">Tạo keyfile chung cho 3 node</span></label>
+        <div class="d">Trên node 1, mở PowerShell <b>Run as administrator</b>:
+<pre><button class="copy" type="button">Chép</button>$b = New-Object byte[] 756
+[Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($b)
+[Convert]::ToBase64String($b) | Set-Content -Encoding ascii D:\MongoDB\keyfile</pre>
+          Copy <b>đúng tệp này</b> sang <code>D:\MongoDB\keyfile</code> trên node 2 và node 3. Tệp này là bí mật: không đưa vào repo, không gửi qua chat.</div></li>
+      <li><label><input type="checkbox" data-id="g1-4"><span class="t">Sửa mongod.cfg trên cả 3 node</span></label>
+        <div class="d">Mở Notepad bằng quyền Administrator → <span class="click">File → Open</span> → <code>C:\Program Files\MongoDB\Server\8.0\bin\mongod.cfg</code> → thay nội dung:
+<pre><button class="copy" type="button">Chép</button>storage:
+  dbPath: D:\MongoDB\data
+systemLog:
+  destination: file
+  logAppend: true
+  path: D:\MongoDB\log\mongod.log
+net:
+  port: 27017
+  bindIp: 127.0.0.1,&lt;IP-của-node-này&gt;
+security:
+  authorization: enabled
+  keyFile: D:\MongoDB\keyfile
+replication:
+  replSetName: rs0</pre>
+          Lưu → mở <span class="click">services.msc</span> → chuột phải dịch vụ <span class="click">MongoDB</span> → <span class="click">Restart</span>. Kiểm <code>D:\MongoDB\log\mongod.log</code> không có dòng lỗi.</div></li>
+      <li><label><input type="checkbox" data-id="g1-5"><span class="t">Mở tường lửa chỉ cho đúng máy</span></label>
+        <div class="d"><ol>
+          <li>Chạy <code>wf.msc</code> → <span class="click">Inbound Rules</span> → <span class="click">New Rule…</span> → <span class="click">Port</span> → <span class="click">TCP</span>, <span class="click">Specific local ports: 27017</span> → <span class="click">Allow the connection</span> → chỉ tích <span class="click">Domain</span> → đặt tên <code>MongoDB rs0</code> → <span class="click">Finish</span>.</li>
+          <li>Chuột phải rule vừa tạo → <span class="click">Properties</span> → tab <span class="click">Scope</span> → <span class="click">Remote IP address: These IP addresses</span> → <span class="click">Add…</span> IP của 3 node và VM Core → <span class="click">OK</span>.</li>
+        </ol></div></li>
+      <li><label><input type="checkbox" data-id="g1-6"><span class="t">Khởi tạo replica set và tạo tài khoản</span></label>
+        <div class="d">Trên node 1 (kết nối từ chính máy đó để dùng "localhost exception" tạo tài khoản đầu tiên):
+<pre><button class="copy" type="button">Chép</button>mongosh --host 127.0.0.1
+rs.initiate({ _id: "rs0", members: [
+  { _id: 0, host: "mongo1.phenikaamec.local:27017" },
+  { _id: 1, host: "mongo2.phenikaamec.local:27017" },
+  { _id: 2, host: "mongo3.phenikaamec.local:27017" } ] })
+<span class="c">// đợi dấu nhắc chuyển thành rs0 [direct: primary]</span>
+use admin
+db.createUser({ user: "itm_admin", pwd: passwordPrompt(), roles: ["root"] })
+<span class="c">// thoát, đăng nhập lại bằng itm_admin rồi tạo tài khoản ứng dụng:</span>
+db.createUser({ user: "core_app",   pwd: passwordPrompt(), roles: [{ role: "readWrite", db: "itm_core" }] })
+db.createUser({ user: "master_app", pwd: passwordPrompt(), roles: [{ role: "readWrite", db: "itm_master" }] })
+db.createUser({ user: "itm_backup", pwd: passwordPrompt(), roles: ["backup"] })</pre>
+          Mật khẩu ghi vào kho bí mật (KeePass hoặc tương đương) của Trung tâm, không ghi vào tài liệu.</div></li>
+      <li><label><input type="checkbox" data-id="g1-7"><span class="t">Sao lưu tự động hằng đêm</span></label>
+        <div class="d"><ol>
+          <li>Tạo <code>D:\MongoBackup\backup.ps1</code> chạy <code>mongodump</code> từ node secondary, nén <code>--gzip --archive</code>, đặt tên theo ngày, xoá bản cũ hơn 14 ngày. Chuỗi kết nối và mật khẩu đặt trong tệp cấu hình <code>--config</code> chỉ tài khoản dịch vụ đọc được.</li>
+          <li>Mở <code>taskschd.msc</code> → <span class="click">Create Task…</span>. Tab <b>General</b>: Name <code>ITM Mongo Backup</code>, chọn <span class="click">Run whether user is logged on or not</span>, tích <span class="click">Run with highest privileges</span>.</li>
+          <li>Tab <b>Triggers</b> → <span class="click">New…</span> → <span class="click">Daily</span>, 01:30 → <span class="click">OK</span>.</li>
+          <li>Tab <b>Actions</b> → <span class="click">New…</span> → Program/script <code>powershell.exe</code>, Add arguments <code>-NoProfile -ExecutionPolicy Bypass -File D:\MongoBackup\backup.ps1</code> → <span class="click">OK</span>.</li>
+          <li>Tab <b>Settings</b>: chọn <span class="click">Do not start a new instance</span> → <span class="click">OK</span> → nhập mật khẩu tài khoản dịch vụ.</li>
+          <li>Đồng bộ thư mục sao lưu sang một máy/ổ khác (khác phòng máy chủ nếu được).</li>
+        </ol></div></li>
+      <li><label><input type="checkbox" data-id="g1-8"><span class="t">Cài Compass trên máy quản trị và thử khôi phục</span></label>
+        <div class="d">Cài <b>MongoDB Compass</b> trên máy quản trị (không cài trên VM). Dựng một VM thử, chạy <code>mongorestore --gzip --archive=&lt;tệp&gt;</code>, kiểm dữ liệu bằng Compass. Ghi lịch khôi phục thử ngày đầu mỗi tháng.</div></li>
+    </ol>
+    <div class="box gate"><b>Cổng kiểm thử</b><ul>
+      <li><code>rs.status()</code>: 1 PRIMARY + 2 SECONDARY, cả 3 <code>health: 1</code>.</li>
+      <li>Dừng dịch vụ MongoDB trên primary → một secondary lên primary trong khoảng 15 giây → bật lại thì node cũ về secondary.</li>
+      <li>Khôi phục thử thành công trên VM riêng.</li></ul></div>
+    <div class="box back"><b>Quay lui</b>Không cần: chưa có ai dùng hạ tầng này.</div>
+    <div class="box cm"><b>Nhận xét</b>Đừng cài một node "cho nhanh" rồi tính sau. Replica set cần cho transaction, change streams (mở rộng Core về sau) và tự chuyển node khi hỏng.</div>
+  </article>
+
+  <!-- GĐ2 -->
+  <article class="phase" data-phase="g2">
+    <header><h3><span class="gd">GĐ2</span>Nền Platform-Core</h3><span class="dur">Tuần 4–10</span></header>
+    <div class="chips"><span class="chip safe">KHÔNG ĐỤNG HỆ ĐANG CHẠY</span></div>
+    <p class="goal">Core chạy được thành dịch vụ: tổ chức, đăng nhập (Local/AD/TOTP), phân quyền, nhật ký, OpenAPI, test cô lập tổ chức.</p>
+    <ol class="steps">
+      <li><label><input type="checkbox" data-id="g2-1"><span class="t">Tạo repo riêng trên GitHub</span></label>
+        <div class="d"><ol>
+          <li>Vào github.com → nút <span class="click">+</span> góc trên phải → <span class="click">New repository</span>.</li>
+          <li>Repository name <code>phenikaa-platform</code> → chọn <span class="click">Private</span> → tích <span class="click">Add a README file</span> → <span class="click">Add .gitignore: Python</span> → <span class="click">Create repository</span>.</li>
+          <li><span class="click">Settings → Rules → Rulesets → New ruleset → New branch ruleset</span>: Target = nhánh mặc định; tích <span class="click">Require a pull request before merging</span> và <span class="click">Require status checks to pass</span> → <span class="click">Create</span>.</li>
+          <li>Mở GitHub Desktop → <span class="click">File → Clone repository…</span> → chọn <code>phenikaa-platform</code> → Local path <code>D:\Platform</code> → <span class="click">Clone</span>.</li>
+        </ol></div></li>
+      <li><label><input type="checkbox" data-id="g2-2"><span class="t">Cài uv và Python 3.14</span></label>
+        <div class="d">
+<pre><button class="copy" type="button">Chép</button>powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+<span class="c"># đóng/mở lại PowerShell</span>
+uv python install 3.14
+cd D:\Platform
+uv init --app platform-core
+cd platform-core
+uv python pin 3.14
+uv add flask apiflask flask-socketio gevent gevent-websocket pymongo pydantic argon2-cffi pyotp ldap3 cryptography openpyxl requests python-dotenv
+uv add --dev pytest ruff pyright</pre>
+          Nếu <code>uv add gevent</code> phải biên dịch từ mã nguồn hoặc lỗi trên 3.14: chạy <code>uv python pin 3.13</code> rồi <code>uv sync</code>, ghi lại vào ADR.</div></li>
+      <li><label><input type="checkbox" data-id="g2-3"><span class="t">Bí mật ngoài repo ngay từ commit đầu (D14)</span></label>
+        <div class="d">Tạo <code>D:\PlatformSecrets\core.env</code> (chuỗi kết nối MongoDB, khoá chính AES, khoá ký Ed25519). Thêm vào <code>.gitignore</code>: <code>*.env</code>, <code>*.key</code>, <code>*.pem</code>.
+          Cài <code>pre-commit</code> (<code>uv tool install pre-commit</code>) với hook <code>gitleaks</code> để chặn commit có khoá/mật khẩu.</div></li>
+      <li><label><input type="checkbox" data-id="g2-4"><span class="t">Tầng CSDL: kết nối, index, validator, dữ liệu gốc</span></label>
+        <div class="d"><code>app/db/client.py</code>: <code>MongoClient(uri, replicaSet="rs0", w="majority", retryWrites=True)</code>, gọi <code>gevent.monkey.patch_all()</code> trước mọi import.
+          <code>app/db/indexes.py</code>: toàn bộ index của chương 4A (đã sửa theo C1: index <code>mac</code>/<code>hostname</code> không unique). <code>app/db/validators.py</code>: <code>$jsonSchema</code> mức <code>moderate</code>.
+          <code>app/db/seeds.py</code>: catalog <code>permissions</code>. Lệnh <code>uv run python -m app.db.init</code> chạy lại nhiều lần không lỗi.</div></li>
+      <li><label><input type="checkbox" data-id="g2-5"><span class="t">Ngữ cảnh tổ chức + TenantRepo (G1) + test quét mã</span></label>
+        <div class="d">Viết <code>app/tenants/repo.py</code> như G1. Thêm test <code>tests/isolation/test_no_raw_queries.py</code>: quét mã nguồn, báo lỗi nếu có <code>.find(</code>, <code>.update_one(</code>… gọi thẳng collection của tổ chức ngoài các tệp <code>repo.py</code> của tầng repository.</div></li>
+      <li><label><input type="checkbox" data-id="g2-6"><span class="t">Đăng nhập: Local, AD, TOTP, một thiết bị, giới hạn IP</span></label>
+        <div class="d">Mang logic đã chạy ổn của hệ cũ sang (đọc <code>_login_guard_main</code>, <code>_account_ip_block</code>, <code>_ip_matches_list</code> trong <code>app.py</code> để giữ đúng hành vi), thêm bước nhận diện tổ chức theo mã.
+          Mật khẩu Argon2id; mật khẩu băm kiểu cũ được nâng lên Argon2id ở lần đăng nhập thành công kế tiếp.</div></li>
+      <li><label><input type="checkbox" data-id="g2-7"><span class="t">Phân quyền + nhật ký</span></label>
+        <div class="d">Catalog quyền, policy theo tổ chức (có <code>room_ids</code>), Super Admin là system policy. <code>after_request</code> ghi <code>audit_log</code> mọi thao tác thay đổi dữ liệu kèm <code>system</code> (LAB/HSK/THI), như mục 8.5 của hệ cũ.</div></li>
+      <li><label><input type="checkbox" data-id="g2-8"><span class="t">OpenAPI và trang tài liệu API</span></label>
+        <div class="d">APIFlask tự sinh <code>/openapi.json</code> và trang <code>/docs</code>. Mỗi endpoint khai báo schema vào/ra bằng Pydantic. Desktop sẽ sinh kiểu dữ liệu TypeScript từ tệp này.</div></li>
+      <li><label><input type="checkbox" data-id="g2-9"><span class="t">Bộ test cô lập tổ chức (15 test của đặc tả 4A.36)</span></label>
+        <div class="d">Chạy trên một database test riêng của cụm (tên ngẫu nhiên, xoá sau mỗi lần chạy). Tạo 2 tổ chức giả A/B, kiểm A không đọc/sửa/tải được bất cứ thứ gì của B.</div></li>
+      <li><label><input type="checkbox" data-id="g2-10"><span class="t">Chạy Core thành dịch vụ Windows bằng NSSM</span></label>
+        <div class="d"><ol>
+          <li>PowerShell quyền Administrator: <code>nssm install PlatformCore</code> → cửa sổ NSSM mở ra.</li>
+          <li>Tab <b>Application</b>: Path <code>D:\Platform\platform-core\.venv\Scripts\python.exe</code>, Startup directory <code>D:\Platform\platform-core</code>, Arguments <code>-m app.server --port 7009</code>.</li>
+          <li>Tab <b>Details</b>: Display name <code>Phenikaa Platform Core</code>, Startup type <span class="click">Automatic (Delayed Start)</span>.</li>
+          <li>Tab <b>Log on</b>: <span class="click">Local System account</span>. Tab <b>I/O</b>: Output <code>D:\Platform\logs\core-out.log</code>, Error <code>D:\Platform\logs\core-err.log</code>.</li>
+          <li>Tab <b>File rotation</b>: tích <span class="click">Rotate files</span>, <span class="click">Rotate while service is running</span>, Restrict rotation to files bigger than <code>10485760</code> bytes.</li>
+          <li>Tab <b>Exit actions</b>: <span class="click">Restart application</span>, Delay restart 5000 ms → bấm <span class="click">Install service</span>.</li>
+          <li><code>nssm start PlatformCore</code> rồi <b>luôn</b> kiểm <code>nssm status PlatformCore</code> (không tin errorlevel, bài học 10.17).</li>
+          <li>Tường lửa VM Core: mở TCP 7009 chỉ cho IP máy chủ Caddy (cách làm như GĐ1 bước 5).</li>
+        </ol></div></li>
+    </ol>
+    <div class="box gate"><b>Cổng kiểm thử</b><ul>
+      <li>15 test cô lập + test quét mã xanh trong CI.</li>
+      <li>Đăng nhập Local, AD, TOTP; đăng nhập máy thứ hai đá phiên máy thứ nhất; IP ngoài danh sách bị chặn.</li>
+      <li>Kill tiến trình Core → NSSM bật lại trong 5 giây.</li></ul></div>
+    <div class="box back"><b>Quay lui</b>Không cần: hệ cũ không bị đụng.</div>
+    <div class="box cm"><b>Nhận xét</b>Không bê nguyên <code>app.py</code> sang. Viết lại theo module, nhưng mang theo các "luật đã trả giá" (mục 10 của CLAUDE.md cũ), vì đó là kiến thức thực địa mà đặc tả không có.</div>
+  </article>
+
+  <!-- GĐ3 -->
+  <article class="phase" data-phase="g3">
+    <header><h3><span class="gd">GĐ3</span>Bộ tương thích agent cũ + canary bằng Caddy</h3><span class="dur">Tuần 10–16</span></header>
+    <div class="chips"><span class="chip s0">§0 KẾT NỐI</span><span class="chip sys">TOÀN HỆ THỐNG khi mở rộng</span></div>
+    <p class="goal">Core nói đúng giao thức agent 2.7.5.x; một máy thật rồi một phòng ít dùng chạy trên Core mà không cài lại gì trên máy trạm; quay lui đã diễn tập.</p>
+    <ol class="steps">
+      <li><label><input type="checkbox" data-id="g3-0"><span class="t">Điều kiện vào: cảnh báo online tụt (D7) và sao lưu (D8) đã chạy</span></label>
+        <div class="d">Không bắt đầu bước 6 nếu chưa có hai thứ này.</div></li>
+      <li><label><input type="checkbox" data-id="g3-1"><span class="t">Ghi lại hợp đồng giao thức agent v2</span></label>
+        <div class="d">Từ danh sách đường dẫn trong khối <code>@hub</code> của Caddyfile và mã <code>client.py</code> (chỉ đọc), lập bảng mọi endpoint HTTP
+          (<code>/update</code>, <code>/check_update</code>, <code>/download_setup</code>, <code>/client_log</code>, <code>/offline</code>, <code>/check_command/*</code>, <code>/ps_bulk_result/*</code>,
+          <code>/send_report</code>, <code>/collect_upload</code>, <code>/fs_*</code>, <code>/vnc/*</code>…) và mọi sự kiện Socket.IO (<code>register</code>, <code>cmd_ack</code>, <code>execute_command</code>,
+          <code>client_ps_output</code>, <code>client_pty_output</code>, <code>fs_*</code>, <code>vnc_thumb</code>…) với định dạng dữ liệu vào/ra.</div></li>
+      <li><label><input type="checkbox" data-id="g3-2"><span class="t">Ghi traffic thật của 1 máy thử</span></label>
+        <div class="d">Dùng máy thử sẵn có (không phải máy phục vụ giảng dạy). Bật log truy cập Caddy cho IP máy đó 1 ngày để thu đường dẫn, User-Agent, kích thước. Dữ liệu này thành bộ test <code>tests/contract_v2</code>.</div></li>
+      <li><label><input type="checkbox" data-id="g3-3"><span class="t">Viết <code>legacy_adapter</code> trong Core</span></label>
+        <div class="d">Namespace Socket.IO mặc định như hệ cũ; ánh xạ hostname → thiết bị thuộc tổ chức <code>PHENIKAA</code>; room <code>host_&lt;HOSTNAME&gt;</code>; ACK/gửi lại như cũ;
+          nhịp tim cập nhật RAM, ghi CSDL khi đổi trạng thái (G4); giữ <code>max_decode_packets = 500</code>.</div></li>
+      <li><label><input type="checkbox" data-id="g3-4"><span class="t">Cập nhật agent cũ phục vụ từ Core</span></label>
+        <div class="d"><code>/check_update</code>, <code>/download_setup</code>, <code>manifest.json</code> (SHA-256 + size), cổng chia đợt (theo phòng, phần trăm, All Update) đọc từ <code>settings</code> trong MongoDB thay cho tệp <code>rollout_*.txt</code>.
+          Mặc định All Update = <b>Tắt</b>.</div></li>
+      <li><label><input type="checkbox" data-id="g3-5"><span class="t">Báo trước người dùng phòng thử và tắt cảnh báo của hệ cũ cho máy đó</span></label>
+        <div class="d">Máy chuyển sang Core sẽ hiện <b>offline trên web cũ</b>. Tạm bỏ máy thử khỏi danh sách nhận email/Telegram cảnh báo của hệ cũ để không báo động giả.</div></li>
+      <li><label><input type="checkbox" data-id="g3-6"><span class="t">Chuyển 1 máy thử sang Core bằng Caddy</span></label>
+        <div class="d"><ol>
+          <li>File Explorer: copy <code>D:\Caddy\Caddyfile</code> thành <code>Caddyfile.bak-&lt;ngày&gt;-canary</code>.</li>
+          <li>Mở <code>Caddyfile</code> bằng Notepad, thêm khối <code>@core_canary</code> (G6) với IP <code>/32</code> của máy thử, đặt <b>trước</b> dòng <code>handle @hub</code>, lưu.</li>
+          <li>PowerShell trong <code>D:\Caddy</code>:
+<pre><button class="copy" type="button">Chép</button>.\caddy.exe validate --config .\Caddyfile
+.\caddy.exe adapt --config .\Caddyfile --pretty &gt; .\adapt_check.json   <span class="c"># mở xem: khối canary đứng trước @hub</span>
+.\caddy.exe reload --config .\Caddyfile</pre></li>
+          <li>Trong 2 phút, máy thử phải hiện online trên Core (Desktop bản đầu hoặc <code>/docs</code> → API danh sách thiết bị) và offline trên web cũ.</li>
+          <li>Thử lệnh: PowerShell <code>hostname; whoami</code> → phải trả về tên máy và <code>nt authority\system</code>. Thử giao 1 tệp nhỏ, thử VNC.</li>
+        </ol></div></li>
+      <li><label><input type="checkbox" data-id="g3-7"><span class="t">Diễn tập quay lui ít nhất một lần</span></label>
+        <div class="d">Xoá khối canary → <code>caddy validate</code> → <code>caddy reload</code> → trong 2 phút máy thử phải online trở lại trên web cũ. Đo thời gian, ghi biên bản. Rồi đưa khối canary trở lại.</div></li>
+      <li><label><input type="checkbox" data-id="g3-8"><span class="t">Theo dõi 72 giờ, rồi mở rộng sang 1 phòng ít dùng</span></label>
+        <div class="d">Sau 72 giờ không mất kết nối: thêm dải IP của 1 phòng ít lịch dạy (hoặc phòng kỹ thuật), theo dõi 1 tuần.
+          <b>Chưa</b> chuyển phòng đang dạy cho tới khi Desktop đủ chức năng (quy tắc I6).</div></li>
+    </ol>
+    <div class="box gate"><b>Cổng kiểm thử</b><ul>
+      <li>72 giờ máy thử không rớt; 1 tuần phòng thử không rớt máy.</li>
+      <li>Quay lui đã diễn tập, mất dưới 2 phút.</li>
+      <li>Tổng online (hệ cũ + Core) không thấp hơn baseline cùng khung giờ.</li></ul></div>
+    <div class="box back"><b>Quay lui</b>Xoá khối <code>@core_canary</code> (hoặc bớt dải IP) → <code>caddy reload</code>. Không đụng máy trạm.</div>
+    <div class="box cm"><b>Nhận xét</b>Đây là giai đoạn quan trọng nhất của dự án. Nếu giao thức cũ được giả lập đúng, mọi bước chuyển về sau chỉ còn là cấu hình. Nếu không đạt, dừng ở đây vẫn không mất gì: hệ cũ nguyên vẹn.</div>
+  </article>
+
+  <!-- GĐ4 -->
+  <article class="phase" data-phase="g4">
+    <header><h3><span class="gd">GĐ4</span>Nền Desktop App</h3><span class="dur">Tuần 6–16</span></header>
+    <div class="chips"><span class="chip safe">KHÔNG ĐỤNG HỆ ĐANG CHẠY</span><span class="chip par">SONG SONG GĐ2–GĐ3</span></div>
+    <p class="goal">Ứng dụng Windows cài được, đăng nhập theo tổ chức, Dashboard realtime, tự cập nhật có chữ ký.</p>
+    <ol class="steps">
+      <li><label><input type="checkbox" data-id="g4-1"><span class="t">Cài Node.js 24 LTS</span></label>
+        <div class="d">Vào <a href="https://nodejs.org" target="_blank" rel="noopener">nodejs.org</a> → trang Download → chọn bản <span class="click">LTS</span>, <span class="click">Windows Installer (.msi)</span>, x64.
+          Chạy: <span class="click">Next</span> → chấp nhận điều khoản → giữ thư mục mặc định → màn <b>Tools for Native Modules</b> <b>bỏ tích</b> mục tự cài công cụ → <span class="click">Install</span>. Kiểm: <code>node -v</code> ra v24.x.</div></li>
+      <li><label><input type="checkbox" data-id="g4-2"><span class="t">Bật pnpm</span></label>
+        <div class="d"><pre><button class="copy" type="button">Chép</button>corepack enable
+corepack prepare pnpm@latest --activate
+pnpm -v</pre></div></li>
+      <li><label><input type="checkbox" data-id="g4-3"><span class="t">Cài Visual Studio Build Tools (cần cho Rust/Tauri)</span></label>
+        <div class="d">Vào <a href="https://visualstudio.microsoft.com/downloads/" target="_blank" rel="noopener">visualstudio.microsoft.com/downloads</a> → mục <b>Tools for Visual Studio</b> → <span class="click">Build Tools for Visual Studio</span> → Download.
+          Chạy → tab <span class="click">Workloads</span> → tích <span class="click">Desktop development with C++</span> → khung bên phải kiểm có <b>MSVC … C++ x64/x86 build tools</b> và <b>Windows 11 SDK</b> → <span class="click">Install</span> → khởi động lại máy.</div></li>
+      <li><label><input type="checkbox" data-id="g4-4"><span class="t">Cài Rust</span></label>
+        <div class="d">Vào <a href="https://rustup.rs" target="_blank" rel="noopener">rustup.rs</a> → tải <code>rustup-init.exe</code> (x64) → chạy → khi hiện lựa chọn <b>1) Proceed with standard installation</b> nhấn <kbd>Enter</kbd>.
+          Đóng/mở PowerShell, kiểm <code>rustc -V</code> và <code>cargo -V</code>. WebView2 có sẵn trên Windows 11/Server 2022; kiểm trong <span class="click">Settings → Apps</span> có <b>Microsoft Edge WebView2 Runtime</b>.</div></li>
+      <li><label><input type="checkbox" data-id="g4-5"><span class="t">Tạo desktop-app từ mẫu React + TypeScript (Vite) của Tauri</span></label>
+        <div class="d"><pre><button class="copy" type="button">Chép</button>cd D:\Platform
+pnpm create tauri-app</pre>
+          Trả lời:
+          <div class="tbl"><table><tbody>
+            <tr><td>Project name</td><td><code>desktop-app</code></td></tr><tr><td>Identifier</td><td><code>vn.edu.phenikaa.itmonitor</code></td></tr>
+            <tr><td>Frontend language</td><td>TypeScript / JavaScript (pnpm, yarn, npm, deno, bun)</td></tr><tr><td>Package manager</td><td>pnpm</td></tr>
+            <tr><td>UI template</td><td>React</td></tr><tr><td>UI flavor</td><td>TypeScript</td></tr>
+          </tbody></table></div>
+          Sau đó: <code>cd desktop-app</code> → <code>pnpm install</code> → <code>pnpm tauri dev</code> (cửa sổ mẫu hiện ra).</div></li>
+      <li><label><input type="checkbox" data-id="g4-6"><span class="t">Kiểm cấu hình Vite và Tauri</span></label>
+        <div class="d"><code>vite.config.ts</code> của mẫu đã có: cổng <code>1420</code> với <code>strictPort</code>, bỏ theo dõi <code>src-tauri</code>. Trong <code>src-tauri/tauri.conf.json</code>:
+<pre><button class="copy" type="button">Chép</button>"build": {
+  "beforeDevCommand": "pnpm dev",
+  "devUrl": "http://localhost:1420",
+  "beforeBuildCommand": "pnpm build",
+  "frontendDist": "../dist"
+}</pre>
+          Thêm: cửa sổ <code>minWidth 1280</code>, <code>minHeight 720</code>; <code>bundle.targets</code> = <code>["nsis"]</code>; <code>bundle.createUpdaterArtifacts</code> = <code>true</code>.</div></li>
+      <li><label><input type="checkbox" data-id="g4-7"><span class="t">Router và cấu trúc module</span></label>
+        <div class="d"><code>pnpm add react-router @tanstack/react-query</code>. Dùng <code>createHashRouter</code> (đường dẫn dạng <code>#/rooms/301</code>) để tải lại cửa sổ không lỗi đường dẫn. Tạo các thư mục module theo đặc tả §9.4 trong <code>src/</code>.</div></li>
+      <li><label><input type="checkbox" data-id="g4-8"><span class="t">Plugin và khoá ký cập nhật</span></label>
+        <div class="d"><pre><button class="copy" type="button">Chép</button>pnpm tauri add updater
+pnpm tauri add notification
+pnpm tauri add store
+pnpm tauri add process
+pnpm tauri signer generate -w "$env:USERPROFILE\.tauri\itmonitor.key"</pre>
+          Nhập mật khẩu khoá 2 lần. Dán nội dung tệp <code>.key.pub</code> vào <code>plugins.updater.pubkey</code>. Khoá riêng + mật khẩu cất vào kho bí mật; chỉ máy build có.</div></li>
+      <li><label><input type="checkbox" data-id="g4-9"><span class="t">Khung ứng dụng</span></label>
+        <div class="d"><ul>
+          <li>Kiểu dữ liệu API: <code>pnpm add openapi-fetch</code>, <code>pnpm add -D openapi-typescript</code>, sinh <code>src/api/schema.d.ts</code> từ <code>/openapi.json</code> của Core.</li>
+          <li>Trạng thái: TanStack Query cho dữ liệu máy chủ, store nhỏ cho phiên.</li>
+          <li>Realtime: <code>socket.io-client</code> namespace <code>/desktop</code>, tự nối lại, banner "MẤT KẾT NỐI" như hệ cũ.</li>
+          <li>Phiên: token lưu bằng plugin store của Tauri (không dùng localStorage của WebView).</li>
+        </ul></div></li>
+      <li><label><input type="checkbox" data-id="g4-10"><span class="t">Màn Đăng nhập và Dashboard</span></label>
+        <div class="d">Ô <b>Mã tổ chức</b> (nhớ lần trước), tài khoản, mật khẩu, TOTP. Dashboard: tổng máy, online, phiếu sự cố, cảnh báo phần cứng, nhóm theo phòng, đồng hồ.
+          Số online <b>ghi đè số tuyệt đối</b> từ server.</div></li>
+      <li><label><input type="checkbox" data-id="g4-11"><span class="t">Đóng gói và cài thử</span></label>
+        <div class="d"><code>pnpm tauri build</code> → bộ cài ở <code>src-tauri\target\release\bundle\nsis\</code>. Cài lên 2 máy quản trị thử.</div></li>
+    </ol>
+    <div class="box gate"><b>Cổng kiểm thử</b><ul><li>Cài trên 2 máy, đăng nhập được, Dashboard khớp số với Core cho các máy đã canary.</li><li>Phát một bản 0.1.1 → hai máy tự cập nhật, chữ ký hợp lệ.</li></ul></div>
+    <div class="box cm"><b>Nhận xét</b>React + Vite là mẫu chính thức của Tauri: ứng dụng một trang build ra <code>dist/</code>, Vite 8 build bằng Rolldown nhanh, không có các bẫy xuất tĩnh của Next.js. Lợi ích phụ: hết hẳn lỗi trình duyệt giữ JS cũ của hệ web.</div>
+  </article>
+
+  <!-- GĐ5 -->
+  <article class="phase" data-phase="g5">
+    <header><h3><span class="gd">GĐ5</span>Phòng, thiết bị, sơ đồ, View desktop</h3><span class="dur">Tuần 14–20</span></header>
+    <div class="chips"><span class="chip par">SONG SONG</span><span class="chip safe">KHÔNG ĐỤNG HỆ ĐANG CHẠY</span></div>
+    <p class="goal">Mọi thứ trên trang phòng của web cũ có trên Desktop, áp dụng cho các phòng đã chuyển.</p>
+    <ol class="steps">
+      <li><label><input type="checkbox" data-id="g5-1"><span class="t">Danh sách phòng, chi tiết phòng realtime</span></label>
+        <div class="d">CPU/RAM/Disk theo giây; payload máy offline không có chỉ số → bọc <code>if (is_online)</code>; mã phòng khớp đúng regex server.</div></li>
+      <li><label><input type="checkbox" data-id="g5-2"><span class="t">Sơ đồ phòng</span></label>
+        <div class="d">Zoom, kéo, đổi cỡ, nhóm có tên, undo/redo, nhập/xuất Excel. Dữ liệu sơ đồ từ thư mục <code>Maps\</code> chuyển vào <code>rooms.map</code>.</div></li>
+      <li><label><input type="checkbox" data-id="g5-3"><span class="t">Chuyển phòng (Move PC), xoá máy</span></label>
+        <div class="d">Giữ đúng nguyên tắc 8.1 của hệ cũ: một hàm phân giải phòng duy nhất có cache RAM; xoá máy phải dọn override; không tự xoá máy theo phần cứng.</div></li>
+      <li><label><input type="checkbox" data-id="g5-4"><span class="t">View desktop + VNC</span></label>
+        <div class="d">Lưới card theo toạ độ sơ đồ, ảnh từ luồng RFB của agent, khung HD khi rê chuột, bấm đúp mở noVNC trong cửa sổ Desktop. Bố trí lưu ở <code>rooms.live_layout</code>.</div></li>
+      <li><label><input type="checkbox" data-id="g5-5"><span class="t">Nhật ký thay đổi máy + Xuất cấu hình</span></label>
+        <div class="d">Màn xem <code>machine_events</code> (chỉ đọc) và nút xuất Excel 3 sheet như hệ cũ.</div></li>
+    </ol>
+    <div class="box gate"><b>Cổng kiểm thử</b>2 người dùng thật làm việc 1 tuần trên phòng đã canary chỉ bằng Desktop; bảng đối chiếu chức năng của nhóm "Phòng/Thiết bị" đạt 100%.</div>
+  </article>
+
+  <!-- GĐ6 -->
+  <article class="phase" data-phase="g6">
+    <header><h3><span class="gd">GĐ6</span>Điều khiển từ xa</h3><span class="dur">Tuần 18–26</span></header>
+    <div class="chips"><span class="chip par">SONG SONG</span><span class="chip s0">§0 ở bước Ngắt Internet</span></div>
+    <p class="goal">Bật/tắt/khởi động lại, WoL, đăng nhập từ xa, chặn Internet/website, PowerShell, ConPTY, chạy hàng loạt, VNC, ra lệnh bằng giọng nói.</p>
+    <ol class="steps">
+      <li><label><input type="checkbox" data-id="g6-1"><span class="t">Nguồn và Wake-on-LAN</span></label>
+        <div class="d">WoL luôn qua agent cùng subnet làm relay (Core không gửi gói ma thuật vào LAN được). Trừ máy GV khi tắt cả phòng.</div></li>
+      <li><label><input type="checkbox" data-id="g6-2"><span class="t">Đăng nhập/đăng xuất từ xa</span></label>
+        <div class="d">Giữ mã hoá AES-GCM như hệ cũ; kết quả trả về đúng người bấm.</div></li>
+      <li><label><input type="checkbox" data-id="g6-3"><span class="t">Ngắt/Mở Internet, chặn website, App-ID, cổng, IP + whitelist Core (D11)</span></label>
+        <div class="d">Thêm luật cho phép cứng tới địa chỉ Core/Caddy trong mọi bộ luật chặn. Thử trên 1 máy: bật chặn → máy vẫn online và nhận lệnh "Mở Internet".</div></li>
+      <li><label><input type="checkbox" data-id="g6-4"><span class="t">PowerShell, ConPTY, PowerShell hàng loạt</span></label>
+        <div class="d">xterm.js trong Desktop. Hàng loạt: đệm kết quả về sớm + API poll dự phòng + hết hạn đánh dấu Timeout (bài học 18b). Script hàng loạt chạy quyền SYSTEM (không truyền user/pass).</div></li>
+      <li><label><input type="checkbox" data-id="g6-5"><span class="t">Voice AI</span></label>
+        <div class="d">Desktop gửi âm thanh/văn bản lên Core, Core gọi Gemini; khoá API chỉ nằm ở Core.</div></li>
+    </ol>
+    <div class="box gate"><b>Cổng kiểm thử</b>Mỗi lệnh thử trên máy thật của phòng canary; PowerShell hàng loạt cho 1 phòng trả đủ kết quả từng máy.</div>
+  </article>
+
+  <!-- GĐ7 -->
+  <article class="phase" data-phase="g7">
+    <header><h3><span class="gd">GĐ7</span>Tệp, giao bài, thu bài</h3><span class="dur">Tuần 24–30</span></header>
+    <div class="chips"><span class="chip par">SONG SONG</span><span class="chip safe">KHÔNG ĐỤNG HỆ ĐANG CHẠY</span></div>
+    <p class="goal">Trình quản lý tệp 2 khung, giao bài, thu bài, nhật ký thu bài chạy qua StorageService.</p>
+    <ol class="steps">
+      <li><label><input type="checkbox" data-id="g7-1"><span class="t">StorageService bản cục bộ</span></label>
+        <div class="d">Gốc <code>D:\PlatformData\tenants\&lt;tenant_id&gt;\{work,collected,thu,chat,report,temp}</code>; truyền dạng luồng; metadata vào <code>file_metadata</code> có <code>expires_at</code>.</div></li>
+      <li><label><input type="checkbox" data-id="g7-2"><span class="t">Trình quản lý tệp 2 khung</span></label>
+        <div class="d">Mang các hành vi đã tinh chỉnh của <code>fbrowser.js</code>: giữ chỗ cuộn và chọn mục sau thao tác, nút Back về đúng vị trí, tự nén/giải nén thư mục, thanh % theo <code>fs_progress</code>.</div></li>
+      <li><label><input type="checkbox" data-id="g7-3"><span class="t">Giao bài, thu bài, nhật ký thu</span></label>
+        <div class="d">Một/nhiều phòng, máy SV/máy GV, ghi đè, Desktop Public, cấu trúc THU, trạng thái ok/nofile/nofolder/fail/offline, tải từng bài hoặc ZIP.</div></li>
+      <li><label><input type="checkbox" data-id="g7-4"><span class="t">Dọn tự động</span></label>
+        <div class="d">Worker xoá theo <code>expires_at</code>: temp 48h, work 48h, collected 168h (giữ như hệ cũ).</div></li>
+    </ol>
+    <div class="box gate"><b>Cổng kiểm thử</b>Giao tệp 500 MB cho 1 phòng và thu bài 1 phòng, thời gian không chậm hơn baseline quá 10%.</div>
+  </article>
+
+  <!-- GĐ8 -->
+  <article class="phase" data-phase="g8">
+    <header><h3><span class="gd">GĐ8</span>Chat, sự cố, báo cáo, quản trị, tích hợp, cập nhật agent</h3><span class="dur">Tuần 28–36</span></header>
+    <div class="chips"><span class="chip par">SONG SONG</span><span class="chip safe">KHÔNG ĐỤNG HỆ ĐANG CHẠY</span></div>
+    <p class="goal">Bảng đối chiếu chức năng đạt 100%: Desktop thay được hoàn toàn web cũ.</p>
+    <ol class="steps">
+      <li><label><input type="checkbox" data-id="g8-1"><span class="t">Chat LAB/HSK</span></label>
+        <div class="d">Tách theo <code>scope</code>; ảnh dán (nén JPEG) lưu qua StorageService; reaction; chưa đọc; <b>thông báo hệ điều hành thật</b> qua plugin notification (thứ web cũ không làm được).</div></li>
+      <li><label><input type="checkbox" data-id="g8-2"><span class="t">Sự cố, báo cáo, cài đặt, người dùng, policy, nhật ký</span></label>
+        <div class="d">Email + Telegram khi có sự cố; xuất Excel; LDAP/SMTP/Telegram/Gemini cấu hình trong Desktop, secret không bao giờ trả về dạng rõ.</div></li>
+      <li><label><input type="checkbox" data-id="g8-3"><span class="t">Màn Quản trị → Cập nhật Agent</span></label>
+        <div class="d">Mang trang "Update Client" sang: bộ lọc <b>Tất cả / Chưa đúng version / Offline</b>, chọn máy, nút <b>Cập nhật đã chọn</b>, chọn phòng, công tắc <b>All Update</b> có hộp xác nhận. Đây là công cụ cho GĐ10.</div></li>
+      <li><label><input type="checkbox" data-id="g8-4"><span class="t">API nội bộ cho hệ thi</span></label>
+        <div class="d"><code>/internal/*</code> giữ nguyên hợp đồng (G8). Viết test hợp đồng bằng cách gọi đúng các request ThiHSK/ThiPM đang gửi.</div></li>
+    </ol>
+    <div class="box gate"><b>Cổng kiểm thử</b>Bảng đối chiếu chức năng 100% "Đạt"; 5 người dùng thật làm việc 2 tuần trên các phòng đã chuyển mà không cần mở web cũ.</div>
+  </article>
+
+  <!-- GĐ9 -->
+  <article class="phase" data-phase="g9">
+    <header><h3><span class="gd">GĐ9</span>Chuyển dữ liệu và chuyển toàn trường</h3><span class="dur">Tuần 34–40</span></header>
+    <div class="chips"><span class="chip s0">§0 KẾT NỐI</span><span class="chip sys">TOÀN HỆ THỐNG</span></div>
+    <p class="goal">Mọi phòng chạy trên Core bằng agent cũ; hệ thi trỏ về Core; hệ cũ ở chế độ chờ để quay lui.</p>
+    <ol class="steps">
+      <li><label><input type="checkbox" data-id="g9-1"><span class="t">Script chuyển dữ liệu chạy lại được nhiều lần</span></label>
+        <div class="d"><code>platform-core/app/db/migrations/sqlite_import.py</code>: đọc bản sao <code>database.db</code>, ghi MongoDB bằng upsert theo khoá cũ (chạy lại không sinh trùng), theo bảng ánh xạ G9, có chế độ <code>--dry-run</code>.</div></li>
+      <li><label><input type="checkbox" data-id="g9-2"><span class="t">Chạy thử và đối chiếu số dòng</span></label>
+        <div class="d">Chạy trên bản sao mới nhất. So từng bảng: <code>computers</code> 889, <code>usage_stats</code> 125.286, <code>audit_log</code>, <code>machine_events</code> 464, <code>incidents</code>… (số tại thời điểm chạy). Lệch là dừng, tìm nguyên nhân.</div></li>
+      <li><label><input type="checkbox" data-id="g9-3"><span class="t">Lập lịch chuyển theo đợt</span></label>
+        <div class="d">Mỗi đợt 2–4 phòng, thứ Hai đến thứ Tư, giờ có người trực, <b>tránh tuần thi</b>. Thông báo giảng viên phòng đó dùng Desktop từ ngày chuyển.</div></li>
+      <li><label><input type="checkbox" data-id="g9-4"><span class="t">Mỗi đợt: chuyển dữ liệu tăng dần + thêm dải IP + theo dõi 30 phút</span></label>
+        <div class="d"><ol>
+          <li>Chạy migrate cho các phòng của đợt (usage_stats, incidents mới phát sinh).</li>
+          <li>Sao lưu Caddyfile, thêm dải IP của phòng vào <code>@core_canary</code>, <code>caddy validate</code> → <code>caddy reload</code>.</li>
+          <li>Trong 30 phút: số online của các phòng đó trên Core phải bằng số trên web cũ trước khi chuyển. Thiếu máy nào thì bớt dải IP ngay, điều tra sau.</li>
+        </ol></div></li>
+      <li><label><input type="checkbox" data-id="g9-5"><span class="t">Chuyển hệ thi sang Core</span></label>
+        <div class="d">Ngoài lịch thi: đổi biến môi trường địa chỉ Monitor + token của ThiHSK và ThiPM trỏ về Core → restart dịch vụ hệ thi → thử <code>/internal/ping</code>, <code>/internal/machines</code>, một lệnh <code>dispatch</code> lên máy thử. Giữ giá trị cũ để đổi lại nếu lỗi.</div></li>
+      <li><label><input type="checkbox" data-id="g9-6"><span class="t">Toàn bộ cổng 5443 về Core, hệ cũ chờ nóng 4 tuần</span></label>
+        <div class="d">Khi mọi phòng đã ở Core: đổi định tuyến mặc định của 5443 sang Core (bỏ điều kiện IP). Hub/UI cũ vẫn chạy nhưng không nhận traffic, sẵn sàng quay lui.</div></li>
+      <li><label><input type="checkbox" data-id="g9-7"><span class="t">Sau 4 tuần ổn định: dừng hệ cũ</span></label>
+        <div class="d">Dừng dịch vụ hub/UI cũ (không gỡ cài đặt trong 3 tháng); lưu trữ <code>database.db</code> cuối cùng. Thư mục hệ cũ lưu trữ nguyên trạng, không sửa; <code>D:\Platform\CLAUDE.md</code> (<a href="#l">mục L</a>) là tài liệu chính từ GĐ2.</div></li>
+    </ol>
+    <div class="box gate"><b>Cổng kiểm thử</b><ul><li>Mỗi đợt: online đủ sau 30 phút.</li><li>Toàn trường: 2 tuần liên tục online không thấp hơn baseline, không sự cố mất máy, hệ thi chạy trọn ít nhất một kỳ thi.</li></ul></div>
+    <div class="box back"><b>Quay lui</b>Theo đợt: bớt dải IP. Toàn cục: trỏ 5443 về hub cũ (dữ liệu cũ còn nguyên tới thời điểm chuyển; thống kê phát sinh trên Core trong thời gian đó có thể chép ngược bằng script nếu cần).</div>
+    <div class="box cm"><b>Nhận xét</b>Lúc này agent vẫn là bản cũ. Nếu có sự cố, chắc chắn lỗi nằm ở server, khoanh vùng nhanh hơn nhiều so với đổi cả hai cùng lúc.</div>
+  </article>
+
+  <!-- GĐ10 -->
+  <article class="phase" data-phase="g10">
+    <header><h3><span class="gd">GĐ10</span>Agent 3.0</h3><span class="dur">Tuần 40–48</span></header>
+    <div class="chips"><span class="chip s0">§0 KẾT NỐI</span><span class="chip sys">TOÀN HỆ THỐNG khi mở rộng</span></div>
+    <p class="goal">Agent có danh tính riêng, lệnh có chữ ký + hạn dùng, vẫn tự rơi về giao thức cũ nếu kênh mới hỏng.</p>
+    <ol class="steps">
+      <li><label><input type="checkbox" data-id="g10-1"><span class="t">Điều kiện vào</span></label>
+        <div class="d">100% máy chạy ổn trên Core bằng agent cũ ít nhất 4 tuần; chứng thư ký mã đã có (D12).</div></li>
+      <li><label><input type="checkbox" data-id="g10-2"><span class="t">Agent 3.0 viết mới trong platform-agent</span></label>
+        <div class="d">Claude đọc <code>client.py</code> (4.160 dòng, chỉ đọc) và viết lại theo module; lập <b>bảng tương đương chức năng</b> với 2.7.5.3 (nhịp tim, phần cứng, mọi action, PowerShell/ConPTY, tệp, VNC/thumbnail, Ngắt Internet, đăng nhập từ xa, giao/thu bài, cập nhật) kèm test từng mục.
+          Kênh mới: namespace <code>/agent</code> chỉ websocket; enroll + <code>agent_id</code> + Ed25519 (G2); lệnh có chữ ký và hạn dùng (G3).
+          Kênh v2 viết lại theo hợp đồng <code>contract_v2</code> làm dự phòng: <b>mất kênh mới 10 phút liên tục → tự dùng kênh v2</b>, không bao giờ "mồ côi".</div></li>
+      <li><label><input type="checkbox" data-id="g10-3"><span class="t">Đóng gói thành phần mềm .exe, nâng cấp tại chỗ (G11)</span></label>
+        <div class="d"><code>Client_Manager.exe</code> (Nuitka) + bộ cài <code>PhenikaaITMonitor-Agent-Setup-3.0.0.0.exe</code> (Inno Setup) giữ <code>AppId</code>, thư mục và tên task của bản cũ; Task Scheduler <code>PhenikaaITMonitor</code> (onstart, SYSTEM) + watchdog <code>PhenikaaITMonitorWD</code> (1 phút);
+          cài qua task tách rời, không là tiến trình con; bước cuối kiểm <code>Client_Manager.exe</code> đang chạy; cài im lặng bằng <code>/VERYSILENT</code>; ký số bộ cài và exe.</div></li>
+      <li><label><input type="checkbox" data-id="g10-4"><span class="t">Canary 2–3 máy</span></label>
+        <div class="d">Desktop → <span class="click">Quản trị</span> → <span class="click">Cập nhật Agent</span> → lọc <span class="click">Chưa đúng version</span> → tích 2–3 máy thử → <span class="click">Cập nhật đã chọn</span>.
+          Chờ 10 phút → <span class="click">Làm mới</span> → máy phải online, đúng version 3.0, có <code>agent_id</code>, lệnh PowerShell thử trả về đúng.</div></li>
+      <li><label><input type="checkbox" data-id="g10-5"><span class="t">Diễn tập quay về bản cũ</span></label>
+        <div class="d">Trên 1 máy canary: cài lại bản 2.7.5.x qua cùng cơ chế (Core giữ sẵn bộ cài cũ + manifest). Máy phải online lại bằng giao thức cũ.</div></li>
+      <li><label><input type="checkbox" data-id="g10-6"><span class="t">Mở rộng: 1 phòng → nhiều phòng → toàn trường</span></label>
+        <div class="d">Mỗi bước chờ ít nhất 1 ngày học. Theo dõi online suốt đợt; tụt bất thường → gạt <span class="click">All Update</span> về <b>Tắt</b> ngay, phân tích sau.</div></li>
+    </ol>
+    <div class="box gate"><b>Cổng kiểm thử</b>Đúng luật §0.5 và §0.6: có bằng chứng thực địa ở mỗi mức trước khi mở rộng.</div>
+    <div class="box back"><b>Quay lui</b>All Update = Tắt; cài lại 2.7.5.x cho máy lỗi; Core vẫn phục vụ giao thức cũ nên máy về bản cũ vẫn được quản lý.</div>
+  </article>
+
+  <!-- GĐ11 -->
+  <article class="phase" data-phase="g11">
+    <header><h3><span class="gd">GĐ11</span>Platform-Master, Deployment, tổ chức thứ hai và cloud</h3><span class="dur">Tuần 46 trở đi</span></header>
+    <div class="chips"><span class="chip safe">KHÔNG ẢNH HƯỞNG TỔ CHỨC PHENIKAA nếu cô lập đúng</span></div>
+    <p class="goal">Có quản lý giấy phép/phiên bản, pipeline build-ký-phát hành tự động, thử nghiệm tổ chức thứ hai.</p>
+    <ol class="steps">
+      <li><label><input type="checkbox" data-id="g11-1"><span class="t">Platform-Master</span></label>
+        <div class="d">DB <code>itm_master</code> riêng: vòng đời tổ chức, giấy phép, kích hoạt, phiên bản (SHA-256, chữ ký Ed25519), mã hỗ trợ. Giữ các thuật toán của <code>master_server.py</code> hiện có.</div></li>
+      <li><label><input type="checkbox" data-id="g11-2"><span class="t">Pipeline CI/CD</span></label>
+        <div class="d">GitHub → <span class="click">Settings → Actions → Runners → New self-hosted runner → Windows</span> trên máy build có chứng thư ký mã. Workflow: test → build agent (Nuitka) → build Desktop (Tauri) → ký → tải lên Master.</div></li>
+      <li><label><input type="checkbox" data-id="g11-3"><span class="t">Chọn hạ tầng cloud (nếu lên cloud)</span></label>
+        <div class="d">Ưu tiên nhà cung cấp trong nước vì luật dữ liệu cá nhân: VM + MongoDB tự quản (replica set) hoặc MongoDB dịch vụ (vd. FPT MongoDB Enterprise); lưu tệp bằng S3 trong nước (VNG vStorage, Viettel IDC). Đặt relay tại trường cho VNC và tệp lớn (D10).</div></li>
+      <li><label><input type="checkbox" data-id="g11-4"><span class="t">Tổ chức thứ hai thử nghiệm</span></label>
+        <div class="d">Tạo qua Master; agent 3.0 enroll bằng mã có hạn; chạy lại toàn bộ test cô lập trên môi trường thật với 2 tổ chức; kiểm thử xâm nhập cơ bản; hồ sơ tuân thủ (D16).</div></li>
+    </ol>
+    <div class="box gate"><b>Cổng kiểm thử</b>Test cô lập đạt trên môi trường thật; không truy vấn nào của tổ chức thứ hai chạm dữ liệu PHENIKAA.</div>
+  </article>
+</section>
+
+<!-- ============================ J ============================ -->
+<section id="k">
+  <h2><span class="k">K</span>Rủi ro và biện pháp</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>#</th><th>Rủi ro</th><th>Khả năng</th><th>Tác động</th><th>Biện pháp</th></tr></thead>
+    <tbody>
+      <tr><td>R1</td><td>Mất kết nối máy trạm khi chuyển</td><td><span class="sev m">Trung bình</span></td><td><span class="sev h">Rất cao</span></td><td>Bộ tương thích agent cũ, canary theo IP, quay lui đã diễn tập, cảnh báo online tụt, đổi một biến mỗi lần</td></tr>
+      <tr><td>R2</td><td>Thiếu chức năng so với web cũ</td><td><span class="sev h">Cao</span></td><td><span class="sev m">Cao</span></td><td>Bảng đối chiếu 152 + 16 mục; chỉ chuyển phòng khi nhóm chức năng của phòng đạt 100%</td></tr>
+      <tr><td>R3</td><td>Rò dữ liệu giữa các tổ chức</td><td><span class="sev l">Thấp</span></td><td><span class="sev h">Rất cao</span></td><td>TenantRepo bắt buộc, test quét mã, 15 test cô lập trong CI, room realtime có tiền tố tổ chức</td></tr>
+      <tr><td>R4</td><td>Cấu hình MongoDB sai hoặc mất dữ liệu</td><td><span class="sev l">Thấp</span></td><td><span class="sev h">Cao</span></td><td>Replica set, <code>w=majority</code>, sao lưu hằng đêm, khôi phục thử hằng tháng</td></tr>
+      <tr><td>R5</td><td>Đội thiếu kỹ năng TypeScript/React/Rust</td><td><span class="sev m">Trung bình</span></td><td><span class="sev m">Trung bình</span></td><td>Phần Rust của Tauri rất ít; 2 tuần đào tạo đầu GĐ4; AI hỗ trợ viết code theo đặc tả V3</td></tr>
+      <tr><td>R6</td><td>Dự án kéo dài, hệ cũ tiếp tục bị đòi tính năng</td><td><span class="sev h">Cao</span></td><td><span class="sev m">Trung bình</span></td><td>Đóng băng tính năng (GĐ0), backlog chung cho hệ mới</td></tr>
+      <tr><td>R7</td><td>Đợt chuyển trùng lịch thi</td><td><span class="sev m">Trung bình</span></td><td><span class="sev h">Cao</span></td><td>Lịch chuyển tránh tuần thi; hệ thi chuyển sau cùng, ngoài giờ thi</td></tr>
+      <tr><td>R8</td><td>Ngắt Internet cắt luôn đường về Core (khi lên cloud)</td><td><span class="sev m">Trung bình</span></td><td><span class="sev h">Cao</span></td><td>Whitelist cứng Core trong mọi bộ luật, thử ở trạng thái chặn</td></tr>
+      <tr><td>R9</td><td>SmartScreen/antivirus chặn bộ cài</td><td><span class="sev m">Trung bình</span></td><td><span class="sev m">Trung bình</span></td><td>Ký số OV/EV, phát hành dần</td></tr>
+      <tr><td>R10</td><td>Vướng luật dữ liệu cá nhân</td><td><span class="sev l">Thấp</span></td><td><span class="sev m">Trung bình</span></td><td>Hạ tầng trong nước, nhật ký truy cập, chính sách lưu giữ, pháp chế xác nhận</td></tr>
+      <tr><td>R11</td><td>gevent chưa ổn định trên Python 3.14</td><td><span class="sev l">Thấp</span></td><td><span class="sev l">Thấp</span></td><td>Dùng Python 3.13 (một dòng cấu hình)</td></tr>
+      <tr><td>R12</td><td>Một VM Core là điểm hỏng duy nhất</td><td><span class="sev l">Thấp</span></td><td><span class="sev h">Cao</span></td><td>NSSM tự bật lại, VM dự phòng đã cài sẵn, Caddy trỏ sang khi cần; giai đoạn sau dùng change streams để chạy 2 instance</td></tr>
+      <tr><td>R13</td><td>Agent viết mới thiếu hành vi so với 2.7.5.3</td><td><span class="sev m">Trung bình</span></td><td><span class="sev h">Rất cao</span></td><td>Bảng tương đương chức năng + test; test hợp đồng v2; chạy song song trên máy thử 2 tuần; canary 2–3 máy; giữ bộ cài 2.7.5.3 để quay về</td></tr>
+      <tr><td>R14</td><td>Claude sửa nhầm mã nguồn hệ đang chạy</td><td><span class="sev l">Thấp</span></td><td><span class="sev h">Cao</span></td><td>Repo riêng <code>D:\Platform</code>; thư mục cũ chỉ đọc; luật Deny ghi; kiểm <code>git status</code> thư mục cũ sau mỗi phiên</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ============================ K ============================ -->
+<section id="l">
+  <h2><span class="k">L</span>Kết quả tổng thể sau chuyển đổi</h2>
+  <p class="sub">Hình dung hệ thống sau GĐ9–GĐ10, và CLAUDE.md của repo mới <code>D:\Platform</code>.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Khía cạnh</th><th>Hiện tại</th><th>Sau chuyển đổi</th></tr></thead>
+    <tbody>
+      <tr><td>Kiến trúc</td><td>1 tệp <code>app.py</code> 6.123 dòng, 2 tiến trình UI/HUB</td><td>Monorepo 5 project; Core chia module; 1 tiến trình Core</td></tr>
+      <tr><td>CSDL</td><td>SQLite 1 tệp, khoá ghi chặn gevent</td><td>MongoDB replica set 3 node, tự chuyển node khi hỏng</td></tr>
+      <tr><td>Giao diện</td><td>Web (Jinja + JS), bị cache trình duyệt</td><td>Desktop Tauri, tự cập nhật có chữ ký, thông báo hệ điều hành</td></tr>
+      <tr><td>Phạm vi phục vụ</td><td>1 trường</td><td>Nhiều tổ chức, dữ liệu tách bằng <code>tenant_id</code></td></tr>
+      <tr><td>Phân phối agent</td><td>Bộ cài <code>Client_Management.exe</code>, cập nhật qua hub</td><td>Phần mềm .exe ký số: bộ cài Setup .exe cài im lặng, nâng cấp tại chỗ, cài hàng loạt cho máy mới</td></tr>
+      <tr><td>Định danh máy</td><td>hostname/MAC</td><td><code>agent_id</code> + khoá Ed25519; MAC/serial là thuộc tính</td></tr>
+      <tr><td>Lệnh</td><td><code>command_id</code> + ACK</td><td>Thêm hạn dùng + chữ ký Core</td></tr>
+      <tr><td>Chuyển đổi/cập nhật</td><td>Cập nhật agent theo đợt</td><td>Như cũ + canary server theo phòng tại Caddy + test hợp đồng giao thức</td></tr>
+      <tr><td>Lưu tệp</td><td>Thư mục cục bộ</td><td>StorageService (cục bộ hoặc S3), khoá theo tổ chức</td></tr>
+      <tr><td>Bảo mật</td><td>Băm mật khẩu, khoá IP theo tài khoản</td><td>Argon2id, token phiên lưu bản băm, secret AES-GCM, bí mật ngoài repo + gitleaks</td></tr>
+      <tr><td>Chất lượng</td><td><code>check_syntax.py</code>, <code>check_eol.py</code></td><td>ruff, pyright, pytest (cô lập, hợp đồng v2/v3), Playwright, CI bắt buộc trước merge</td></tr>
+      <tr><td>Tài liệu API</td><td>Không có</td><td>OpenAPI tự sinh, trang <code>/docs</code>, kiểu TypeScript sinh tự động</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>CLAUDE.md mục tiêu</h3>
+  <p>Khối dưới đây là <code>CLAUDE.md</code> đặt ở gốc repo mới <code>D:\Platform</code> <b>từ ngày đầu GĐ2</b>, để Claude và đội làm việc theo. <code>CLAUDE.md</code> của <code>D:\NetworkInventory</code> giữ nguyên, không sửa, vẫn là tài liệu của hệ đang chạy.</p>
+  <div class="claude">
+<pre id="claudeMd"><button class="copy" type="button" data-target="claudeMdText">Chép toàn bộ</button><span id="claudeMdText"># Phenikaa IT Monitor 3.0 — Nền tảng SaaS đa tổ chức
+
+&gt; **CLAUDE.md của repo mới `D:\Platform`.** Đặt ở gốc repo từ ngày đầu Giai đoạn 2. Nền tảng được Claude
+&gt; **xây mới hoàn toàn** tại đây. CLAUDE.md của hệ cũ (`D:\NetworkInventory`) giữ nguyên, không sửa, vẫn là tài liệu
+&gt; của hệ đang chạy cho tới khi hệ cũ được lưu trữ.
+&gt; Toàn bộ trao đổi trong dự án **bằng tiếng Việt**.
+
+---
+
+## 0. ⛔ ĐIỀU KIỆN TỐI THƯỢNG — KHÔNG ĐƯỢC LÀM MẤT KẾT NỐI CORE ↔ AGENT
+
+Giữ nguyên 8 luật của hệ cũ (fail-safe update · installer không là tiến trình con · state chung ra DB ·
+route ra lệnh phải qua đúng cổng · canary 2-3 máy trước · cấm bật toàn fleet khi cơ chế cài chưa chứng minh ·
+Task Scheduler `PhenikaaITMonitor` + watchdog `PhenikaaITMonitorWD` luôn tồn tại · nút dừng khẩn All Update).
+Bổ sung cho nền tảng mới:
+
+9.  **Không có truy vấn tenant-owned nào thiếu `tenant_id`.** Mọi truy cập dữ liệu đi qua `TenantRepo`;
+    `tenant_id` lấy từ phiên đã xác thực (`g.ctx`), KHÔNG BAO GIỜ từ body/header/query do client gửi.
+10. **Giao thức agent cũ (v2) là hợp đồng bất biến** cho tới khi 100% máy chạy agent v3 ≥ 4 tuần.
+    Sửa `legacy_adapter` phải chạy bộ kiểm thử hợp đồng v2 (`platform-core/tests/contract_v2`) trước khi phát hành.
+11. **Không xoay chứng thư TLS của Caddy cổng 5443** khi còn agent v2 (agent v2 ghim chứng thư).
+12. **Lệnh gửi agent luôn có `expires_at`.** Lệnh hết hạn agent bỏ qua (chống chạy lại lệnh tắt máy
+    sau khi mất mạng rồi nối lại).
+13. **Mọi đợt thay đổi ảnh hưởng máy trạm** (agent, Caddy, Internet Control, chứng thư) theo thứ tự:
+    1 máy → 1 phòng → nhiều phòng → toàn trường, mỗi bước có **cổng kiểm thử** + **lệnh quay lui đã diễn tập**.
+14. **Dự án cũ CHỈ ĐỌC.** `D:\NetworkInventory`, `D:\ExaminationSystem`, `D:\Agent`, `D:\Caddy`, `D:\RemoteControl`:
+    Claude được đọc để hiểu hành vi, **không sửa, không tạo, không xoá** tệp ở đó. Mã mới chỉ nằm trong `D:\Platform`.
+    Thao tác vận hành trên máy chủ (Caddyfile, dịch vụ NSSM, cài đặt cần quyền Administrator) do người vận hành làm theo Sổ tay.
+
+---
+
+## 1. Tổng quan
+
+| Hạng mục | Chi tiết |
+|---|---|
+| Mô hình | Modular monolith, đa tổ chức (multi-tenant) dùng chung CSDL, phân tách bằng `tenant_id` |
+| Thành phần (đúng tên đặc tả §4.1) | `platform-core` · `platform-agent` · `desktop-app` · `platform-master` · `platform-deployment` |
+| Core | Python 3.14 (dự phòng 3.13) · Flask 3.1 + APIFlask (OpenAPI) · Flask-SocketIO 5.6 + gevent · PyMongo 4 (đồng bộ, hợp gevent) · Pydantic v2 |
+| CSDL | MongoDB Community 8.0.x, **replica set 3 node `rs0`**, `w=majority`; DB `itm_core` (Core) và `itm_master` (Master) TÁCH RIÊNG |
+| Desktop | **Tauri 2 + React 19 + Vite 8 + TypeScript** (ứng dụng một trang, mẫu chính thức của Tauri) · React Router 7 (hash router) · TanStack Query · socket.io-client · xterm.js · noVNC · Chart.js |
+| Agent | **Phần mềm .exe**: `Client_Manager.exe` (Python biên dịch bằng Nuitka 4.x, máy trạm không cần Python) + bộ cài `PhenikaaITMonitor-Agent-Setup-&lt;ver&gt;.exe` (Inno Setup 6.7, cài im lặng, nâng cấp tại chỗ); chạy bằng Task Scheduler quyền SYSTEM |
+| Cách xây dựng | Claude xây mới hoàn toàn trong `D:\Platform`; dự án cũ chỉ đọc (mục 13) |
+| Reverse proxy | Caddy 2.11 (dịch vụ `CaddyServer`): `:5443` agent v2 + legacy; `:7443` Desktop + agent v3 |
+| Cổng nội bộ | Core `7009` · Master `7010` · MongoDB `27017` (chỉ mở giữa các node + Core) |
+| Tổ chức đầu tiên | `PHENIKAA` (on-prem tại trường). Tổ chức khác chỉ mở khi GĐ11 hoàn tất |
+
+**IP thật của client** nằm ở `X-Forwarded-For` (Core đứng sau Caddy) → chỉ dùng helper `client_ip()`.
+
+---
+
+## 2. Cấu trúc monorepo `D:\Platform` (5 project theo đặc tả §4.1)
+
+```
+platform-core/        app/{api,auth,tenants,users,rbac,rooms,devices,agents,commands,realtime,
+                      legacy_adapter,incidents,chat,work,files,reports,audit,settings,
+                      integrations/{ldap,smtp,telegram,gemini,hsk_thipm},workers,storage,
+                      db/{client,indexes,validators,seeds,migrations},security,config,utils}
+                      tests/{unit,isolation,contract_v2,contract_v3} · pyproject.toml · uv.lock
+platform-agent/       agent/ (mã mới theo module: transport_v2, transport_v3, identity, heartbeat, hwinfo,
+                      commands/, ps, pty, fs, vnc, wfp, login, work, update) · tests/ · build/ (Nuitka,
+                      PhenikaaITMonitor-Agent.iss, watchdog.ps1) · dist/ (Client_Manager.exe, Setup .exe)
+desktop-app/          index.html · vite.config.ts · src/ (React + Vite: authentication, dashboard, rooms, devices,
+                      remote, terminal, file-manager, work, chat, incidents, reports, settings, admin,
+                      api-client, realtime-client, tenant-context, session, shared) · src-tauri/
+platform-master/      app/... (tenant lifecycle, license, activation, version, support token)
+platform-deployment/  caddy/ · nssm/ · build/ · updater/ · qa/ (check_routes.py, check_eol.py) · runner/
+docs/adr/             Quyết định kiến trúc (ADR-0001...)
+```
+
+| File | Line ending | BOM |
+|---|---|---|
+| `*.py`, `*.ts(x)`, `*.json`, `*.toml`, `*.md` | LF | không |
+| `*.bat`, `*.cmd`, `*.iss` | **CRLF** | không |
+| `*.ps1` | CRLF | **có** (PowerShell 5.1 đọc UTF-8 cần BOM) |
+
+Ghim trong `.gitattributes`; kiểm bằng `uv run tools/check_eol.py`.
+
+---
+
+## 3. Quy trình làm việc BẮT BUỘC
+
+1. Đọc file thật trước khi sửa; sửa từng khối, không viết lại cả file.
+2. Mọi API mới khai báo đủ 8 mục: xác thực · tenant · quyền · sở hữu tài nguyên · validate đầu vào ·
+   hành động · audit · response (Pydantic schema → OpenAPI).
+3. Thêm field/collection: theo đúng 7 bước §76 của đặc tả — cập nhật `app/db/validators.py` + `app/db/indexes.py`
+   + API contract + test cô lập tenant. Schema chuẩn là chương 4A (đặc tả V3).
+4. Sau khi sửa chạy cổng QA (mục 11). Thất bại = không merge.
+5. Cập nhật CLAUDE.md + ADR khi đổi quy ước.
+6. Không thêm microservice, Redis, message queue (đặc tả cấm). Cần phát sự kiện giữa nhiều instance Core
+   thì dùng MongoDB change streams.
+
+---
+
+## 4. Tổ chức (tenant), xác thực, phân quyền
+
+- Đăng nhập Desktop: **Mã tổ chức + tài khoản + mật khẩu** (+ TOTP nếu bật). Desktop nhớ mã tổ chức lần trước.
+- Phiên: token ngẫu nhiên 256-bit, DB chỉ lưu **SHA-256 của token** (`sessions.token_hash`).
+- Một thiết bị/một thời điểm: `active_sessions` unique `(tenant_id, user_id)`; đăng nhập mới thay phiên cũ.
+  Super Admin miễn trừ.
+- Giới hạn IP theo từng tài khoản (`allowed_ip_cidrs`; rỗng = mọi nơi). Nghiêm ngặt: bật mà IP không khớp → chặn.
+- Mật khẩu: **Argon2id**. Secret cấu hình (SMTP, LDAP bind, Telegram, Gemini): AES-256-GCM, khoá chính ngoài DB.
+- RBAC: `permissions` (catalog toàn nền tảng) → `policies` (theo tổ chức, có `room_ids`) → user/AD user.
+  Policy `Super Admin` là system policy, không sửa/xoá.
+- `g.ctx = {tenant_id, user_id, permissions, room_ids, is_super, system}` gắn trong `before_request`.
+- Socket.IO `/desktop`: xác thực bằng token lúc `connect`, join room `t:&lt;tenant&gt;:u:&lt;user&gt;` và `t:&lt;tenant&gt;:room:&lt;room&gt;`.
+- **Hệ thi (HSK/ThiPM) dùng hệ tài khoản riêng** (admin.db của ExaminationSystem). Core KHÔNG lưu tài khoản thi.
+
+---
+
+## 5. Giao tiếp Core ↔ Agent
+
+### Hai giao thức chạy song song
+| | Agent v2 (2.7.5.x) — `legacy_adapter` | Agent v3 (3.x) |
+|---|---|---|
+| Vào qua | Caddy `:5443`, đường dẫn cũ (`/update`, `/check_update`, `/socket.io/*`…) | Caddy `:7443`, namespace `/agent`, chỉ websocket |
+| Định danh | hostname (+ MAC) → device thuộc tenant `PHENIKAA` | `agent_id` (GUID sinh khi enroll) + khoá Ed25519 |
+| Lệnh | `execute_command` như cũ | Envelope v3 có `command_id`, `expires_at`, `sig` (Ed25519 của Core) |
+| Định tuyến | room `host_&lt;HOSTNAME&gt;` | room `t:&lt;tenant&gt;:dev:&lt;device_id&gt;` |
+
+- **KHÔNG BAO GIỜ broadcast lệnh.** Không tìm thấy room của máy → ghi log `KENH-LENH`, trả lỗi cho người bấm.
+- ACK: `command_id`, `ACK_TIMEOUT=8s`, `ACK_MAX_TRIES=3`; agent chống chạy đúp theo `command_id`.
+- Kết quả bất đồng bộ (PowerShell hàng loạt, giao/thu bài): **đệm kết quả về sớm + API poll dự phòng**.
+- Online: RAM `ONLINE[tenant][device]=ts`; ghi `online_state` CHỈ khi đổi trạng thái + flush `last_seen` mỗi 60s.
+  KHÔNG ghi Mongo mỗi nhịp tim.
+- `engineio.payload.Payload.max_decode_packets = 500` (bài học View desktop).
+- Agent v3 mất kênh mới 10 phút liên tục → tự rơi về kênh v2 (Core vẫn phục vụ) → không bao giờ mồ côi.
+
+### Action agent xử lý
+`powershell` · `start_ps`/`stop_ps` · `start_pty`/`stop_pty`/`pty_validate` · `login_encrypted` ·
+`internet_control` · `relay_wake`/`relay_wake_batch` · `kill_and_update` · `receive_work` · `collect_work` ·
+`hsk_launch` · `show_sbd`/`hide_sbd` · `vnc_start`/`vnc_stop` · `vnc_thumb` · `fs_request`.
+
+---
+
+## 6. Desktop App
+
+- **React + Vite, ứng dụng một trang** (tạo từ `pnpm create tauri-app`, mẫu React + TypeScript). Build ra `dist/`;
+  dev server cổng `1420` (`strictPort`); `tauri.conf.json`: `devUrl` = `http://localhost:1420`, `frontendDist` = `../dist`.
+- Router dùng `createHashRouter` (đường dẫn `#/…`) để tải lại cửa sổ không lỗi. Mọi logic nghiệp vụ ở Core.
+- Kiểu dữ liệu API sinh tự động từ OpenAPI của Core (`openapi-typescript` + `openapi-fetch`).
+- Realtime: `socket.io-client` namespace `/desktop`; mất kết nối → banner đỏ + tự nối lại + đồng bộ lại số tuyệt đối.
+- **Số liệu online luôn GHI ĐÈ số tuyệt đối** từ server (`room_stats`, `total_online`), cấm cộng dồn.
+- Payload máy offline không có CPU/RAM/Disk → mọi chỗ vẽ chỉ số bọc `if (is_online)`.
+- Thông báo chat: Tauri notification plugin → thông báo hệ điều hành thật (nháy taskbar).
+- Tự cập nhật: Tauri updater (chữ ký Ed25519/minisign); khoá riêng nằm trong kho bí mật, KHÔNG trong repo.
+- Phiên bản đang chạy: menu Trợ giúp → Giới thiệu (thay cho `FB_VER`/`CHATBOX_VER` của web cũ).
+
+---
+
+## 7. Tích hợp hệ thi (ThiHSK / ThiPM — `D:\ExaminationSystem`)
+
+- Giữ nguyên hợp đồng `/internal/*` (`ping`, `machines`, `dispatch`, `track/*`, `upload_work`, `thu/*`, `collect/*`).
+- Xác thực: on-prem giữ `X-Internal-Token` + chỉ localhost/allowlist; khi lên cloud chuyển sang API key theo
+  tổ chức (`X-ITM-Key-Id` + HMAC-SHA256 `X-ITM-Signature` + `X-ITM-Timestamp` ±300s).
+- `/internal/machines` trả cờ `online` (nhịp tim) và `nhan_lenh` (có socket) — hai thứ KHÁC NHAU.
+
+---
+
+## 8. Lưu trữ tệp
+
+- `StorageService` (giao diện chung): `LocalFS` (on-prem, `D:\PlatformData`) hoặc `S3` (SeaweedFS / dịch vụ S3 trong nước).
+  KHÔNG dùng MinIO (đã ngừng bảo trì, archive 25/04/2026).
+- Khoá lưu trữ luôn có ranh giới tổ chức: `tenants/&lt;tenant_id&gt;/{work,collected,thu,chat,report,temp}/...`.
+- MongoDB chỉ giữ metadata (`file_metadata`); tệp lớn truyền dạng luồng, không nạp cả tệp vào RAM.
+- Dọn tự động: `temp` 48h, `work` 48h, `collected` 168h (worker đọc `file_metadata.expires_at`).
+
+---
+
+## 9. MongoDB — collection chính (DB `itm_core`)
+
+Tenant-owned (bắt buộc `tenant_id`): `users` · `ad_user_policies` · `policies` · `rooms` (kèm `map`, `live_layout`) ·
+`computers` · `agents` · `agent_enrollments` · `incidents` · `usage_stats` · `online_state` · `client_logs` ·
+`sessions` · `active_sessions` · `settings` · `chat_messages` (`scope` LAB/HSK) · `chat_reads` · `chat_reactions` ·
+`audit_log` (`system` LAB/HSK/THI) · `pushed_files` · `file_metadata` · `machine_events` · `computers_archive`.
+
+Platform-owned: `tenants` · `permissions` (Core) · `platform_licenses` · `platform_activations` ·
+`platform_versions` · `support_tokens` (DB `itm_master`).
+
+Quy tắc then chốt:
+- `computers`: định danh = `agent_id`; `mac`, `serial`, `hostname` là thuộc tính, index KHÔNG unique.
+  Phát hiện trùng phần cứng → ghi `machine_events` + chép `computers_archive`, **KHÔNG BAO GIỜ tự xoá máy**.
+- Placeholder dữ liệu phần cứng của agent phải là giá trị server coi là rác (`N/A`); server bỏ qua serial &lt; 5 ký tự.
+- TTL: `sessions.expires_at`, `agent_enrollments.expires_at`, `client_logs` 90 ngày, `audit_log` 180 ngày.
+  `machine_events` bất biến, không TTL.
+- Validator `$jsonSchema` ở mức `moderate` cho mọi collection; đổi schema = cập nhật `app/db/validators.py`.
+
+---
+
+## 10. Bài học bắt buộc giữ (mang từ hệ cũ)
+
+1. gevent: chỉ dùng thư viện I/O thuần Python (PyMongo ổn); cấm gọi C-extension chặn lâu trong greenlet.
+2. Không tự gộp/xoá máy dựa trên serial/MAC (mất 5 máy phòng 404 ngày 16/09).
+3. Mật khẩu VNC: bất biến 4 chỗ (Core · agent · `ultravnc.ini` của bộ cài · script vá) — giá trị nằm trong kho bí mật.
+4. `passwd2` (chỉ-xem) không bao giờ trùng `passwd`; `ForceCursorShape=0`; giết sạch `winvnc.exe` trước khi sửa ini.
+5. Thumbnail màn hình lấy từ winvnc qua RFB trong agent (không chụp bằng PowerShell — AMSI chặn).
+6. Hai file exe: `Client_Management.exe` = bộ cài, `Client_Manager.exe` = agent. Không đổi tên.
+7. Phát hành agent 2 giai đoạn: staging → verify → manifest (SHA-256 + size) → version CUỐI CÙNG.
+8. Không tin `errorlevel` của `nssm start`; luôn đọc `nssm status` thật.
+9. Kết quả bất đồng bộ gắn token: đệm kết quả về sớm + poll dự phòng.
+10. "Dịch vụ đang chạy/cổng đang mở" ≠ "cấu hình đúng": tự chữa phải kiểm thứ quan trọng (vd. xác thực thật).
+
+---
+
+## 11. Cổng QA trước khi phát hành
+
+```powershell
+uv run --project platform-core ruff check platform-core platform-agent platform-master
+uv run --project platform-core pyright
+uv run --project platform-core pytest -q          # gồm tests/isolation (cô lập tổ chức) + contract_v2/v3
+uv run --project platform-core python ..\platform-deployment\qa\check_routes.py   # trùng route/endpoint/socket
+uv run --project platform-core python ..\platform-deployment\qa\check_eol.py
+pnpm -C desktop-app typecheck; pnpm -C desktop-app lint; pnpm -C desktop-app test
+pnpm -C desktop-app tauri build                    # chỉ khi phát hành Desktop
+```
+
+Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay lại online đúng version) → 1 phòng → nhiều phòng → All Update.
+
+---
+
+## 11b. Đóng gói agent thành phần mềm .exe
+
+- `Client_Manager.exe`: Nuitka `--standalone --windows-console-mode=disable`, có icon, `--file-version`, company/product name; ký số.
+- Bộ cài `PhenikaaITMonitor-Agent-Setup-&lt;ver&gt;.exe` (Inno Setup 6.7): `AppId=Phenikaa IT Inventory` (bằng giá trị ngầm định
+  của bộ cài cũ), `DefaultDirName={autopf}\PhenikaaIT`, `PrivilegesRequired=admin`; giữ tên task `PhenikaaITMonitor`
+  (onstart, SYSTEM) + `PhenikaaITMonitorWD` (1 phút) → **cài đè tại chỗ lên agent 2.7.5.x, không để lại hai bản**.
+- Tham số: `/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SERVER=&lt;địa chỉ&gt; /ENROLL=&lt;mã&gt; /LOG="C:\ProgramData\PhenikaaIT\install.log"`;
+  `/SERVER`, `/ENROLL` đọc bằng hằng `{param:...}` và ghi vào `C:\ProgramData\PhenikaaIT\agent.json`.
+- Bước cuối bộ cài: chạy task và **kiểm `Client_Manager.exe` đang chạy**. Gỡ: `unins000.exe /VERYSILENT` (giữ `agent_id`).
+- Cập nhật cho máy đang có agent luôn qua Core + cài bằng task tách rời (luật §0.2), không gọi bộ cài như tiến trình con.
+
+## 12. Git &amp; CI
+
+- Repo private `phenikaa-platform`; nhánh `main` được bảo vệ, mọi thay đổi qua Pull Request + CI xanh.
+- Bí mật KHÔNG vào repo: `.env` đặt ở `D:\PlatformSecrets\`; pre-commit `gitleaks` chặn khoá/mật khẩu.
+- CI: GitHub Actions, runner tự host Windows cho build Nuitka/Tauri + ký số.
+- Commit của Claude gắn dòng `Co-Authored-By` cuối message; tránh `reset --hard`, `push --force`.
+
+---
+
+## 13. Mô hình xây dựng: Claude xây mới, dự án cũ chỉ đọc
+
+| Nguồn chỉ đọc | Đọc để lấy |
+|---|---|
+| `D:\NetworkInventory\CLAUDE.md` | Luật §0, bài học 10.x |
+| `app.py`, `utils.py`, `workers.py`, `config.py` | Hành vi 152 route + 16 socket, hợp đồng agent v2 |
+| `templates\*.html`, `fbrowser.js`, `chatbox.js`, `collectlog.js` | Hành vi giao diện cần giữ khi viết lại bằng React |
+| `agent_build\client.py`, `TaoApp.iss`, `build_client.bat`, `publish_release.ps1`, `watchdog.ps1` | Hành vi agent 2.7.5.3, đóng gói, cài đặt |
+| `D:\ExaminationSystem\CLAUDE_THI.md`, `KE_HOACH_TACH_DOC_LAP.md` | Hợp đồng `/internal/*`, biến `MONITOR_*` |
+
+- Claude Code mở tại `D:\Platform`; thư mục cũ thêm bằng `/add-dir` chỉ để đọc; luật **Deny** Edit/Write cho thư mục cũ (`/permissions`).
+- **Viết lại, không chép nguyên khối.** Mỗi module có bảng "hành vi cũ ↔ mã mới ↔ test"; agent có bảng tương đương 2.7.5.3 ↔ 3.0.
+- Claude không chạy lệnh cần quyền Administrator (cài dịch vụ, sửa Caddy, tường lửa): ghi rõ lệnh để người vận hành chạy.
+- Hết mỗi phiên: `git -C D:\NetworkInventory status` không có thay đổi mới do phiên đó.
+</span></pre>
+  </div>
+</section>
+
+<!-- ============================ M ============================ -->
+<section id="m">
+  <h2><span class="k">M</span>Kết luận kỹ thuật chuyên môn</h2>
+  <p class="sub">Ý kiến chuyên môn trên cơ sở đối chiếu đặc tả V2, mã nguồn và số liệu vận hành thực tế của hệ thống hiện tại.</p>
+
+  <h3>1. Về định hướng của đặc tả</h3>
+  <p>Định hướng của đặc tả là <b>đúng và phù hợp</b> với quy mô bài toán. Modular monolith một Core, một CSDL dùng chung phân tách bằng <code>tenant_id</code>,
+  agent tự kết nối ra, Core là điểm duy nhất chạm dữ liệu: đây là mô hình được MongoDB khuyến nghị cho SaaS đa tổ chức và đủ cho vài nghìn máy trạm mỗi tổ chức.
+  Việc cấm microservice, Redis, message queue và Kubernetes là hợp lý ở quy mô hiện tại (889 máy, khoảng 437 nhịp tim/giây lúc đỉnh).</p>
+
+  <h3>2. Về tính khả thi</h3>
+  <p>Phương án <b>khả thi về kỹ thuật</b> với công nghệ hiện hành (10/2026): Python 3.14, Flask-SocketIO 5.6, MongoDB 8.0, Tauri 2, React 19, Vite 8, Nuitka 4.2, Inno Setup 6.7 đều ở trạng thái ổn định.
+  Phần khó nhất <b>không phải viết mã</b> mà là <b>chuyển 889 máy đang chạy sang nền tảng mới mà không mất kết nối</b>. Đặc tả V2 chưa giải quyết điểm này.
+  Phương án giải quyết bằng bộ tương thích agent cũ và định tuyến canary theo dải IP tại Caddy: chuyển và quay lui chỉ bằng cấu hình, không chạm máy trạm.</p>
+
+  <h3>3. Điều kiện tiên quyết</h3>
+  <ol>
+    <li>Ban hành đặc tả V3 đã sửa 17 điểm (mục C) và có 18 bổ sung (mục D); AI chỉ được dùng V3.</li>
+    <li>Hạ tầng MongoDB replica set 3 node có sao lưu đã khôi phục thử.</li>
+    <li>Cảnh báo tự động khi số máy online tụt, chạy trước mọi thay đổi chạm máy trạm.</li>
+    <li>Đóng băng tính năng lớn trên hệ cũ trong thời gian chuyển đổi.</li>
+    <li>Tối thiểu 2–3 người tham gia ổn định suốt dự án.</li>
+  </ol>
+
+  <h3>4. Kết luận lựa chọn công nghệ</h3>
+  <ul>
+    <li><b>Core:</b> Python 3.14 (dự phòng 3.13) + Flask 3.1 + APIFlask + Flask-SocketIO 5.6 + gevent + PyMongo 4 bản đồng bộ. Không dùng Motor (đã hết hỗ trợ 14/05/2026).</li>
+    <li><b>CSDL:</b> MongoDB Community 8.0.x, replica set 3 node; nâng 9.0 khi bản Community phát hành chính thức và ổn định.</li>
+    <li><b>Desktop:</b> Tauri 2 + React 19 + Vite 8 + TypeScript (mẫu chính thức của Tauri, ứng dụng một trang), theo quyết định của chủ đầu tư.</li>
+    <li><b>Agent:</b> phần mềm .exe viết mới: <code>Client_Manager.exe</code> (Nuitka) + bộ cài Setup .exe (Inno Setup) cài im lặng, nâng cấp đè tại chỗ; giữ cơ chế Task Scheduler + watchdog đã có bằng chứng thực địa.</li>
+    <li><b>Lưu tệp:</b> StorageService (cục bộ → SeaweedFS hoặc S3 trong nước). Không dùng MinIO.</li>
+    <li><b>Ký số:</b> chứng thư ký mã OV/EV từ CA, vì dịch vụ ký của Microsoft chưa mở cho tổ chức Việt Nam.</li>
+  </ul>
+
+  <h3>5. Những điểm phải điều chỉnh so với đặc tả (cần phê duyệt)</h3>
+  <ol>
+    <li>Định danh máy bằng <code>agent_id</code>, không bằng MAC (C1).</li>
+    <li>Bổ sung chương chuyển đổi: bộ tương thích agent cũ, canary theo dải IP, quay lui đã diễn tập (C2, D1–D3).</li>
+    <li>Đưa các tính năng đang chạy vào phạm vi (C3).</li>
+    <li>Triển khai tại trường trước, cloud sau (C7).</li>
+    <li>Envelope lệnh có hạn dùng và chữ ký (C12).</li>
+    <li>Chia Phase 2 của đặc tả thành GĐ3 (server) và GĐ10 (agent).</li>
+    <li>Desktop dùng React + Vite thay Next.js (quyết định của chủ đầu tư, 10/2026).</li>
+    <li>Toàn bộ nền tảng, kể cả agent, do Claude xây mới trong <code>D:\Platform</code>; dự án cũ chỉ đọc (G10).</li>
+  </ol>
+
+  <h3>6. Kiến nghị</h3>
+  <ol>
+    <li><b>Phê duyệt Phương án 2</b> (song song, chuyển từng phòng).</li>
+    <li><b>Phê duyệt gói đầu tiên gồm GĐ0–GĐ3 (khoảng 4 tháng)</b> với một điểm quyết định đi tiếp/dừng ở cuối GĐ3.
+      Nếu bộ tương thích agent cũ không đạt cổng kiểm thử, dừng tại đó không gây thiệt hại vì hệ cũ nguyên vẹn; nền Core và MongoDB vẫn dùng lại được.</li>
+    <li>Phê duyệt ngân sách hạ tầng (3 VM MongoDB + 1 VM Core + dự phòng), chứng thư ký mã, và nhân sự.</li>
+    <li>Dừng "Khối A" ở Pha 1, không làm Pha 2.</li>
+    <li>Giao Claude xây mới trong <code>D:\Platform</code> theo đặc tả V3, mỗi giai đoạn qua Pull Request và cổng kiểm thử; mọi thao tác trên máy chủ do người vận hành thực hiện theo Sổ tay.</li>
+    <li>Nhờ bộ phận pháp chế rà soát yêu cầu của Luật Bảo vệ dữ liệu cá nhân 2025 trước khi mở cho tổ chức thứ hai.</li>
+  </ol>
+
+  <h3>7. Tiêu chí nghiệm thu</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Tiêu chí</th><th>Ngưỡng đạt</th></tr></thead>
+    <tbody>
+      <tr><td>Máy mất kết nối do chuyển đổi</td><td>0 máy phải xử lý tại chỗ</td></tr>
+      <tr><td>Số máy online sau chuyển</td><td>Không thấp hơn baseline cùng khung giờ trong 2 tuần liên tục</td></tr>
+      <tr><td>Bảng đối chiếu chức năng</td><td>100% "Đạt" trước khi tắt hệ cũ</td></tr>
+      <tr><td>Cô lập tổ chức</td><td>15 test (§4A.36) + 8 test (§77) xanh trong CI; không có truy vấn trần</td></tr>
+      <tr><td>Hiệu năng giao/thu bài</td><td>Không chậm hơn baseline quá 10%</td></tr>
+      <tr><td>Quay lui</td><td>Đã diễn tập ở GĐ3, GĐ9, GĐ10; thời gian dưới 2 phút cho quay lui bằng Caddy</td></tr>
+      <tr><td>Sao lưu</td><td>Khôi phục thử thành công hằng tháng</td></tr>
+      <tr><td>Hệ thi</td><td>Chạy trọn ít nhất một kỳ thi trên Core</td></tr>
+    </tbody>
+  </table></div>
+  <div class="verdict" style="margin-top:14px"><p style="margin:0 0 8px"><b>Kết luận.</b> Đồng ý với định hướng của đặc tả V2 và khuyến nghị thực hiện theo Phương án 2, với điều kiện ban hành đặc tả V3 có các điều chỉnh nêu trên.
+    Thứ tự bắt buộc: đổi server trước, đổi agent sau; mọi bước chạm máy trạm có canary, cổng kiểm thử và quay lui đã diễn tập. Với cách làm này, mục tiêu SaaS đa tổ chức đạt được
+    mà không vi phạm điều kiện tối thượng của hệ thống: không làm mất kết nối giữa máy chủ và máy trạm.</p></div>
+</section>
+
+<!-- ============================ N ============================ -->
+<section id="n">
+  <h2><span class="k">N</span>Nguồn tham khảo (tra cứu 10/2026)</h2>
+  <ul>
+    <li>Tauri 2: <a href="https://v2.tauri.app/release/tauri-runtime/all-versions/" target="_blank" rel="noopener">danh sách phiên bản</a> · <a href="https://v2.tauri.app/reference/webview-versions/" target="_blank" rel="noopener">WebView2</a> · <a href="https://v2.tauri.app/plugin/updater/" target="_blank" rel="noopener">plugin updater</a></li>
+    <li>Vite 8: <a href="https://vite.dev/blog/announcing-vite8" target="_blank" rel="noopener">vite.dev</a> · Tauri tạo dự án: <a href="https://v2.tauri.app/it/start/create-project" target="_blank" rel="noopener">create-tauri-app</a> · React Router 7: <a href="https://reactrouter.com/7.18.2/changelog.md" target="_blank" rel="noopener">changelog</a></li>
+    <li>Inno Setup cài im lặng: <a href="https://silentinstallhq.com/inno-setup-silent-install-how-to-guide/" target="_blank" rel="noopener">hướng dẫn tham số</a></li>
+    <li>Tauri và Electron 2026: <a href="https://www.pkgpulse.com/guides/electron-vs-tauri-2026" target="_blank" rel="noopener">pkgpulse</a> · <a href="https://www.digitalapplied.com/blog/desktop-apps-web-stack-tauri-electron-deno-wails-2026" target="_blank" rel="noopener">digitalapplied</a></li>
+    <li>MongoDB: <a href="https://www.mongodb.com/docs/v8.2/installation/" target="_blank" rel="noopener">cài đặt 8.2</a> · <a href="https://www.mongodb.com/docs/manual/reference/versioning/" target="_blank" rel="noopener">chính sách phiên bản</a> · <a href="https://www.mongodb.com/docs/upcoming/release-notes/9.0-upgrade-replica-set/" target="_blank" rel="noopener">nâng cấp 9.0</a> · <a href="https://www.mongodb.com/docs/current/administration/production-notes/" target="_blank" rel="noopener">production notes</a> · <a href="https://www.mongodb.com/docs/atlas/atlas-search/multi-tenant-architecture/" target="_blank" rel="noopener">kiến trúc đa tổ chức</a></li>
+    <li>Motor ngừng phát triển: <a href="https://motor.readthedocs.io/en/latest/" target="_blank" rel="noopener">motor.readthedocs.io</a> · <a href="https://sammai.bearblog.dev/pymongos-native-async-driver-moving-beyond-motor/" target="_blank" rel="noopener">PyMongo async</a></li>
+    <li>MinIO ngừng bảo trì: <a href="https://infoq.com/news/2025/12/minio-s3-api-alternatives/" target="_blank" rel="noopener">InfoQ</a> · <a href="https://pinggy.io/blog/minio_archived_self_hosted_s3_alternatives/" target="_blank" rel="noopener">pinggy</a></li>
+    <li>Python 3.14.7: <a href="https://www.python.org/downloads/release/python-3147/" target="_blank" rel="noopener">python.org</a> · Nuitka 4.2: <a href="https://nuitka.net/posts/nuitka-release-42.html" target="_blank" rel="noopener">nuitka.net</a></li>
+    <li>Flask-SocketIO 5.6.1: <a href="https://archlinux.org/packages/extra/any/python-flask-socketio/" target="_blank" rel="noopener">archlinux</a> · APIFlask: <a href="https://pypi.org/project/apiflask/" target="_blank" rel="noopener">PyPI</a></li>
+    <li>Node.js 24 LTS: <a href="https://nodesource.com/blog/nodejs-24-becomes-lts" target="_blank" rel="noopener">NodeSource</a> · uv: <a href="https://blog.codercops.com/blog/uv-python-package-manager-2026" target="_blank" rel="noopener">codercops</a></li>
+    <li>Caddy 2.11: <a href="https://www.versio.io/de/product-release-end-of-life-eol-zerossl-caddy.html" target="_blank" rel="noopener">versio.io</a></li>
+    <li>Ký số Windows: <a href="https://devclass.com/2026/01/14/code-signing-windows-apps-may-be-easier-and-more-secure-with-new-azure-artifact-service/" target="_blank" rel="noopener">DevClass</a> · <a href="https://learn.microsoft.com/en-us/azure/trusted-signing/overview" target="_blank" rel="noopener">Microsoft Learn</a></li>
+    <li>Luật Bảo vệ dữ liệu cá nhân 2025: <a href="https://vneconomy.vn/khong-hien-dien-phap-nhan-doanh-nghiep-van-phai-tuan-thu-luat-bao-ve-du-lieu-ca-nhan-tu-ngay-112026.htm" target="_blank" rel="noopener">VnEconomy</a> · <a href="https://luatvietan.vn/nhung-diem-moi-cua-luat-bao-ve-du-lieu-ca-nhan-2025-so-voi-nghi-dinh-13-2023-nd-cp.html" target="_blank" rel="noopener">Luật Việt An</a></li>
+    <li>Windows Server 2019 hết hỗ trợ: <a href="https://endoflife.ai/article-windows-server-2019-eol" target="_blank" rel="noopener">endoflife.ai</a></li>
+    <li>Hạ tầng trong nước: <a href="https://docs.vngcloud.vn/vng-cloud-document/vstorage/object-storage" target="_blank" rel="noopener">VNG vStorage</a> · <a href="https://greennode.ai/blog/top-cloud-providers-in-vietnam" target="_blank" rel="noopener">tổng quan nhà cung cấp</a></li>
+    <li>Mẫu Strangler Fig: <a href="https://oneuptime.com/blog/post/2026-01-24-strangler-fig-migration-pattern/view" target="_blank" rel="noopener">OneUptime</a></li>
+  </ul>
+  <footer>Soạn 02/10/2026 cho Trung tâm CNTT để cân nhắc. Số liệu hệ hiện tại đo bằng thao tác chỉ đọc trên mã nguồn, CSDL và log; không có thay đổi nào trên máy chủ.
+  Thời lượng là ước lượng; phiên bản phần mềm cần kiểm lại ngay trước khi cài.</footer>
+</section>
+</main>
+</div>
+
+<script>
+(function(){
+  /* Lịch Gantt (tuần trên 52) */
+  var rows=[["GĐ0 Quyết định",0,2,"dec"],["GĐ1 MongoDB",2,5,""],["GĐ2 Nền Core",4,10,""],["GĐ3 Tương thích + canary",10,16,"s0"],
+    ["GĐ4 Nền Desktop",6,16,"par"],["GĐ5 Phòng/thiết bị",14,20,"par"],["GĐ6 Điều khiển",18,26,"par"],["GĐ7 Tệp/giao-thu",24,30,"par"],
+    ["GĐ8 Chat/quản trị",28,36,"par"],["GĐ9 Chuyển toàn trường",34,40,"s0"],["GĐ10 Agent 3.0",40,48,"s0"],["GĐ11 Master/cloud",46,52,""]];
+  var g=document.querySelector(".gantt");
+  if(g){ rows.forEach(function(r){
+      var l=document.createElement("div"); l.className="lbl"; l.textContent=r[0]; g.appendChild(l);
+      var t=document.createElement("div"); t.className="b"; t.style.gridColumn="2 / span 12";
+      var i=document.createElement("i"); if(r[3]==="s0") i.className="s0"; else if(r[3]==="par") i.className="par"; else if(r[3]==="dec") i.className="sys";
+      i.style.left=(r[1]/52*100)+"%"; i.style.right=(100-r[2]/52*100)+"%"; i.title=r[0]+": tuần "+(r[1]+1)+"–"+r[2];
+      t.appendChild(i); g.appendChild(t); }); }
+
+  /* Đánh dấu bước: lưu trên trình duyệt này */
+  var KEY="itm-saas-steps-v1", st={};
+  try{ st=JSON.parse(localStorage.getItem(KEY)||"{}")||{}; }catch(e){ st={}; }
+  var boxes=[].slice.call(document.querySelectorAll('ol.steps input[type="checkbox"]'));
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
+  function refresh(){
+    var done=0;
+    boxes.forEach(function(b){ var li=b.closest("li"); li.classList.toggle("done", b.checked); if(b.checked) done++; });
+    document.getElementById("progTxt").textContent=done+" / "+boxes.length+" bước";
+    document.getElementById("progBar").style.width=(boxes.length? done/boxes.length*100:0)+"%";
+    [].forEach.call(document.querySelectorAll(".phase"), function(p){
+      var bs=p.querySelectorAll('ol.steps input[type="checkbox"]'), d=0;
+      [].forEach.call(bs,function(b){ if(b.checked) d++; });
+      var pp=p.querySelector(".pp");
+      if(!pp){ pp=document.createElement("span"); pp.className="pp"; p.querySelector("header").appendChild(pp); }
+      pp.textContent=d+"/"+bs.length+" bước xong";
+    });
+  }
+  boxes.forEach(function(b){ b.checked=!!st[b.dataset.id];
+    b.addEventListener("change", function(){ st[b.dataset.id]=b.checked; save(); refresh(); }); });
+  refresh();
+
+  /* Nút chép */
+  [].forEach.call(document.querySelectorAll("button.copy"), function(btn){
+    btn.addEventListener("click", function(){
+      var pre=btn.closest("pre"), txt;
+      if(btn.dataset.target){ txt=document.getElementById(btn.dataset.target).textContent; }
+      else { var c=pre.cloneNode(true); var x=c.querySelector("button.copy"); if(x) x.remove(); txt=c.textContent.replace(/^\n+/,""); }
+      function ok(){ var o=btn.textContent; btn.textContent="Đã chép"; setTimeout(function(){ btn.textContent=o; },1500); }
+      function fallback(){ var r=document.createRange(); r.selectNodeContents(pre); var s=window.getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent="Đã chọn, nhấn Ctrl+C"; }
+      try{ navigator.clipboard.writeText(txt).then(ok, fallback); }catch(e){ fallback(); }
+    });
+  });
+
+  /* Mục lục: tô mục đang đọc */
+  var links=[].slice.call(document.querySelectorAll("nav.toc a"));
+  if("IntersectionObserver" in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ links.forEach(function(a){ a.classList.toggle("on", a.getAttribute("href")==="#"+e.target.id); }); } });
+    },{rootMargin:"-30% 0px -60% 0px"});
+    [].forEach.call(document.querySelectorAll("main section[id]"), function(s){ io.observe(s); });
+  }
+})();
+</script>
+

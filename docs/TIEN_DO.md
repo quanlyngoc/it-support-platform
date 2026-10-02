@@ -1,0 +1,97 @@
+# Sổ bàn giao tiến độ — ITSupportPlatform
+
+> **Phiên Claude mới: đọc tệp này ngay sau `CLAUDE.md`, rồi làm tiếp từ mục "BƯỚC TIẾP THEO".**
+> Mỗi khi xong một bước: cập nhật tệp này + bảng mục 14 của `CLAUDE.md` TRƯỚC khi sang bước khác,
+> để nếu phiên bị dừng giữa chừng thì phiên sau vẫn biết chính xác đang ở đâu.
+> Kế hoạch đầy đủ: `docs/plan/SoTay_ThucHien_ITMonitor_SaaS.html` (số bước bên dưới theo Sổ tay;
+> tài liệu đó còn ghi `D:\Platform` — hiểu là `D:\ITSupportPlatform`).
+
+Cập nhật lần cuối: 02/10/2026 (kết thúc GĐ2 phần của Claude)
+
+## Cách mở phiên mới để làm tiếp
+
+1. Mở VS Code tại `D:\ITSupportPlatform` → mở Claude Code (CLAUDE.md và `.claude/settings.json` tự nạp).
+2. Gõ: **"Đọc CLAUDE.md và docs/TIEN_DO.md rồi làm tiếp BƯỚC TIẾP THEO."**
+3. Muốn mở lại đúng cuộc trò chuyện cũ: trong Claude Code gõ `/resume` (hoặc chạy `claude --continue` ở thư mục đã làm việc).
+4. Kiểm nhanh trạng thái trước khi làm tiếp (tất cả phải xanh):
+   ```powershell
+   cd D:\ITSupportPlatform\platform-core
+   uv run pytest -q                 # 58 passed, 2 skipped (skip có ghi giai đoạn)
+   uv run ruff check .
+   uv run pyright
+   git -C D:\ITSupportPlatform status --short
+   git -C D:\NetworkInventory status --short   # KHÔNG được có thay đổi do dự án mới
+   ```
+
+## Quyết định đã chốt (chi tiết trong docs/adr)
+
+- Phương án 2 (song song, chuyển từng phòng) · Desktop Tauri 2 + React 19 + Vite 8 · Agent là phần mềm .exe có bộ cài
+- Claude xây mới, dự án cũ CHỈ ĐỌC (rào: `.claude/settings.json` + hook `.claude/hooks/guard_readonly.py`)
+- Python **3.14.8 đã chốt** (ADR-0012: chạy thật bằng gevent trên Atlas đạt)
+- **CSDL dựng thử: MongoDB Atlas** (ADR-0013). Chuỗi kết nối ở `platform-core/.env` (`MONGO_URI`, đã `.gitignore`).
+  Không ghi chuỗi kết nối vào tài liệu.
+- **Giai đoạn dựng thử: BỎ QUA bảo mật** (chỉ đạo 02/10/2026). Chỗ cố ý làm lỏng gắn nhãn `HOAN_BAO_MAT`;
+  khi hoàn thiện chạy `rg HOAN_BAO_MAT` để xử lý hết (mục "Hoãn bảo mật").
+- **Người phụ trách cho phép làm tiếp không cần hỏi** (02/10/2026: "hiện tại sẽ đều yes hết"). Vẫn giữ: dự án cũ chỉ đọc,
+  không đẩy (push) ra ngoài, không chạy lệnh cần Administrator.
+
+## Đã xong
+
+| Bước Sổ tay | Việc | Bằng chứng |
+|---|---|---|
+| 0.11 | Không gian xây mới + rào chỉ đọc | `.claude/settings.json`, hook + `platform-deployment/qa/test_guard_readonly.py` (6 test) |
+| 2.2 | Khung 5 project, `.gitattributes`, `.gitignore`, `README.md`, `CLAUDE.md`, ADR-0001…0013, `docs/plan` | cây thư mục |
+| 2.3 | uv 0.12.22, Python 3.14.8, `pyproject.toml`, `uv.lock` (+ pyright 1.1.414 kèm node riêng) | `uv run pyright` |
+| 2.4 | Bí mật: `.env` trong `.gitignore` (gitleaks + thư mục bí mật ngoài repo → hoãn bảo mật) | `.gitignore` |
+| 2.5 | `app/db`: client, 51 index (4A.30 bản V3), validator `$jsonSchema` moderate, seed 18 quyền, `init` | Atlas `itm_core`: 25 collection, 51 index, 18 quyền |
+| 2.6 | `Ctx`, `TenantRepo` + `repo_for`, `require_refs` (4A.29), test cấm truy vấn trần | `tests/isolation/*` |
+| 2.7 | CLI tạo tổ chức + Super Admin | Atlas: tổ chức `PHENIKAA`, tài khoản `admin` (mật khẩu: biến `DEV_ADMIN_PASSWORD` trong `platform-core/.env`) |
+| 2.8 | `/api/auth/login|logout|me`: Local (Argon2id), AD (LDAP), TOTP, 1 thiết bị, giới hạn IP, sai mã tổ chức | `tests/unit/test_auth_api.py` |
+| 2.9 | `require_perm`, audit after_request (LAB/HSK/THI), OpenAPI `/docs`, `app/server.py` gevent | chạy thật cổng 7009 trên Atlas: login 0,5 s, `/me` 11 ms (đệm) |
+| 2.10 | 23 mục §4A.36 + §77 (`tests/isolation/test_spec_isolation.py`), CI `.github/workflows/ci.yml` | 21 xanh + 2 skip mức API (GĐ3, GĐ7) |
+| — | Công cụ QA: `platform-deployment/qa/check_routes.py`, `check_eol.py` (+ test của chính công cụ) | cả hai ĐẠT |
+
+## Đang làm
+
+- (không có — GĐ2 phần của Claude đã xong; chờ bắt đầu GĐ3)
+
+## BƯỚC TIẾP THEO
+
+1. **GĐ3 bước 3.1 — Ghi hợp đồng giao thức agent v2** vào `platform-core/tests/contract_v2/HOP_DONG.md`:
+   đọc (CHỈ ĐỌC) `D:\NetworkInventory\app.py`, `workers.py`, `utils.py`, `agent_build\client.py` (agent 2.7.5.3);
+   với mỗi HTTP route agent gọi (`/update`, `/check_update`, `/download_setup`, `/client_log`, `/offline`, `/check_command/…`,
+   `/login_result/…`, `/pty_auth_result/…`, `/ps_auth_result/…`, `/ps_bulk_result/…`, `/work_file/…`, `/collect_report`,
+   `/collect_upload`, `/send_report`, `/fs_recv_raw`, `/fs_serve/<tok>`, `/fs_bridge/<tok>`) và mỗi sự kiện socket
+   (agent→server: `register`, `cmd_ack`, `client_ps_output`, `client_pty_output`, `fs_progress`, `fs_response`, `vnc_thumb`;
+   server→agent: `execute_command`, `server_ps_input`, `server_pty_input`, `server_pty_resize`, `fs_request`, `vnc_thumb_req`)
+   ghi định dạng vào/ra + mã HTTP, lưu fixture JSON ở `tests/contract_v2/fixtures/`, viết test hợp đồng (đỏ, chờ 3.3).
+2. 3.3 `app/legacy_adapter/` theo Sổ tay (online trong RAM, ghi gộp — Atlas RTT 55 ms nên tuyệt đối không ghi CSDL mỗi nhịp tim).
+3. Bỏ `skip` của 2 test API trong `test_spec_isolation.py` khi module tương ứng xong (GĐ3: lệnh agent; GĐ7: tải tệp).
+
+## Việc cần người vận hành (Claude không có quyền Administrator)
+
+- [ ] Tạo repo GitHub riêng tư, cho đẩy mã lần đầu → CI tự chạy (kiểm lại phiên bản `actions/checkout`, `astral-sh/setup-uv` mới nhất).
+- [ ] 2.11: chạy Core thành dịch vụ NSSM `PlatformCore` (lệnh trong Sổ tay 2.11; `DOTENV_PATH` trỏ tới tệp `.env`).
+- [ ] 3.2, 3.5–3.9: các bước sửa Caddy (canary) — chỉ làm khi đã có legacy_adapter và có người trực.
+- [ ] Cài Node.js 24 LTS, Rust, VS Build Tools trên máy phát triển desktop-app (GĐ4).
+- [ ] Bước 0.6, 0.7 (sao lưu hằng ngày, cảnh báo online tụt) trên máy chủ hệ cũ.
+
+## Hoãn bảo mật (làm ở giai đoạn hoàn thiện, trước khi chạy thật)
+
+- [ ] Atlas: đổi mật khẩu `admin` (đã xuất hiện trong khung chat), tạo user riêng `core_app` (readWrite `itm_core`),
+      `master_app` (readWrite `itm_master`); giới hạn Network Access theo IP công khai của máy chủ.
+- [ ] Đổi mật khẩu tài khoản `admin` của tổ chức PHENIKAA (đang là mật khẩu dựng thử trong `.env`).
+- [ ] Đặt `MASTER_KEY_B64` riêng (đang dùng khoá dev mặc định trong `app/config/settings.py`); `ALLOWED_ORIGINS` theo Desktop.
+- [ ] Rà mọi nhãn `HOAN_BAO_MAT` trong mã (`rg HOAN_BAO_MAT D:\ITSupportPlatform`).
+- [ ] Bí mật chuyển ra ngoài repo (`D:\ITSupportPlatformSecrets`), khoá quyền thư mục; bật gitleaks pre-commit (Sổ tay 2.4).
+- [ ] Luật Bảo vệ dữ liệu cá nhân 2025: kiểm region Atlas và thoả thuận xử lý dữ liệu.
+
+## Ghi chú hạ tầng
+
+- Atlas: MongoDB **8.0.34**, replica set `atlas-m146mq-shard-0`, 3 node, RTT ≈ **55 ms** từ máy chủ hiện tại (đo 02/10/2026).
+- Database: `itm_core` (Core, đã khởi tạo) · `itm_master` (chưa dùng, GĐ11) · test tạo `itm_test_<hex>` rồi tự xoá.
+  Atlas còn sẵn `sample_mflix` (dữ liệu mẫu của Atlas, không liên quan).
+- Hiệu năng đo được: đăng nhập ≈ 0,5 s (≈ 8 lượt CSDL), kiểm phiên lần đầu ≈ 190 ms, có đệm ≈ 11 ms.
+- Chạy thử Core: `cd D:\ITSupportPlatform\platform-core; uv run python -m app.server` → `http://127.0.0.1:7009/docs`.
+  Cổng 7009 hiện trống trên máy chủ; chạy thử xong nhớ tắt (chỉ dừng tiến trình có `app.server` trong dòng lệnh).
+- Console máy chủ dùng cp1252: CLI phải gọi `utf8_stdio()`; script thử bằng Python thì đặt `PYTHONIOENCODING=utf-8`.

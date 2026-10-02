@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "additionalDirectories": [
+      "D:\\NetworkInventory",
+      "D:\\ExaminationSystem",
+      "D:\\Agent",
+      "D:\\Caddy",
+      "D:\\RemoteControl"
+    ],
+    "deny": [
+      "Edit(//d/NetworkInventory/**)",
+      "Edit(//D:/NetworkInventory/**)",
+      "Edit(//d/ExaminationSystem/**)",
+      "Edit(//D:/ExaminationSystem/**)",
+      "Edit(//d/Agent/**)",
+      "Edit(//D:/Agent/**)",
+      "Edit(//d/Caddy/**)",
+      "Edit(//D:/Caddy/**)",
+      "Edit(//d/RemoteControl/**)",
+      "Edit(//D:/RemoteControl/**)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit|Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_readonly.py\"",
+            "timeout": 15,
+            "statusMessage": "Kiểm rào chỉ đọc dự án cũ"
+          }
+        ]
+      }
+    ]
+  }
+}

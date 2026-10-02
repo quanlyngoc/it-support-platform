@@ -1,0 +1,33 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+build/lib/
+# Node / Tauri
+node_modules/
+dist/
+out/
+target/
+# Nuitka / Inno Setup
+*.build/
+*.dist/
+*.onefile-build/
+platform-agent/dist/
+# Dữ liệu chạy & nhật ký
+logs/
+*.log
+.dev/
+# Bí mật: KHÔNG BAO GIỜ vào repo (đặt ở D:\PlatformSecrets)
+*.env
+.env*
+*.key
+*.pem
+*.pfx
+*.p12
+mongodump.yaml
+# Claude Code cục bộ
+.claude/settings.local.json

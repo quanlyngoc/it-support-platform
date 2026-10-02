@@ -1,0 +1,1951 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sổ tay thực hiện IT Monitor SaaS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#F3F6F5; --surface:#FFFFFF; --surface-2:#E9EFED; --ink:#13201E; --ink-2:#34423F; --muted:#5B6966; --line:#D2DCD9;
+  --accent:#0B6E5F; --accent-ink:#FFFFFF; --accent-soft:#DCEEEA;
+  --amber:#8F5404; --amber-soft:#FBEACF; --red:#B42318; --red-soft:#FCE3E0; --green:#1D7438; --green-soft:#DDF1E2;
+  --blue:#1D4F91; --blue-soft:#E0EAF7; --code-bg:#102019; --code-ink:#D6E7E1; --code-dim:#8FB3A8;
+  --font:"Be Vietnam Pro", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  --mono:"JetBrains Mono", "Cascadia Mono", Consolas, "Courier New", monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0D1413; --surface:#141F1D; --surface-2:#1A2826; --ink:#E2EBE8; --ink-2:#C3D1CD; --muted:#93A4A0; --line:#2A3A37;
+    --accent:#4CC3AA; --accent-ink:#062420; --accent-soft:#12372F;
+    --amber:#F1AE55; --amber-soft:#3A2A0F; --red:#F27A6E; --red-soft:#3C1916; --green:#6FCF8E; --green-soft:#14301E;
+    --blue:#8DB6F0; --blue-soft:#15253B; --code-bg:#09110F; --code-ink:#D6E7E1; --code-dim:#7FA095;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0D1413; --surface:#141F1D; --surface-2:#1A2826; --ink:#E2EBE8; --ink-2:#C3D1CD; --muted:#93A4A0; --line:#2A3A37;
+  --accent:#4CC3AA; --accent-ink:#062420; --accent-soft:#12372F;
+  --amber:#F1AE55; --amber-soft:#3A2A0F; --red:#F27A6E; --red-soft:#3C1916; --green:#6FCF8E; --green-soft:#14301E;
+  --blue:#8DB6F0; --blue-soft:#15253B; --code-bg:#09110F; --code-ink:#D6E7E1; --code-dim:#7FA095;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15.5px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-underline-offset:2px}
+a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd,pre{font-family:var(--mono)}
+code{font-size:.86em;background:var(--surface-2);border:1px solid var(--line);padding:.05em .35em;border-radius:5px;word-break:break-word}
+kbd{font-size:.82em;background:var(--surface);border:1px solid var(--line);border-bottom-width:2px;padding:.05em .4em;border-radius:5px;white-space:nowrap}
+.shell{display:grid;grid-template-columns:250px minmax(0,1fr);gap:40px;max-width:1240px;margin:0 auto;padding-inline:24px;padding-block:0 80px}
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;max-height:100vh;overflow:auto;padding-block:28px 24px;font-size:13.5px}
+nav.toc .tt{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:10px}
+nav.toc ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+nav.toc a{display:grid;grid-template-columns:24px 1fr;gap:6px;color:var(--ink-2);text-decoration:none;padding:5px 8px;border-radius:7px;line-height:1.35}
+nav.toc a span:first-child{font-family:var(--mono);color:var(--muted);font-size:12px;padding-top:1px}
+nav.toc a:hover{background:var(--surface-2)}
+nav.toc a.on{background:var(--accent-soft);color:var(--ink)}
+nav.toc .prog{margin-top:18px;padding:12px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+nav.toc .prog b{font-variant-numeric:tabular-nums}
+.bar{height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+main{min-width:0;padding-top:28px}
+header.top{padding-block:8px 28px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600}
+h1{font-size:clamp(30px,4.2vw,44px);line-height:1.12;margin:.25em 0 .35em;letter-spacing:-.015em;text-wrap:balance;font-weight:700}
+.lead{font-size:17px;color:var(--ink-2);max-width:68ch;margin:0;overflow-wrap:anywhere}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:16px;font-size:13px;color:var(--muted)}
+.meta b{color:var(--ink-2);font-weight:600}
+section{padding-top:44px}
+section > h2{font-size:clamp(22px,2.6vw,28px);line-height:1.25;margin:0 0 6px;letter-spacing:-.01em;text-wrap:balance;display:flex;gap:12px;align-items:baseline}
+section > h2 .k{font-family:var(--mono);font-size:.6em;color:var(--accent);font-weight:600;border:1px solid var(--accent);border-radius:6px;padding:0 .45em;transform:translateY(-2px)}
+section > .sub{color:var(--muted);margin:0 0 18px;max-width:72ch}
+h3{font-size:18px;margin:28px 0 8px;line-height:1.35;text-wrap:balance}
+h4{font-size:15px;margin:18px 0 6px}
+p,li{max-width:76ch}
+ul,ol{padding-left:1.3em}
+li{margin:.25em 0}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
+.tile b{display:block;font-size:24px;line-height:1.2;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.tile span{font-size:12.5px;color:var(--muted)}
+.verdict{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:var(--r);padding:16px 18px 10px}
+.verdict ol{margin:6px 0 6px}
+.verdict li{margin:.45em 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+.card h4{margin-top:0}
+.note{border-radius:var(--r);padding:12px 14px;margin:14px 0;font-size:14.5px;background:var(--blue-soft);color:var(--ink)}
+.note.warn{background:var(--amber-soft)}
+.note.crit{background:var(--red-soft)}
+.note.ok{background:var(--green-soft)}
+.note > b:first-child{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
+.note.warn > b:first-child{color:var(--amber)} .note.crit > b:first-child{color:var(--red)} .note.ok > b:first-child{color:var(--green)} .note > b:first-child{color:var(--blue)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;letter-spacing:.03em;padding:2px 9px;border-radius:99px;white-space:nowrap;border:1px solid transparent}
+.chip.sys{background:var(--amber-soft);color:var(--amber);border-color:color-mix(in srgb,var(--amber) 35%,transparent)}
+.chip.s0{background:var(--red-soft);color:var(--red);border-color:color-mix(in srgb,var(--red) 35%,transparent)}
+.chip.safe{background:var(--green-soft);color:var(--green);border-color:color-mix(in srgb,var(--green) 35%,transparent)}
+.chip.par{background:var(--blue-soft);color:var(--blue);border-color:color-mix(in srgb,var(--blue) 35%,transparent)}
+.chip.dec{background:var(--surface-2);color:var(--ink-2);border-color:var(--line)}
+.sev{font-size:11px;font-weight:700;padding:1px 7px;border-radius:5px;white-space:nowrap}
+.sev.h{background:var(--red-soft);color:var(--red)} .sev.m{background:var(--amber-soft);color:var(--amber)} .sev.l{background:var(--blue-soft);color:var(--blue)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+th{background:var(--surface-2);font-weight:600;font-size:12.5px;letter-spacing:.02em;color:var(--ink-2);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td .muted{color:var(--muted)}
+.win{color:var(--green);font-weight:600}.lose{color:var(--red);font-weight:600}.mid{color:var(--amber);font-weight:600}
+pre{background:var(--code-bg);color:var(--code-ink);border-radius:var(--r);padding:14px 16px;overflow-x:auto;font-size:12.8px;line-height:1.55;margin:10px 0;position:relative}
+pre .c{color:var(--code-dim)}
+.copy{position:absolute;top:8px;right:8px;font:600 11.5px var(--font);background:rgba(255,255,255,.08);color:var(--code-ink);border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:3px 9px;cursor:pointer}
+.copy:hover{background:rgba(255,255,255,.16)}
+/* Kiến trúc */
+.arch{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+.node{border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;background:var(--surface)}
+.node .nt{font-weight:700;font-size:15px}
+.node .ns{font-size:12.5px;color:var(--muted);font-family:var(--mono)}
+.node ul{margin:6px 0 0;padding-left:1.1em;font-size:13.5px}
+.node.core{grid-column:1/-1;border:2px solid var(--accent);background:var(--accent-soft)}
+.node.db{grid-column:1/-1;text-align:center}
+.flow{grid-column:1/-1;text-align:center;font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+/* Gantt */
+.gantt{display:grid;grid-template-columns:200px repeat(12,minmax(26px,1fr));font-size:12.5px;min-width:700px}
+.gantt div{padding:5px 4px;border-bottom:1px solid var(--line)}
+.gantt .h{font-weight:600;color:var(--muted);text-align:center;font-family:var(--mono);font-size:11.5px;background:var(--surface-2)}
+.gantt .lbl{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gantt .b{position:relative}
+.gantt .b i{position:absolute;inset:7px 0;border-radius:4px;background:var(--accent)}
+.gantt .b i.sys{background:var(--amber)} .gantt .b i.par{background:var(--blue)} .gantt .b i.s0{background:var(--red)}
+/* Đường găng */
+.path{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:12px 0}
+.path span{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:5px 10px;font-weight:600;font-size:13.5px}
+.path span.hot{border-color:var(--red);color:var(--red)}
+.path em{font-style:normal;color:var(--muted)}
+/* Giai đoạn & bước */
+.phase{min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:22px 0}
+.phase > header{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;justify-content:space-between}
+.phase h3{margin:0;font-size:19px}
+.phase h3 .gd{font-family:var(--mono);color:var(--accent);margin-right:6px}
+.phase .dur{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.phase .goal{margin:6px 0 10px;color:var(--ink-2)}
+.phase .pp{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+ol.steps{list-style:none;padding:0;margin:8px 0;counter-reset:s;display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+ol.steps > li{counter-increment:s;max-width:none;min-width:0;border:1px solid var(--line);border-radius:10px;padding:10px 12px 10px 12px;background:var(--bg)}
+ol.steps > li > label{display:grid;grid-template-columns:22px 34px minmax(0,1fr);gap:6px;align-items:start;cursor:pointer}
+ol.steps > li > label::before{content:counter(s);grid-column:2;grid-row:1;font-family:var(--mono);font-weight:600;color:var(--accent);font-size:13px;padding-top:2px}
+ol.steps > li > label input{grid-column:1;grid-row:1;margin:4px 0 0;width:16px;height:16px;accent-color:var(--accent)}
+ol.steps > li > label .t{grid-column:3;grid-row:1;font-weight:600}
+ol.steps > li.done > label .t{text-decoration:line-through;color:var(--muted)}
+ol.steps .d{margin:6px 0 0 62px;font-size:14px;color:var(--ink-2)}
+ol.steps .d p,ol.steps .d li{max-width:none}
+ol.steps .d ol,ol.steps .d ul{margin:4px 0;padding-left:1.2em}
+ol.steps .d pre{margin:8px 0}
+.box{border-radius:10px;padding:10px 12px;margin:10px 0 0;font-size:14px}
+.box.gate{background:var(--green-soft)} .box.back{background:var(--red-soft)} .box.cm{background:var(--blue-soft)}
+.box > b:first-child{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:2px}
+.box.gate > b:first-child{color:var(--green)} .box.back > b:first-child{color:var(--red)} .box.cm > b:first-child{color:var(--blue)}
+.box ul{margin:2px 0;padding-left:1.15em}
+.click{font-weight:600;color:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13px;color:var(--muted);margin:8px 0 4px}
+.cmp td:first-child{font-weight:600;white-space:nowrap}
+.claude pre{max-height:620px}
+.topbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.btn{font:600 13px var(--font);border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+@media (max-width:1000px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:0;padding-inline:16px}
+  nav.toc{position:static;max-height:none;border-bottom:1px solid var(--line);padding-block:20px 16px}
+  nav.toc ol{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:620px){
+  body{font-size:15px}
+  .g2,.g3,.arch{grid-template-columns:minmax(0,1fr)}
+  nav.toc ol{grid-template-columns:minmax(0,1fr)}
+  ol.steps .d{margin-left:0}
+  .chip{white-space:normal}
+  td,th{overflow-wrap:anywhere}
+  .tiles{grid-template-columns:minmax(0,1fr)}
+}
+
+nav.toc a{grid-template-columns:44px 1fr}
+ol.steps > li > label{grid-template-columns:22px minmax(0,1fr)}
+ol.steps > li > label::before{content:none}
+ol.steps > li > label .t{grid-column:2}
+dl.f{display:grid;grid-template-columns:118px minmax(0,1fr);gap:6px 14px;margin:10px 0 2px 30px;font-size:14px}
+dl.f dt{font-weight:600;color:var(--muted);font-size:12.5px;letter-spacing:.02em;padding-top:2px}
+dl.f dd{margin:0;min-width:0;color:var(--ink-2)}
+dl.f dd p,dl.f dd li{max-width:none}
+dl.f dd ol,dl.f dd ul{margin:0;padding-left:1.2em}
+dl.f dd .tbl{margin:8px 0}
+.m2{display:flex;flex-wrap:wrap;align-items:center;gap:4px 16px;margin:6px 0 0 30px;font-size:12.5px;color:var(--muted)}
+.m2 b{color:var(--ink-2)}
+section > .chips{margin-bottom:12px}
+section > h2 .pp{margin-left:auto;font-size:12.5px;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums}
+@media (max-width:620px){dl.f{grid-template-columns:minmax(0,1fr);margin-left:0;gap:2px 0} dl.f dd{margin-bottom:8px} .m2{margin-left:0}}
+</style>
+
+<div class="shell">
+<nav class="toc" aria-label="Mục lục">
+  <div class="tt">Mục lục</div>
+  <ol>
+    <li><a href="#u"><span>0</span><span>Cách dùng sổ tay</span></a></li>
+    <li><a href="#g0"><span>GĐ0</span><span>Chuẩn bị, quyết định</span></a></li>
+    <li><a href="#g1"><span>GĐ1</span><span>Hạ tầng MongoDB</span></a></li>
+    <li><a href="#g2"><span>GĐ2</span><span>Nền Platform-Core</span></a></li>
+    <li><a href="#g3"><span>GĐ3</span><span>Tương thích agent cũ + canary</span></a></li>
+    <li><a href="#g4"><span>GĐ4</span><span>Nền Desktop</span></a></li>
+    <li><a href="#g5"><span>GĐ5</span><span>Phòng, thiết bị, View</span></a></li>
+    <li><a href="#g6"><span>GĐ6</span><span>Điều khiển từ xa</span></a></li>
+    <li><a href="#g7"><span>GĐ7</span><span>Tệp, giao/thu bài</span></a></li>
+    <li><a href="#g8"><span>GĐ8</span><span>Chat, quản trị, hệ thi</span></a></li>
+    <li><a href="#g9"><span>GĐ9</span><span>Chuyển toàn trường</span></a></li>
+    <li><a href="#g10"><span>GĐ10</span><span>Agent 3.0</span></a></li>
+    <li><a href="#g11"><span>GĐ11</span><span>Master, CI, cloud</span></a></li>
+    <li><a href="#p"><span>P</span><span>Phụ lục</span></a></li>
+  </ol>
+  <div class="prog" aria-live="polite">
+    <div style="font-size:12px;color:var(--muted)">Tiến độ đánh dấu (lưu trên trình duyệt này)</div>
+    <b id="progTxt">0 / 0</b>
+    <div class="bar"><i id="progBar"></i></div>
+  </div>
+</nav>
+
+<main>
+<header class="top">
+  <div class="eyebrow">Sổ tay thực hiện · đi kèm "Lộ trình IT Monitor SaaS" · 02/10/2026</div>
+  <h1>Sổ tay thực hiện IT Monitor SaaS</h1>
+  <p class="lead">Hướng dẫn làm từng bước cho 12 giai đoạn của Phương án 2: xây nền tảng mới chạy song song, chuyển dần từng phòng, đổi server trước rồi mới đổi agent.
+  Chỉ bắt đầu khi phương án đã được phê duyệt. Các đoạn mã là <b>khung mẫu</b> để đội phát triển hoàn thiện, không phải mã chạy ngay.</p>
+  <div class="note warn" style="margin-top:14px"><b>Cập nhật theo quyết định 02/10/2026</b>
+    Desktop viết bằng <b>Tauri 2 + React + Vite</b> · Windows Agent là <b>phần mềm .exe có bộ cài</b> cài trên máy trạm ·
+    <b>Claude đọc mã nguồn và tài liệu hiện có (chỉ đọc) và xây mới hoàn toàn</b> trong <code>D:\Platform</code>, không sửa cấu trúc mã nguồn dự án hiện tại.</div>
+  <div class="meta">
+    <span>Căn cứ: <b>SPEC V2 + tài liệu Lộ trình</b></span>
+    <span>Hệ hiện tại: <b>server 2.7.3.1 · agent 2.7.5.3 · 889 máy</b></span>
+    <span>Tổng: <b>12 giai đoạn · bước đánh dấu được</b></span>
+  </div>
+  <div class="legend" aria-label="Chú giải nhãn">
+    <span class="chip s0">§0 KẾT NỐI</span><span>chạm đường kết nối máy trạm</span>
+    <span class="chip sys">TOÀN HỆ THỐNG</span><span>ảnh hưởng mọi phòng/người dùng</span>
+    <span class="chip safe">KHÔNG ĐỤNG HỆ ĐANG CHẠY</span><span>làm tách biệt</span>
+    <span class="chip par">SONG SONG</span><span>làm cùng lúc giai đoạn khác</span>
+  </div>
+</header>
+
+<section id="u">
+  <h2><span class="k">0</span>Cách dùng sổ tay</h2>
+  <p class="sub">Đọc một lần trước khi bắt đầu. Mỗi bước trong sổ tay có cùng một khuôn để không bỏ sót việc kiểm tra.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Mục trong mỗi bước</th><th>Ý nghĩa</th></tr></thead>
+    <tbody>
+      <tr><td>Người làm · Thời lượng</td><td>Vai chịu trách nhiệm chính (bảng dưới) và ước lượng công.</td></tr>
+      <tr><td>Mục đích</td><td>Vì sao phải làm bước này. Nếu thấy mục đích đã đạt bằng cách khác, ghi lại và bỏ qua có lý do.</td></tr>
+      <tr><td>Cần có trước</td><td>Điều kiện bắt buộc. Thiếu thì dừng, không làm "tạm".</td></tr>
+      <tr><td>Thao tác</td><td>Các việc cụ thể: bấm vào đâu, chọn gì, dán lệnh nào. Chữ <span class="click">đậm</span> là tên nút/mục trên màn hình.</td></tr>
+      <tr><td>Kiểm tra đạt</td><td>Bằng chứng để đánh dấu xong. Không có bằng chứng thì chưa xong.</td></tr>
+      <tr><td>Nếu lỗi</td><td>Cách xử lý hoặc quay lui.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Ký hiệu vai</th><th>Vai</th><th>Phụ trách chính</th></tr></thead>
+    <tbody>
+      <tr><td><b>L</b></td><td>Lãnh đạo Trung tâm</td><td>Phê duyệt quyết định, ngân sách, điểm đi tiếp/dừng</td></tr>
+      <tr><td><b>Q</b></td><td>Trưởng nhóm dự án</td><td>Kế hoạch, đặc tả V3, biên bản, lịch chuyển, liên lạc người dùng</td></tr>
+      <tr><td><b>C</b></td><td>Lập trình Core + Agent</td><td><b>Claude Code viết mã</b> <code>platform-core</code>, <code>platform-agent</code>, script chuyển dữ liệu; lập trình viên của Trung tâm duyệt Pull Request và chạy thử</td></tr>
+      <tr><td><b>D</b></td><td>Lập trình Desktop</td><td><b>Claude Code viết mã</b> <code>desktop-app</code> (Tauri 2 + React + Vite); lập trình viên duyệt và chạy thử</td></tr>
+      <tr><td><b>H</b></td><td>Hạ tầng + kiểm thử</td><td>Máy chủ, MongoDB, Caddy, sao lưu, cảnh báo, kiểm thử chấp nhận; <b>chạy mọi lệnh cần quyền Administrator</b> (Claude không có quyền này)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note crit"><b>Bốn luật không được phá ở bất kỳ bước nào</b>
+    <ol>
+      <li>Không bước nào chạm máy trạm (Caddy, agent, luật mạng) khi <b>chưa có cảnh báo online tụt và sao lưu</b> (bước 0.6, 0.7).</li>
+      <li><b>Mỗi lần chỉ đổi một biến</b>: đổi server thì giữ agent; đổi agent thì giữ server.</li>
+      <li>Mọi thay đổi chạm máy trạm phải có <b>lệnh quay lui đã diễn tập</b> và người trực trong 30 phút sau thay đổi.</li>
+      <li><b>Dự án cũ chỉ đọc:</b> Claude không sửa, tạo, xoá tệp trong <code>D:\NetworkInventory</code>, <code>D:\ExaminationSystem</code>, <code>D:\Agent</code>; mã mới chỉ ở <code>D:\Platform</code>.</li>
+    </ol></div>
+  <div class="note warn"><b>Nút dừng khẩn (in ra, dán cạnh màn hình trực)</b>
+    <ul>
+      <li>Máy rớt sau khi sửa Caddy: mở <code>D:\Caddy</code>, chép <code>Caddyfile.bak-&lt;ngày&gt;</code> đè <code>Caddyfile</code>, chạy <code>.\caddy.exe reload --config .\Caddyfile</code>.</li>
+      <li>Máy rớt khi cập nhật agent: gạt <span class="click">All Update</span> về <b>Tắt</b> (trang Update Client của hệ cũ, hoặc Quản trị → Cập nhật Agent của Desktop).</li>
+      <li>Core treo: <code>nssm restart PlatformCore</code>, sau đó <code>nssm status PlatformCore</code>. Không lên trong 5 phút: quay Caddy về hub cũ.</li>
+    </ul></div>
+</section>
+
+<!-- ======================= GĐ0 ======================= -->
+<section id="g0">
+  <h2><span class="k">GĐ0</span>Chuẩn bị và quyết định</h2>
+  <div class="chips"><span class="chip dec">QUYẾT ĐỊNH TOÀN HỆ THỐNG</span><span class="chip safe">KHÔNG ĐỤNG HỆ ĐANG CHẠY</span><span class="chip dec">Tuần 1–2 · Người chính: Q</span></div>
+  <div class="grid g2">
+    <div class="note"><b>Điều kiện vào</b>Phương án 2 đã được lãnh đạo đồng ý về nguyên tắc.</div>
+    <div class="note ok"><b>Cổng ra</b>Biên bản 8 quyết định đã ký · đặc tả V3 · bảng đối chiếu chức năng · bảng baseline · bảng dải IP · sao lưu hằng ngày và cảnh báo online đang chạy · không gian xây mới cho Claude có rào chỉ đọc.</div>
+  </div>
+  <ol class="steps">
+    <li><label><input type="checkbox" data-id="r0-1"><span class="t">0.1 Họp chốt 8 quyết định</span></label>
+      <div class="m2"><span>Người làm: <b>Q, L</b></span><span>Thời lượng: <b>0,5 ngày</b></span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>Khoá hướng đi để không đổi giữa chừng; mọi bước sau dựa vào các quyết định này.</dd>
+        <dt>Cần có trước</dt><dd>Tài liệu Lộ trình (mục A, C, E, M) gửi cho người dự họp trước 3 ngày.</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li>Họp 90 phút theo chương trình: 15 phút hiện trạng (mục B) · 20 phút đánh giá đặc tả (C) · 20 phút ba phương án (E) · 20 phút chốt 8 quyết định · 15 phút kế hoạch gói GĐ0–GĐ3.</li>
+          <li>Chốt từng dòng theo mẫu biên bản ở <a href="#p">Phụ lục P2</a>: Phương án 2 · triển khai tại trường trước · Tauri 2 · MongoDB 8.0 replica set 3 node · đăng nhập bằng mã tổ chức · dừng Khối A ở Pha 1 · ngân sách · phân công.</li>
+          <li>Ghi rõ người chịu trách nhiệm từng vai (L, Q, C, D, H) và người thay thế khi vắng.</li>
+          <li>Lãnh đạo ký biên bản; lưu bản scan vào thư mục dự án.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Biên bản có đủ 8 dòng ở trạng thái "Đã quyết", có chữ ký.</dd>
+        <dt>Nếu lỗi</dt><dd>Quyết định nào còn treo thì ghi hạn chốt. Không bắt đầu GĐ1 khi quyết định 1, 2, 4 (phương án, nơi triển khai, CSDL) còn treo.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r0-2"><span class="t">0.2 Đóng băng tính năng lớn trên hệ cũ</span></label>
+      <div class="m2"><span>Người làm: <b>Q</b></span><span>Thời lượng: <b>0,5 ngày</b></span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>Mọi tính năng thêm vào hệ cũ trong lúc chuyển đổi sẽ phải làm lại lần hai trên hệ mới.</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li>Gửi thông báo cho người dùng: "Từ ngày …, IT Monitor chỉ sửa lỗi và vận hành; yêu cầu tính năng mới được ghi nhận cho phiên bản Desktop."</li>
+          <li>Lập danh sách chờ "Hệ mới" (Excel hoặc Planner) với cột: yêu cầu · người đề nghị · mức ưu tiên · giai đoạn dự kiến.</li>
+          <li>Lỗi vận hành trên hệ cũ vẫn sửa theo đúng quy trình trong CLAUDE.md hiện tại.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Thông báo đã gửi; danh sách chờ đã có và được dùng.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r0-3"><span class="t">0.3 Viết đặc tả V3</span></label>
+      <div class="m2"><span>Người làm: <b>Q, C</b></span><span>Thời lượng: <b>3–4 ngày</b></span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>AI và lập trình viên viết theo đặc tả; đặc tả sai thì mã sai hàng loạt.</dd>
+        <dt>Cần có trước</dt><dd>Biên bản 0.1.</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li>Sao chép đặc tả V2 thành <code>PHENIKAA_IT_MONITOR_SAAS_SPEC_V3.md</code>; thêm mục "Lịch sử thay đổi" ở đầu tệp.</li>
+          <li>Xoá chương 24–48 (schema viết lần hai). Thêm câu "Schema chuẩn duy nhất là chương 4A" vào 4A.37.</li>
+          <li>4A.11 <code>computers</code>: thay "tenant_id + mac là identity vật lý chính" bằng "định danh là <code>agent_id</code>; <code>mac</code>, <code>serial</code>, <code>hostname</code> là thuộc tính". Đổi <code>unique(tenant_id, mac)</code> thành index thường ở 4A.11 và 4A.30.</li>
+          <li>4A: thêm <code>audit_log</code> vào bảng 4A.4 và 4A.30; thêm <code>machine_events</code>, <code>computers_archive</code>; thêm <code>rooms.live_layout</code>; reaction lưu emoji (bỏ <code>"LIKE"</code>).</li>
+          <li>§1.3: thêm danh sách tính năng đang chạy được giữ (View desktop + VNC relay, nhật ký thay đổi máy, xuất cấu hình, cập nhật agent theo đợt, watchdog).</li>
+          <li>§7.3: chốt "mã tổ chức + tài khoản + mật khẩu". §9.3: đổi sang <b>Tauri 2 + React + Vite</b> (thay Next.js). §69: tên và tham số bộ cài agent .exe (G11 của tài liệu Lộ trình).</li>
+          <li>§52: thêm <code>expires_at</code>, <code>issued_by</code>, <code>sig</code> vào envelope. §54: cấm MinIO, mô tả StorageService.</li>
+          <li>Thêm chương "Mô hình xây dựng": Claude xây mới hoàn toàn trong <code>D:\Platform</code>, dự án cũ chỉ đọc (G10 của tài liệu Lộ trình).</li>
+          <li>Thêm chương mới "Chuyển đổi" (bộ tương thích agent cũ, canary theo dải IP, quay lui) và chương "Phụ thuộc hệ thi" (<code>/internal/*</code>, <code>MONITOR_INTERNAL_URL</code>, <code>INTERNAL_API_TOKEN</code>, <code>MONITOR_MAPS_DIR</code>).</li>
+          <li>§74: thay thứ tự Phase bằng GĐ0–GĐ11 (bảng H4 của tài liệu Lộ trình).</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Một người không viết V3 đọc lại và đánh dấu đủ 17 điểm C + 18 điểm D của tài liệu Lộ trình.</dd>
+        <dt>Nếu lỗi</dt><dd>Điểm nào chưa thống nhất: ghi "Mở" trong V3, không để AI tự quyết.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r0-4"><span class="t">0.4 Lập bảng đối chiếu chức năng (152 route + 16 socket)</span></label>
+      <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>1–2 ngày</b></span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>Danh sách duy nhất để biết hệ mới đã đủ chức năng chưa; GĐ9 chỉ được tắt hệ cũ khi 100% "Đạt".</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li>Tạo thư mục <code>D:\Backup\tools</code> và tệp <code>xuat_doi_chieu.py</code> với nội dung dưới (chỉ <b>đọc</b> <code>app.py</code>):
+<pre><button class="copy" type="button">Chép</button>import re, csv
+src = open(r'D:\NetworkInventory\app.py', encoding='utf-8').read().splitlines()
+rows, pend = [], []
+for ln in src:
+    m = re.match(r"\s*@app\.route\(['\"]([^'\"]+)['\"](?:.*methods=\[([^\]]*)\])?", ln)
+    if m:
+        pend.append(('route', m.group(1), (m.group(2) or 'GET').replace("'", '').replace('"', ''))); continue
+    m = re.match(r"\s*@socketio\.on\(['\"]([^'\"]+)['\"]", ln)
+    if m:
+        pend.append(('socket', m.group(1), '')); continue
+    m = re.match(r"\s*def (\w+)\(", ln)
+    if m and pend:
+        rows += [p + (m.group(1),) for p in pend]; pend = []
+out = r'D:\Backup\Moc0\doi_chieu.csv'
+with open(out, 'w', newline='', encoding='utf-8-sig') as f:
+    w = csv.writer(f)
+    w.writerow(['Loai', 'Duong dan / su kien', 'Phuong thuc', 'Ham', 'Chuc nang', 'Nhom',
+                'API moi', 'Man hinh Desktop', 'Trang thai', 'Nguoi kiem'])
+    for r in rows:
+        w.writerow(list(r) + ['', '', '', '', 'Chua', ''])
+print(len(rows), 'dong ->', out)</pre></li>
+          <li>Chạy: <code>python D:\Backup\tools\xuat_doi_chieu.py</code> (cần thư mục <code>D:\Backup\Moc0</code> có sẵn, xem bước 0.5).</li>
+          <li>Mở Excel → <span class="click">Data</span> → <span class="click">From Text/CSV</span> → chọn tệp → <span class="click">File Origin: 65001: Unicode (UTF-8)</span> → <span class="click">Load</span>.</li>
+          <li>Điền cột <b>Nhóm</b> theo 9 nhóm: Phòng/Thiết bị · Điều khiển · Terminal · Tệp/Giao-thu · Chat · Sự cố/Báo cáo · Quản trị · Agent · Hệ thi. Điền cột <b>Chức năng</b> bằng một câu.</li>
+          <li>Thêm các chức năng chỉ có ở giao diện (không có route riêng): sơ đồ phòng, View desktop, bảng kết quả PowerShell, banner mất kết nối…</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Số dòng route ≥ 152, socket = 16. Thấp hơn: mở <code>app.py</code>, tìm <code>@app.route</code> viết khác mẫu và thêm tay.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r0-5"><span class="t">0.5 Sao lưu mốc 0</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>0,5 ngày</b></span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>Có một điểm khôi phục chắc chắn trước khi bắt đầu dự án.</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li>Trên Dashboard, bấm <span class="click">Xuất cấu hình</span>, lưu tệp Excel vào <code>D:\Backup\Moc0\</code>.</li>
+          <li>PowerShell (Run as administrator):
+<pre><button class="copy" type="button">Chép</button>New-Item -ItemType Directory -Force D:\Backup\Moc0 | Out-Null
+python -c "import sqlite3; s=sqlite3.connect(r'D:\NetworkInventory\database.db'); d=sqlite3.connect(r'D:\Backup\Moc0\database.db'); s.backup(d); d.close()"
+Copy-Item -Recurse D:\NetworkInventory\Maps    D:\Backup\Moc0\Maps
+Copy-Item -Recurse D:\NetworkInventory\updates D:\Backup\Moc0\updates
+Copy-Item D:\Caddy\Caddyfile D:\Backup\Moc0\Caddyfile</pre></li>
+          <li>Kiểm tính toàn vẹn bản sao:
+<pre><button class="copy" type="button">Chép</button>python -c "import sqlite3; c=sqlite3.connect(r'D:\Backup\Moc0\database.db'); print(c.execute('pragma integrity_check').fetchone(), c.execute('select count(*) from computers').fetchone())"</pre></li>
+          <li>Chép cả thư mục <code>D:\Backup\Moc0</code> sang một máy hoặc ổ khác.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Lệnh kiểm in <code>('ok',)</code> và số máy (khoảng 889). Bản sao có trên ít nhất 2 nơi.</dd>
+        <dt>Nếu lỗi</dt><dd><code>database is locked</code>: chạy lại sau vài giây (API backup của SQLite tự thử lại; không copy tệp thô khi dịch vụ đang chạy).</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r0-6"><span class="t">0.6 Sao lưu CSDL hệ cũ hằng ngày (script độc lập)</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>0,5 ngày</b></span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>Suốt thời gian chuyển đổi, luôn có bản sao không quá 24 giờ; đồng thời là ảnh chụp danh sách máy để đối chiếu (bài học 10.21). Script chỉ đọc CSDL, không sửa mã hệ cũ.</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li>Tạo <code>D:\Backup\tools\backup_sqlite.py</code>:
+<pre><button class="copy" type="button">Chép</button>import sqlite3, os, glob, datetime
+dst_dir = r'D:\Backup\daily'
+os.makedirs(dst_dir, exist_ok=True)
+dst = os.path.join(dst_dir, 'database_' + datetime.date.today().strftime('%Y%m%d') + '.db')
+s = sqlite3.connect(r'D:\NetworkInventory\database.db'); d = sqlite3.connect(dst)
+s.backup(d); d.close(); s.close()
+for old in sorted(glob.glob(os.path.join(dst_dir, 'database_*.db')))[:-14]:
+    os.remove(old)                          <span class="c"># giữ 14 bản gần nhất</span>
+print('OK', dst)</pre></li>
+          <li>Mở <code>taskschd.msc</code> → <span class="click">Create Task…</span>. Tab <b>General</b>: Name <code>ITM Backup SQLite</code>, chọn <span class="click">Run whether user is logged on or not</span>, tích <span class="click">Run with highest privileges</span>.</li>
+          <li>Tab <b>Triggers</b> → <span class="click">New…</span> → <span class="click">Daily</span>, Start 23:30 → <span class="click">OK</span>.</li>
+          <li>Tab <b>Actions</b> → <span class="click">New…</span> → Program/script: đường dẫn đầy đủ tới <code>python.exe</code> (gõ <code>(Get-Command python).Source</code> trong PowerShell để lấy); Add arguments: <code>D:\Backup\tools\backup_sqlite.py</code> → <span class="click">OK</span> → <span class="click">OK</span> → nhập mật khẩu tài khoản chạy.</li>
+          <li>Chuột phải task → <span class="click">Run</span> để chạy thử ngay.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Có tệp <code>D:\Backup\daily\database_&lt;ngày&gt;.db</code>; cột <b>Last Run Result</b> của task là <code>(0x0)</code>.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r0-7"><span class="t">0.7 Cảnh báo tự động khi số máy online tụt (script độc lập)</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>1 ngày</b></span><span class="chip safe">CHỈ ĐỌC</span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>Luật §0.8: phải biết ngay khi máy rớt bất thường trong mọi đợt thay đổi. Script đọc <code>/internal/machines</code> của hub (chỉ đọc, đã có sẵn), phân biệt máy <b>tắt có chủ ý</b> (trường <code>tat_sach</code>) với máy <b>rớt</b>, và gửi Telegram. Đồng thời ghi lịch sử mỗi phút làm số liệu baseline.</dd>
+        <dt>Cần có trước</dt><dd>Bot Telegram và chat ID đang dùng cho cảnh báo của hệ cũ; token nội bộ (<code>internal_api_token</code>) do người quản trị cấp.</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li>Tạo thư mục <code>D:\PlatformSecrets</code>. Chuột phải → <span class="click">Properties</span> → <span class="click">Security</span> → <span class="click">Advanced</span> → <span class="click">Disable inheritance</span> → <span class="click">Convert inherited permissions…</span> → xoá mọi dòng trừ <b>SYSTEM</b> và <b>Administrators</b> → <span class="click">OK</span>.</li>
+          <li>Tạo 3 tệp văn bản trong đó: <code>internal_token.txt</code>, <code>telegram_token.txt</code>, <code>telegram_chat.txt</code>, mỗi tệp một dòng giá trị.</li>
+          <li>Tạo <code>D:\Backup\tools\canh_bao_online.ps1</code> (lưu dạng <b>UTF-8 with BOM</b>):
+<pre><button class="copy" type="button">Chép</button>param([switch]$Thu)
+$ErrorActionPreference = 'Stop'
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+$S = 'D:\PlatformSecrets'; $W = 'D:\Backup\baseline'; New-Item -ItemType Directory -Force $W | Out-Null
+$tok  = (Get-Content "$S\internal_token.txt" -Raw).Trim()
+$bot  = (Get-Content "$S\telegram_token.txt" -Raw).Trim()
+$chat = (Get-Content "$S\telegram_chat.txt" -Raw).Trim()
+function Gui($t) { Invoke-RestMethod -Method Post -Uri "https://api.telegram.org/bot$bot/sendMessage" -Body @{chat_id=$chat; text=$t} | Out-Null }
+if ($Thu) { Gui 'ITM: thử kênh cảnh báo online'; return }
+
+$canary = @(); if (Test-Path "$W\canary_hosts.txt") { $canary = Get-Content "$W\canary_hosts.txt" | % { $_.Trim().ToUpper() } }
+$r = Invoke-RestMethod -Uri 'http://127.0.0.1:5009/internal/machines' -Headers @{ 'X-Internal-Token' = $tok } -TimeoutSec 20
+$now = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+$on  = @($r.machines | ? { $_.online } | % { $_.hostname.ToUpper() })
+$nl  = @($r.machines | ? { $_.online -and $_.nhan_lenh }).Count
+"$(Get-Date -Format s),$($on.Count),$nl" | Add-Content "$W\online_$(Get-Date -Format yyyyMMdd).csv"
+
+$stateF = "$W\state.json"
+$prev = @(); if (Test-Path $stateF) { $prev = @(Get-Content $stateF -Raw | ConvertFrom-Json) }
+$tat = @{}; $r.machines | % { $tat[$_.hostname.ToUpper()] = [int64]$_.tat_sach }
+<span class="c"># rớt bất thường = online lần trước, giờ offline, KHÔNG báo tắt có chủ ý trong 15 phút, không thuộc canary</span>
+$rot = @($prev | ? { ($on -notcontains $_) -and ($canary -notcontains $_) -and (($now - $tat[$_]) -gt 900) })
+$on | ConvertTo-Json -Compress | Set-Content $stateF
+if ($prev.Count -ge 20 -and $rot.Count -ge [Math]::Max(5, [int]($prev.Count * 0.10))) {
+  $lock = "$W\last_alert.txt"
+  if (-not (Test-Path $lock) -or ((Get-Date) - (Get-Item $lock).LastWriteTime).TotalMinutes -gt 15) {
+    Gui ("ITM CANH BAO: $($rot.Count) may rot bat thuong (truoc $($prev.Count), nay $($on.Count)). Vi du: " + (($rot | Select -First 8) -join ', '))
+    Set-Content $lock (Get-Date)
+  }
+}</pre></li>
+          <li>Thử kênh: <code>powershell -ExecutionPolicy Bypass -File D:\Backup\tools\canh_bao_online.ps1 -Thu</code> → nhóm Telegram nhận tin "thử kênh".</li>
+          <li>Task Scheduler: <span class="click">Create Task…</span>, Name <code>ITM Canh bao online</code>, chạy với quyền cao nhất. <b>Triggers</b> → <span class="click">New…</span> → <span class="click">Daily</span> 00:00 → tích <span class="click">Repeat task every</span>, gõ <code>1 minute</code>, <span class="click">for a duration of: Indefinitely</span>. <b>Actions</b>: <code>powershell.exe</code>, arguments <code>-NoProfile -ExecutionPolicy Bypass -File D:\Backup\tools\canh_bao_online.ps1</code>. <b>Settings</b>: <span class="click">Do not start a new instance</span>.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Tệp <code>D:\Backup\baseline\online_&lt;ngày&gt;.csv</code> thêm một dòng mỗi phút; tắt thử mạng 1 máy test không gây cảnh báo (dưới ngưỡng), tắt máy bằng lệnh "Tắt máy" không bị tính là rớt.</dd>
+        <dt>Nếu lỗi</dt><dd>401/403 từ <code>/internal/machines</code>: sai token hoặc gọi qua proxy (phải gọi thẳng 127.0.0.1:5009 trên máy chủ). Báo động giả giờ tan học: tăng ngưỡng hoặc thêm khung giờ im lặng.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r0-8"><span class="t">0.8 Đo baseline 1 tuần</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>1 tuần (song song)</b></span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>Thước đo "không tệ hơn" dùng ở mọi cổng kiểm thử về sau.</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li><b>Online theo giờ:</b> lấy từ các tệp <code>online_*.csv</code> của bước 0.7; trong Excel lập bảng tổng hợp max theo giờ của từng ngày.</li>
+          <li><b>Nhịp tim/phút:</b> <code>Select-String -Path D:\NetworkInventory\logs\hub-server.log -Pattern '\[SYNC\]' | Select-Object -Last 120</code>; ghi giá trị cao nhất mỗi ngày.</li>
+          <li><b>Giao bài:</b> giao một tệp 200 MB cho một phòng, bấm giờ từ lúc bấm tới khi bảng báo đủ máy. <b>Thu bài:</b> thu một phòng, bấm giờ tương tự.</li>
+          <li><b>Mở trang phòng:</b> trình duyệt → <kbd>F12</kbd> → tab <span class="click">Network</span> → tải lại trang phòng → ghi số <b>Load</b> ở thanh dưới.</li>
+          <li>Điền vào bảng baseline (Phụ lục P5 có mẫu cột).</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Đủ 5 ngày học có số liệu.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r0-9"><span class="t">0.9 Bảng dải IP theo phòng</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>0,5 ngày</b></span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>Canary ở GĐ3 và GĐ9 chuyển phòng bằng dải IP; cần biết phòng nào nằm gọn trong một dải.</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li>Chạy trên <b>bản sao</b> CSDL:
+<pre><button class="copy" type="button">Chép</button>python -c "import sqlite3,collections; c=sqlite3.connect(r'D:\Backup\Moc0\database.db'); m=collections.defaultdict(set)
+for room,ip in c.execute('select room, ip from computers'):
+    if ip: m[room].add('.'.join(ip.split('.')[:3]))
+for r in sorted(m): print(r, sorted(m[r]))"</pre></li>
+          <li>Lập bảng Excel: Phòng · Tiền tố IP · Dùng <code>/24</code> được không · Danh sách <code>/32</code> nếu không · Phòng dùng chung dải.</li>
+          <li>Hỏi bộ phận mạng: máy trạm dùng DHCP hay IP tĩnh; nếu DHCP, dải có cố định theo phòng không.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Mỗi phòng có cách chọn IP xác định (một <code>/24</code> hoặc danh sách <code>/32</code>).</dd>
+        <dt>Nếu lỗi</dt><dd>Hai phòng chung một <code>/24</code>: chuyển cả hai cùng đợt, hoặc dùng danh sách <code>/32</code>.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r0-10"><span class="t">0.10 Dừng Khối A ở Pha 1 và ghi ADR</span></label>
+      <div class="m2"><span>Người làm: <b>Q, C</b></span><span>Thời lượng: <b>0,5 ngày</b></span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>Không làm việc sẽ bị bỏ (Pha 2 dời tệp sang <code>D:\Agent</code>); ghi lại lý do mọi quyết định cho người sau.</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li>Ghi quyết định "Dừng Khối A ở Pha 1 từ ngày …; Platform-Core thay vai Agent hub" vào ADR của repo mới. <b>Không sửa tệp trong <code>D:\Agent</code></b> (dự án cũ chỉ đọc).</li>
+          <li>Tạo các tệp ADR (sẽ đặt trong repo ở GĐ2) theo mẫu: <i>Bối cảnh · Quyết định · Phương án đã loại · Hệ quả · Ngày · Người duyệt</i>. Mỗi quyết định ở bước 0.1 một tệp.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>8 tệp ADR, trong đó có ADR dừng Khối A.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r0-11"><span class="t">0.11 Thiết lập không gian xây mới cho Claude (dự án cũ chỉ đọc)</span></label>
+      <div class="m2"><span>Người làm: <b>Q, H</b></span><span>Thời lượng: <b>2 giờ</b></span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>Claude đọc được toàn bộ mã nguồn và tài liệu cũ nhưng không thể ghi vào đó; mọi mã mới chỉ sinh ra trong <code>D:\Platform</code>.</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li>Tạo thư mục <code>D:\Platform</code> (repo ở bước 2.1 sẽ clone vào đây; nếu thư mục đã có nội dung thì clone vào <code>D:\Platform\repo</code> và mở Claude Code tại đó).</li>
+          <li>Mở VS Code tại <code>D:\Platform</code> → mở Claude Code.</li>
+          <li>Thêm thư mục cũ để đọc: gõ <code>/add-dir D:\NetworkInventory</code>, rồi <code>/add-dir D:\ExaminationSystem</code>, <code>/add-dir D:\Agent</code>.</li>
+          <li>Gõ <code>/permissions</code> → thêm luật <b>Deny</b> cho thao tác <b>Edit</b> và <b>Write</b> vào ba thư mục trên (theo hướng dẫn cú pháp hiện trên màn hình).</li>
+          <li>Đặt tệp <code>CLAUDE.md</code> ở gốc <code>D:\Platform</code> bằng khối "CLAUDE.md" (mục K của tài liệu Lộ trình). Tệp này nêu rõ danh sách nguồn chỉ đọc và quy tắc viết lại.</li>
+          <li>Thử rào: yêu cầu Claude tạo tệp <code>D:\NetworkInventory\thu.txt</code> → phải bị từ chối. Chạy <code>git -C D:\NetworkInventory status</code> → không có thay đổi mới.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Claude đọc được <code>D:\NetworkInventory\app.py</code>; lệnh ghi vào thư mục cũ bị chặn.</dd>
+        <dt>Nếu lỗi</dt><dd>Luật Deny chưa chặn được: chưa cho Claude làm việc cho tới khi rào hoạt động.</dd>
+      </dl></li>
+  </ol>
+</section>
+
+<!-- ======================= GĐ1 ======================= -->
+<section id="g1">
+  <h2><span class="k">GĐ1</span>Hạ tầng MongoDB và máy chủ Core</h2>
+  <div class="chips"><span class="chip safe">KHÔNG ĐỤNG HỆ ĐANG CHẠY</span><span class="chip dec">Tuần 2–5 · Người chính: H</span></div>
+  <div class="grid g2">
+    <div class="note"><b>Điều kiện vào</b>Quyết định 2 (on-prem), 4 (MongoDB RS) và 7 (ngân sách) đã chốt.</div>
+    <div class="note ok"><b>Cổng ra</b><code>rs.status()</code> đủ 3 node khoẻ · chuyển primary tự động dưới 15 giây · sao lưu đêm chạy và đã khôi phục thử · VM Core sẵn sàng.</div>
+  </div>
+  <ol class="steps">
+    <li><label><input type="checkbox" data-id="r1-1"><span class="t">1.1 Xin VM và đặt tên DNS</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>tuỳ quy trình cấp phát</b></span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>Có 3 máy cho MongoDB và 1 máy cho Core, tên cố định để cấu hình không phụ thuộc IP.</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li>Yêu cầu cấp: <code>mongo1</code>, <code>mongo2</code>, <code>mongo3</code> (mỗi máy 4 vCPU, 16 GB RAM, SSD 200 GB); <code>itm-core</code> (8 vCPU, 16 GB RAM, SSD 200 GB + ổ dữ liệu tệp bằng 3 lần tổng <code>WorkFiles</code>/<code>Collected</code>/<code>THU</code> hiện tại). Nếu hạ tầng ảo hoá cho phép, đặt 3 node MongoDB trên 3 máy chủ vật lý khác nhau.</li>
+          <li>Trên máy chủ DNS của AD: chạy <code>dnsmgmt.msc</code> → <span class="click">Forward Lookup Zones</span> → <span class="click">phenikaamec.local</span> → chuột phải → <span class="click">New Host (A or AAAA)…</span> → Name <code>mongo1</code>, IP của máy → <span class="click">Add Host</span>. Lặp cho <code>mongo2</code>, <code>mongo3</code>, <code>itm-core</code>.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd><code>Resolve-DnsName mongo1.phenikaamec.local</code> trả đúng IP cho cả 4 tên.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r1-2"><span class="t">1.2 Cài hệ điều hành, join domain, ổ dữ liệu, loại trừ antivirus</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>1 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Cài Windows Server 2022 hoặc 2025, cập nhật Windows đầy đủ.</li>
+          <li>Join domain: <code>sysdm.cpl</code> → <span class="click">Computer Name</span> → <span class="click">Change…</span> → chọn <span class="click">Domain</span>: <code>phenikaamec.local</code> → nhập tài khoản có quyền → khởi động lại.</li>
+          <li>Kiểm giờ đồng bộ từ AD: <code>w32tm /query /status</code> (dòng <b>Source</b> phải là máy chủ AD).</li>
+          <li>Ổ dữ liệu: <code>diskmgmt.msc</code> → khởi tạo ổ mới kiểu <b>GPT</b> → <span class="click">New Simple Volume</span> → gán <b>D:</b>, NTFS.</li>
+          <li>Loại trừ quét antivirus cho thư mục dữ liệu MongoDB (theo khuyến nghị vận hành của MongoDB): <span class="click">Windows Security</span> → <span class="click">Virus &amp; threat protection</span> → <span class="click">Manage settings</span> → <span class="click">Exclusions</span> → <span class="click">Add or remove exclusions</span> → <span class="click">Add an exclusion → Folder</span> → <code>D:\MongoDB\data</code>.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>4 máy đăng nhập được bằng tài khoản domain; giờ lệch dưới 1 giây.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r1-3"><span class="t">1.3 Cài MongoDB 8.0, MongoDB Shell, Database Tools</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>0,5 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Mở <a href="https://www.mongodb.com/try/download/community" target="_blank" rel="noopener">mongodb.com/try/download/community</a> → <span class="click">Version: 8.0.x</span> (bản mới nhất dòng 8.0) · <span class="click">Platform: Windows x64</span> · <span class="click">Package: msi</span> → <span class="click">Download</span>.</li>
+          <li>Chạy .msi → <span class="click">Next</span> → tích chấp nhận điều khoản → <span class="click">Complete</span>.</li>
+          <li>Màn <b>Service Configuration</b>: giữ <span class="click">Install MongoD as a Service</span>, chọn <span class="click">Run service as Network Service user</span>, Data Directory <code>D:\MongoDB\data</code>, Log Directory <code>D:\MongoDB\log</code> → <span class="click">Next</span>.</li>
+          <li>Bỏ tích <span class="click">Install MongoDB Compass</span> → <span class="click">Install</span> → <span class="click">Finish</span>.</li>
+          <li>Cài <b>MongoDB Shell</b> (gói MSI tại mongodb.com/try/download/shell) và <b>Database Tools</b> (gói MSI tại mongodb.com/try/download/database-tools), tuỳ chọn mặc định.</li>
+          <li>Lặp trên <code>mongo2</code>, <code>mongo3</code>. Trên <code>itm-core</code> chỉ cài MongoDB Shell + Database Tools.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd><code>mongod --version</code> và <code>mongosh --version</code> chạy được trên 3 node; dịch vụ <b>MongoDB</b> ở trạng thái Running trong <code>services.msc</code>.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r1-4"><span class="t">1.4 Keyfile và cấu hình replica set</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>0,5 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Trên <code>mongo1</code>, PowerShell quyền Administrator:
+<pre><button class="copy" type="button">Chép</button>$b = New-Object byte[] 756
+[Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($b)
+[Convert]::ToBase64String($b) | Set-Content -Encoding ascii D:\MongoDB\keyfile</pre>
+            Chép đúng tệp này sang <code>D:\MongoDB\keyfile</code> của <code>mongo2</code>, <code>mongo3</code> (qua ổ chia sẻ quản trị, xoá bản trung gian sau khi chép).</li>
+          <li>Đặt quyền tệp keyfile: chỉ <b>SYSTEM</b>, <b>Administrators</b>, <b>NETWORK SERVICE</b> đọc được (cách làm như bước 0.7).</li>
+          <li>Notepad (Run as administrator) → mở <code>C:\Program Files\MongoDB\Server\8.0\bin\mongod.cfg</code> → thay toàn bộ:
+<pre><button class="copy" type="button">Chép</button>storage:
+  dbPath: D:\MongoDB\data
+systemLog:
+  destination: file
+  logAppend: true
+  path: D:\MongoDB\log\mongod.log
+net:
+  port: 27017
+  bindIp: 127.0.0.1,mongo1.phenikaamec.local     <span class="c"># đổi theo tên từng node</span>
+security:
+  authorization: enabled
+  keyFile: D:\MongoDB\keyfile
+replication:
+  replSetName: rs0</pre></li>
+          <li><code>services.msc</code> → chuột phải <span class="click">MongoDB</span> → <span class="click">Restart</span>. Lặp trên 3 node.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Dịch vụ chạy; cuối <code>D:\MongoDB\log\mongod.log</code> không có dòng <code>"s":"E"</code> hoặc <code>"s":"F"</code>.</dd>
+        <dt>Nếu lỗi</dt><dd>Dịch vụ không lên: thường do sai thụt lề YAML (phải dùng dấu cách, không tab) hoặc NETWORK SERVICE không đọc được keyfile.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r1-5"><span class="t">1.5 Tường lửa: chỉ mở 27017 cho đúng máy</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>1 giờ</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li><code>wf.msc</code> → <span class="click">Inbound Rules</span> → <span class="click">New Rule…</span> → <span class="click">Port</span> → <span class="click">TCP</span> · <span class="click">Specific local ports: 27017</span> → <span class="click">Allow the connection</span> → chỉ tích <span class="click">Domain</span> → Name <code>MongoDB rs0</code> → <span class="click">Finish</span>.</li>
+          <li>Chuột phải rule → <span class="click">Properties</span> → tab <span class="click">Scope</span> → <span class="click">Remote IP address: These IP addresses</span> → <span class="click">Add…</span> IP của 3 node + <code>itm-core</code> + máy quản trị dùng Compass → <span class="click">OK</span>.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Từ <code>itm-core</code>: <code>Test-NetConnection mongo1 -Port 27017</code> → <b>TcpTestSucceeded: True</b>. Từ một máy khác ngoài danh sách → False.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r1-6"><span class="t">1.6 Khởi tạo replica set và tài khoản</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>0,5 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Trên <code>mongo1</code> (kết nối từ chính máy để dùng localhost exception tạo tài khoản đầu tiên):
+<pre><button class="copy" type="button">Chép</button>mongosh --host 127.0.0.1
+rs.initiate({ _id: "rs0", members: [
+  { _id: 0, host: "mongo1.phenikaamec.local:27017" },
+  { _id: 1, host: "mongo2.phenikaamec.local:27017" },
+  { _id: 2, host: "mongo3.phenikaamec.local:27017" } ] })
+<span class="c">// đợi dấu nhắc thành  rs0 [direct: primary]</span>
+use admin
+db.createUser({ user: "itm_admin", pwd: passwordPrompt(), roles: ["root"] })</pre></li>
+          <li>Thoát, đăng nhập lại bằng tài khoản vừa tạo và tạo tài khoản ứng dụng:
+<pre><button class="copy" type="button">Chép</button>mongosh "mongodb://mongo1.phenikaamec.local,mongo2.phenikaamec.local,mongo3.phenikaamec.local/?replicaSet=rs0" -u itm_admin --authenticationDatabase admin
+use admin
+db.createUser({ user: "core_app",   pwd: passwordPrompt(), roles: [{ role: "readWrite", db: "itm_core" }] })
+db.createUser({ user: "master_app", pwd: passwordPrompt(), roles: [{ role: "readWrite", db: "itm_master" }] })
+db.createUser({ user: "itm_backup", pwd: passwordPrompt(), roles: ["backup"] })
+db.createUser({ user: "itm_restore", pwd: passwordPrompt(), roles: ["restore"] })
+rs.status().members.map(m =&gt; m.name + "  " + m.stateStr)</pre></li>
+          <li>Ghi mật khẩu vào kho bí mật của Trung tâm (KeePass hoặc tương đương). Không ghi vào tài liệu, chat, email.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Lệnh cuối in 1 dòng <b>PRIMARY</b> và 2 dòng <b>SECONDARY</b>.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r1-7"><span class="t">1.7 Thử tự chuyển primary</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>1 giờ</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Trên primary trong mongosh: <code>rs.stepDown()</code> → sau vài giây <code>rs.status().members.map(m =&gt; m.name + " " + m.stateStr)</code> thấy primary đã sang node khác.</li>
+          <li>Trên primary mới: <code>services.msc</code> → <span class="click">Stop</span> dịch vụ MongoDB → đo thời gian một node còn lại lên PRIMARY → <span class="click">Start</span> lại.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Mỗi lần có primary mới trong khoảng 15 giây; node bật lại về SECONDARY và đồng bộ.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r1-8"><span class="t">1.8 Sao lưu đêm + đồng bộ sang nơi khác</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>0,5 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Trên <code>itm-core</code> tạo <code>D:\PlatformSecrets\mongodump.yaml</code> (thư mục đã khoá quyền):
+<pre><button class="copy" type="button">Chép</button>uri: mongodb://itm_backup:&lt;mat-khau&gt;@mongo1.phenikaamec.local:27017,mongo2.phenikaamec.local:27017,mongo3.phenikaamec.local:27017/?replicaSet=rs0&amp;authSource=admin</pre></li>
+          <li>Tạo <code>D:\MongoBackup\backup.ps1</code>:
+<pre><button class="copy" type="button">Chép</button>$ErrorActionPreference = 'Stop'
+$dst = 'D:\MongoBackup'; $day = Get-Date -Format 'yyyyMMdd'
+$dump = Get-ChildItem 'C:\Program Files\MongoDB\Tools' -Recurse -Filter mongodump.exe | Select-Object -First 1
+&amp; $dump.FullName --config 'D:\PlatformSecrets\mongodump.yaml' --readPreference secondary --gzip --archive="$dst\itm_$day.gz"
+if ($LASTEXITCODE -ne 0) { throw "mongodump loi $LASTEXITCODE" }
+Get-ChildItem $dst -Filter 'itm_*.gz' | Sort-Object LastWriteTime -Descending | Select-Object -Skip 14 | Remove-Item
+robocopy $dst '\\&lt;may-sao-luu&gt;\MongoBackup' 'itm_*.gz' /MIR /R:2 /W:5 | Out-Null
+if ($LASTEXITCODE -ge 8) { throw "robocopy loi $LASTEXITCODE" }</pre></li>
+          <li>Task Scheduler như bước 0.6: Name <code>ITM Mongo Backup</code>, Daily 01:30, Program <code>powershell.exe</code>, arguments <code>-NoProfile -ExecutionPolicy Bypass -File D:\MongoBackup\backup.ps1</code>, <span class="click">Do not start a new instance</span>. Chuột phải → <span class="click">Run</span> để chạy thử.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Có tệp <code>itm_&lt;ngày&gt;.gz</code> ở cả hai nơi; Last Run Result <code>(0x0)</code>.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r1-9"><span class="t">1.9 Khôi phục thử và lịch khôi phục hằng tháng</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>0,5 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Trên một VM thử, cài MongoDB 8.0 một node (không cần replica set).</li>
+          <li><code>mongorestore --gzip --archive=D:\restore\itm_&lt;ngày&gt;.gz --drop</code></li>
+          <li>Mở Compass, đối chiếu số tài liệu vài collection với cụm thật.</li>
+          <li>Tạo lời nhắc lịch ngày làm việc đầu mỗi tháng: "Khôi phục thử bản sao lưu MongoDB".</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Khôi phục không lỗi, số liệu khớp. Ghi biên bản khôi phục thử.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r1-10"><span class="t">1.10 Chuẩn bị VM Core và Compass trên máy quản trị</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>0,5 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Trên <code>itm-core</code>: tạo <code>D:\Platform</code>, <code>D:\PlatformData</code>, <code>D:\Platform\logs</code>; chép <code>nssm.exe</code> vào <code>C:\Program Files\NSSM</code> và thêm thư mục này vào PATH hệ thống (<code>sysdm.cpl</code> → <span class="click">Advanced</span> → <span class="click">Environment Variables</span> → <b>Path</b> → <span class="click">Edit</span> → <span class="click">New</span>).</li>
+          <li>Cài Git for Windows và uv (lệnh ở bước 2.3).</li>
+          <li>Trên máy quản trị: cài <b>MongoDB Compass</b>, kết nối bằng chuỗi <code>mongodb://itm_admin@mongo1.phenikaamec.local,mongo2.phenikaamec.local,mongo3.phenikaamec.local/?replicaSet=rs0&amp;authSource=admin</code>.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Compass thấy cụm <code>rs0</code>; <code>nssm</code> và <code>git</code> chạy được từ PowerShell trên <code>itm-core</code>.</dd>
+      </dl></li>
+  </ol>
+</section>
+<!-- ======================= GĐ2 ======================= -->
+<section id="g2">
+  <h2><span class="k">GĐ2</span>Nền Platform-Core</h2>
+  <div class="chips"><span class="chip safe">KHÔNG ĐỤNG HỆ ĐANG CHẠY</span><span class="chip dec">Tuần 4–10 · Người chính: C</span></div>
+  <div class="grid g2">
+    <div class="note"><b>Điều kiện vào</b>Đặc tả V3 đã ban hành; cụm MongoDB đạt cổng ra GĐ1.</div>
+    <div class="note ok"><b>Cổng ra</b>Core chạy thành dịch vụ · tổ chức PHENIKAA + Super Admin tạo được · đăng nhập Local/AD/TOTP · phân quyền · nhật ký · OpenAPI · 23 test cô lập xanh trong CI.</div>
+  </div>
+  <ol class="steps">
+    <li><label><input type="checkbox" data-id="r2-1"><span class="t">2.1 Tạo repo riêng tư và quy tắc nhánh</span></label>
+      <div class="m2"><span>Người làm: <b>Q</b></span><span>Thời lượng: <b>1 giờ</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>github.com → nút <span class="click">+</span> góc trên phải → <span class="click">New repository</span> → Owner: tài khoản/tổ chức của Trung tâm → Name <code>phenikaa-platform</code> → <span class="click">Private</span> → tích <span class="click">Add a README file</span> → <span class="click">Create repository</span>.</li>
+          <li><span class="click">Settings</span> → <span class="click">Rules</span> → <span class="click">Rulesets</span> → <span class="click">New ruleset</span> → <span class="click">New branch ruleset</span> → Ruleset name <code>bao-ve-main</code> → Enforcement <span class="click">Active</span> → Target branches <span class="click">Include default branch</span> → tích <span class="click">Require a pull request before merging</span> và <span class="click">Require status checks to pass</span> → <span class="click">Create</span>.</li>
+          <li>Trên máy phát triển: GitHub Desktop → <span class="click">File</span> → <span class="click">Clone repository…</span> → chọn <code>phenikaa-platform</code> → Local path <code>D:\Platform</code> → <span class="click">Clone</span>.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Đẩy thẳng lên <code>main</code> bị từ chối; tạo Pull Request thì được.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r2-2"><span class="t">2.2 Khung thư mục 5 project, .gitattributes, .gitignore</span></label>
+      <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>2 giờ</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>PowerShell trong <code>D:\Platform</code>:
+<pre><button class="copy" type="button">Chép</button>'platform-core','platform-agent','desktop-app','platform-master','platform-deployment','docs\adr' |
+  ForEach-Object { New-Item -ItemType Directory -Force $_ | Out-Null }
+'qa','caddy','nssm','build','updater','runner' | ForEach-Object { New-Item -ItemType Directory -Force "platform-deployment\$_" | Out-Null }</pre></li>
+          <li>Tạo <code>.gitattributes</code>:
+<pre><button class="copy" type="button">Chép</button>* text=auto eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.iss text eol=crlf
+*.ps1 text eol=crlf
+*.png binary
+*.ico binary
+*.exe binary</pre></li>
+          <li>Thêm vào <code>.gitignore</code>:
+<pre><button class="copy" type="button">Chép</button>.venv/
+__pycache__/
+node_modules/
+.next/
+out/
+target/
+logs/
+*.env
+*.key
+*.pem
+*.pfx</pre></li>
+          <li>Chép 8 tệp ADR (bước 0.10) vào <code>docs\adr</code> và tệp <code>CLAUDE.md</code> (bước 0.11) vào gốc repo. Commit qua Pull Request đầu tiên.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Cây thư mục khớp mục 2 của CLAUDE.md mục tiêu.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r2-3"><span class="t">2.3 Cài uv, Python 3.14 và khởi tạo platform-core</span></label>
+      <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>2 giờ</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Cài uv và Python:
+<pre><button class="copy" type="button">Chép</button>powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+<span class="c"># đóng và mở lại PowerShell</span>
+uv python install 3.14
+cd D:\Platform
+uv init --app platform-core
+cd platform-core
+uv python pin 3.14
+uv add flask apiflask flask-socketio gevent gevent-websocket pymongo pydantic argon2-cffi pyotp ldap3 cryptography openpyxl requests python-dotenv
+uv add --dev pytest ruff pyright</pre></li>
+          <li>Tạo thư mục <code>app</code> với các module của đặc tả §5.4 (mỗi thư mục một <code>__init__.py</code>): <code>api auth tenants users rbac rooms devices agents commands realtime legacy_adapter incidents chat work files reports audit settings integrations workers storage db security config utils</code>.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd><code>uv run python -c "import gevent, pymongo, apiflask; print('ok')"</code> in <code>ok</code> mà không phải biên dịch gì.</dd>
+        <dt>Nếu lỗi</dt><dd><code>gevent</code> đòi biên dịch hoặc lỗi trên 3.14: <code>uv python pin 3.13</code> → <code>uv sync</code>; ghi vào ADR.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r2-4"><span class="t">2.4 Bí mật ngoài repo + chặn commit lộ khoá</span></label>
+      <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>2 giờ</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Tạo <code>D:\PlatformSecrets\core.env</code> (thư mục đã khoá quyền ở bước 0.7):
+<pre><button class="copy" type="button">Chép</button>MONGO_URI=mongodb://core_app:&lt;mat-khau&gt;@mongo1.phenikaamec.local,mongo2.phenikaamec.local,mongo3.phenikaamec.local/?replicaSet=rs0&amp;authSource=admin
+MONGO_DB=itm_core
+MASTER_KEY_B64=&lt;32 byte ngẫu nhiên, base64&gt;
+CORE_SIGNING_KEY=D:\PlatformSecrets\core_ed25519.pem
+PORT=7009</pre>
+            Sinh <code>MASTER_KEY_B64</code>: <code>python -c "import os,base64;print(base64.b64encode(os.urandom(32)).decode())"</code>.</li>
+          <li>Cài pre-commit: <code>uv tool install pre-commit</code>. Tạo <code>.pre-commit-config.yaml</code> ở gốc repo:
+<pre><button class="copy" type="button">Chép</button>repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: &lt;bản mới nhất trên trang Releases của gitleaks&gt;
+    hooks:
+      - id: gitleaks</pre>
+            Chạy <code>pre-commit install</code>.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Thử thêm một tệp chứa chuỗi giống khoá riêng rồi commit: bị chặn.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r2-5"><span class="t">2.5 Tầng CSDL: kết nối, index, validator, dữ liệu gốc</span></label>
+      <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>4 ngày</b></span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>Đúng §4A.33: tạo collection, index, seed quyền; không tạo tổ chức giả.</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li><code>app/db/client.py</code> (khung mẫu):
+<pre><button class="copy" type="button">Chép</button>from pymongo import MongoClient
+from app.config.settings import S
+
+_client = MongoClient(S.MONGO_URI, w="majority", retryWrites=True,
+                      serverSelectionTimeoutMS=5000, appname="platform-core")
+db = _client[S.MONGO_DB]</pre></li>
+          <li><code>app/db/indexes.py</code>: khai báo toàn bộ index của bảng 4A.30 (đã sửa theo V3). Ví dụ phần <code>computers</code>:
+<pre><button class="copy" type="button">Chép</button>from pymongo import ASCENDING as A
+INDEXES = {
+  "computers": [
+    ([("tenant_id", A), ("agent_id", A)], {"unique": True, "partialFilterExpression": {"agent_id": {"$type": "string"}}}),
+    ([("tenant_id", A), ("mac", A)], {}),          <span class="c"># KHÔNG unique (V3, C1)</span>
+    ([("tenant_id", A), ("hostname", A)], {}),
+    ([("tenant_id", A), ("room_id", A)], {}),
+    ([("tenant_id", A), ("is_online", A)], {}),
+  ],
+  "users":    [([("tenant_id", A), ("username", A)], {"unique": True})],
+  "sessions": [([("expires_at", A)], {"expireAfterSeconds": 0})],
+  "client_logs": [([("created_at", A)], {"expireAfterSeconds": 90 * 86400})],
+  "audit_log":   [([("created_at", A)], {"expireAfterSeconds": 180 * 86400})],
+  <span class="c"># ... đủ mọi collection theo 4A.30</span>
+}
+def ensure(db):
+    for col, specs in INDEXES.items():
+        for keys, opt in specs:
+            db[col].create_index(keys, **opt)</pre></li>
+          <li><code>app/db/validators.py</code>: một <code>$jsonSchema</code> cho mỗi collection tenant-owned, bắt buộc <code>tenant_id</code> kiểu <code>objectId</code>; áp bằng <code>db.command("collMod", col, validator=..., validationLevel="moderate")</code> (tạo collection trước nếu chưa có).</li>
+          <li><code>app/db/seeds.py</code>: catalog <code>permissions</code> gồm 14 mã của đặc tả + mã cho tính năng giữ lại (vd. <code>agent.update</code>, <code>remote.vnc</code>, <code>machine_events.view</code>); upsert theo <code>code</code>.</li>
+          <li><code>app/db/init.py</code> gọi lần lượt: tạo collection → validator → index → seed. Chạy: <code>uv run python -m app.db.init</code>.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Chạy <code>app.db.init</code> hai lần liên tiếp không lỗi; Compass thấy đủ collection và index; <code>permissions</code> không trùng mã.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r2-6"><span class="t">2.6 Ngữ cảnh tổ chức, TenantRepo và test cấm truy vấn trần</span></label>
+      <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>3 ngày</b></span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>Đáp ứng quy tắc AI 1–5 (§73) bằng cơ chế, không dựa vào trí nhớ người viết.</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li><code>app/tenants/context.py</code>: dataclass <code>Ctx(tenant_id, user_id, permissions, room_ids, is_super, system)</code>; <code>before_request</code> đọc token phiên → nạp <code>g.ctx</code>. Mọi header/tham số mang tên tenant do client gửi bị bỏ qua.</li>
+          <li><code>app/tenants/repo.py</code>: lớp <code>TenantRepo</code> như mục G1 của tài liệu Lộ trình; mỗi module có <code>repo.py</code> kế thừa (vd. <code>ComputerRepo(collection="computers")</code>).</li>
+          <li>Kiểm tham chiếu chéo trong service trước khi ghi (4A.29): ví dụ chuyển máy sang phòng thì đọc cả máy và phòng qua repo của cùng <code>g.ctx.tenant_id</code>; không thấy thì trả 404.</li>
+          <li><code>tests/isolation/test_no_raw_queries.py</code>:
+<pre><button class="copy" type="button">Chép</button>import pathlib, re
+TENANT_COLS = ["users","rooms","computers","agents","incidents","chat_messages","audit_log",
+               "settings","usage_stats","client_logs","pushed_files","file_metadata"]
+PAT = re.compile(r"db\[\s*['\"](" + "|".join(TENANT_COLS) + r")['\"]\s*\]\.(find|update|delete|insert|aggregate|count)")
+def test_khong_truy_van_tran():
+    bad = []
+    for f in pathlib.Path("app").rglob("*.py"):
+        if f.name == "repo.py" or "db" in f.parts: continue
+        for i, ln in enumerate(f.read_text(encoding="utf-8").splitlines(), 1):
+            if PAT.search(ln): bad.append(f"{f}:{i}")
+    assert not bad, "Truy van tran ngoai repo: " + ", ".join(bad)</pre></li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Thêm thử một dòng <code>db["computers"].find({})</code> vào một route → test đỏ; xoá → xanh.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r2-7"><span class="t">2.7 Lệnh tạo tổ chức PHENIKAA và Super Admin</span></label>
+      <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>1 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li><code>app/tenants/cli.py</code> với hai lệnh: <code>create</code> (tạo <code>tenants</code> + policy mặc định gồm <b>Super Admin</b> là system policy) và <code>create-admin</code> (tạo user, hỏi mật khẩu bằng <code>getpass</code>, băm Argon2id).</li>
+          <li>Chạy:
+<pre><button class="copy" type="button">Chép</button>uv run python -m app.tenants.cli create --code PHENIKAA --name "Truong Dai hoc Phenikaa" --timezone Asia/Ho_Chi_Minh
+uv run python -m app.tenants.cli create-admin --tenant PHENIKAA --username admin</pre></li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Compass: <code>tenants</code> có 1 bản ghi; <code>users</code> có admin với <code>password_hash</code> bắt đầu bằng <code>$argon2id$</code>.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r2-8"><span class="t">2.8 Đăng nhập: Local, AD, TOTP, một thiết bị, giới hạn IP</span></label>
+      <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>6 ngày</b></span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>Mang đúng hành vi đã chạy ổn của hệ cũ sang (§4, §8.4 của CLAUDE.md hiện tại) và thêm tầng tổ chức.</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li>Đọc (không sửa) trong <code>D:\NetworkInventory\app.py</code>: route <code>/login</code>, <code>_login_guard_main</code>, <code>_account_ip_block</code>, <code>_ip_matches_list</code>, <code>_enforce_single_session</code>; trong <code>utils.py</code>: <code>verify_password</code>, <code>password_needs_upgrade</code>, <code>totp_check</code>.</li>
+          <li>API theo §50: <code>POST /api/auth/login</code> nhận <code>{tenant_code, username, password, totp?}</code>; <code>POST /api/auth/logout</code>; <code>GET /api/auth/me</code>.</li>
+          <li>Thứ tự kiểm khi đăng nhập: tổ chức tồn tại và <code>ACTIVE</code> → tài khoản Local (Argon2id; băm cũ hợp lệ thì nâng lên Argon2id) hoặc AD (ldap3 bind bằng UPN, AD user phải có trong <code>ad_user_policies</code>) → TOTP nếu bật → giới hạn IP theo <code>client_ip()</code> → tạo phiên.</li>
+          <li>Phiên: <code>secrets.token_urlsafe(32)</code> trả cho Desktop; CSDL chỉ lưu SHA-256. Ghi đè <code>active_sessions</code> theo <code>(tenant_id, user_id)</code> → thiết bị cũ bị đăng xuất ở request kế tiếp (Super Admin miễn trừ).</li>
+          <li>Desktop gửi token trong header <code>Authorization: Bearer …</code>; socket <code>/desktop</code> gửi token khi <code>connect</code>.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Kịch bản: đăng nhập Local, AD, có TOTP; đăng nhập máy thứ hai thì máy thứ nhất bị đá; tài khoản giới hạn IP đăng nhập từ IP khác bị chặn; sai mã tổ chức bị từ chối.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r2-9"><span class="t">2.9 Phân quyền, nhật ký, OpenAPI, điểm khởi chạy</span></label>
+      <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>4 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Decorator <code>@require_perm("device.control")</code> kiểm <code>g.ctx.permissions</code>; phạm vi phòng kiểm bằng <code>g.ctx.room_ids</code>.</li>
+          <li><code>after_request</code> ghi <code>audit_log</code> cho mọi POST/PUT/PATCH/DELETE có phiên, kèm <code>system</code> (LAB/HSK/THI).</li>
+          <li><code>app/server.py</code> (khung mẫu):
+<pre><button class="copy" type="button">Chép</button>from gevent import monkey; monkey.patch_all()          <span class="c"># PHẢI là dòng đầu tiên</span>
+import engineio
+from apiflask import APIFlask
+from flask_socketio import SocketIO
+from app.config.settings import S
+
+engineio.payload.Payload.max_decode_packets = 500    <span class="c"># bài học View desktop</span>
+app = APIFlask(__name__, title="Platform-Core API", version="3.0")
+socketio = SocketIO(app, async_mode="gevent", cors_allowed_origins=S.ALLOWED_ORIGINS)
+
+from app import api, legacy_adapter, realtime          <span class="c"># đăng ký blueprint + socket handler</span>
+
+@app.get("/api/health")
+def health():
+    return {"ok": True}
+
+if __name__ == "__main__":
+    socketio.run(app, host="0.0.0.0", port=S.PORT)</pre></li>
+          <li>Mở <code>http://localhost:7009/docs</code> để xem tài liệu API tự sinh.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Trang <code>/docs</code> liệt kê các nhóm API; gọi API cần quyền bằng tài khoản thiếu quyền trả 403; mỗi thao tác thay đổi có một dòng <code>audit_log</code>.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r2-10"><span class="t">2.10 Bộ test cô lập tổ chức và CI</span></label>
+      <div class="m2"><span>Người làm: <b>C, H</b></span><span>Thời lượng: <b>4 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Viết 15 test của §4A.36 và 8 test của §77 trong <code>tests/isolation/</code>. Fixture tạo 2 tổ chức A, B trên database test tên ngẫu nhiên, xoá sau khi chạy.</li>
+          <li>Tạo <code>.github/workflows/ci.yml</code>:
+<pre><button class="copy" type="button">Chép</button>name: ci
+on: [pull_request]
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:8.0
+        ports: ["27017:27017"]
+    defaults: { run: { working-directory: platform-core } }
+    env:
+      MONGO_URI: mongodb://localhost:27017
+      MONGO_DB: itm_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync
+      - run: uv run ruff check .
+      - run: uv run pyright
+      - run: uv run pytest -q</pre></li>
+          <li>Thêm job <code>core</code> vào danh sách status check bắt buộc của ruleset (bước 2.1).</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Pull Request có dấu xanh; cố ý làm hỏng một test thì không merge được.</dd>
+        <dt>Nếu lỗi</dt><dd>Phiên bản action trong ví dụ có thể đã mới hơn; dùng bản mới nhất ghi trên trang Marketplace của action đó.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r2-11"><span class="t">2.11 Chạy Core thành dịch vụ trên itm-core</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>0,5 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Trên <code>itm-core</code>: clone repo vào <code>D:\Platform</code>, <code>cd D:\Platform\platform-core</code>, <code>uv sync --no-dev</code>.</li>
+          <li>PowerShell quyền Administrator: <code>nssm install PlatformCore</code>.</li>
+          <li>Tab <b>Application</b>: Path <code>D:\Platform\platform-core\.venv\Scripts\python.exe</code> · Startup directory <code>D:\Platform\platform-core</code> · Arguments <code>-m app.server</code>.</li>
+          <li>Tab <b>Details</b>: Display name <code>Phenikaa Platform Core</code> · Startup type <span class="click">Automatic (Delayed Start)</span>.</li>
+          <li>Tab <b>Log on</b>: <span class="click">Local System account</span>. Tab <b>I/O</b>: Output <code>D:\Platform\logs\core-out.log</code> · Error <code>D:\Platform\logs\core-err.log</code>.</li>
+          <li>Tab <b>File rotation</b>: tích <span class="click">Rotate files</span>, <span class="click">Rotate while service is running</span>, giới hạn <code>10485760</code> bytes.</li>
+          <li>Tab <b>Environment</b>: <code>DOTENV_PATH=D:\PlatformSecrets\core.env</code>. Tab <b>Exit actions</b>: <span class="click">Restart application</span>, delay 5000 ms → <span class="click">Install service</span>.</li>
+          <li><code>nssm start PlatformCore</code>, sau đó <b>luôn</b> <code>nssm status PlatformCore</code> (không tin errorlevel).</li>
+          <li>Tường lửa <code>itm-core</code>: mở TCP 7009 chỉ cho IP máy chủ Caddy hiện tại (cách làm bước 1.5).</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Từ máy chủ Caddy: <code>curl.exe http://itm-core.phenikaamec.local:7009/api/health</code> trả <code>{"ok": true}</code>. Kill tiến trình python của Core → dịch vụ tự lên lại trong 5 giây.</dd>
+      </dl></li>
+  </ol>
+</section>
+
+<!-- ======================= GĐ3 ======================= -->
+<section id="g3">
+  <h2><span class="k">GĐ3</span>Bộ tương thích agent cũ + canary bằng Caddy</h2>
+  <div class="chips"><span class="chip s0">§0 KẾT NỐI</span><span class="chip sys">TOÀN HỆ THỐNG khi mở rộng</span><span class="chip dec">Tuần 10–16 · Người chính: C, H</span></div>
+  <div class="grid g2">
+    <div class="note crit"><b>Điều kiện vào (bắt buộc)</b>Bước 0.6 và 0.7 đang chạy · Core đạt cổng ra GĐ2 · có máy thử không phục vụ giảng dạy · người trực có mặt trong mọi lần sửa Caddy.</div>
+    <div class="note ok"><b>Cổng ra</b>Máy thử 72 giờ + 1 phòng ít dùng 1 tuần chạy trên Core không rớt · quay lui đã diễn tập dưới 2 phút · họp đi tiếp/dừng (Phụ lục P3) đã quyết.</div>
+  </div>
+  <ol class="steps">
+    <li><label><input type="checkbox" data-id="r3-1"><span class="t">3.1 Ghi hợp đồng giao thức agent v2</span></label>
+      <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>4 ngày</b></span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>Biết chính xác mọi thứ agent 2.7.5.3 gửi và chờ nhận, để Core trả lời y hệt hub cũ.</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li>Lập bảng trong <code>platform-core/tests/contract_v2/HOP_DONG.md</code>. Danh sách đo từ mã agent ngày 02/10/2026:
+            <div class="tbl"><table>
+              <thead><tr><th>Loại</th><th>Tên</th></tr></thead>
+              <tbody>
+                <tr><td>HTTP agent gọi</td><td><code>/update</code> (nhịp tim) · <code>/check_update</code> · <code>/download_setup</code> · <code>/client_log</code> · <code>/offline</code> · <code>/check_command/…</code> · <code>/login_result/…</code> · <code>/pty_auth_result/…</code> · <code>/ps_auth_result/…</code> · <code>/ps_bulk_result/…</code> · <code>/work_file/…</code> · <code>/collect_report</code> · <code>/collect_upload</code> · <code>/send_report</code> · <code>/fs_recv_raw</code></td></tr>
+                <tr><td>URL do server cấp trong lệnh</td><td><code>/fs_serve/&lt;tok&gt;</code>, <code>/fs_bridge/&lt;tok&gt;</code> (truyền tệp) · <code>relay_url</code> + token trong lệnh <code>vnc_start</code> (relay VNC hiện có)</td></tr>
+                <tr><td>Socket agent → server</td><td><code>register</code> · <code>cmd_ack</code> · <code>client_ps_output</code> · <code>client_pty_output</code> · <code>fs_progress</code> · <code>fs_response</code> · <code>vnc_thumb</code></td></tr>
+                <tr><td>Socket server → agent</td><td><code>execute_command</code> · <code>server_ps_input</code> · <code>server_pty_input</code> · <code>server_pty_resize</code> · <code>fs_request</code> · <code>vnc_thumb_req</code></td></tr>
+              </tbody></table></div></li>
+          <li>Với mỗi dòng: đọc hàm xử lý tương ứng trong <code>D:\NetworkInventory\app.py</code> (chỉ đọc), ghi định dạng dữ liệu vào/ra và mã trạng thái HTTP, lưu một tệp mẫu JSON trong <code>tests/contract_v2/fixtures/</code>.</li>
+          <li>Ghi riêng các hằng số hành vi: <code>ACK_TIMEOUT=8</code>, <code>ACK_MAX_TRIES=3</code>, ngưỡng offline, định dạng <code>disk_usage</code> <code>dl:dn:pct:free_gb:total_gb</code>, room <code>host_&lt;HOSTNAME&gt;</code>.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Mỗi endpoint/sự kiện có ít nhất một fixture và một test hợp đồng (đang đỏ, chờ bước 3.3).</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r3-2"><span class="t">3.2 Thu log thật của máy thử qua Caddy (1 ngày)</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>1 ngày</b></span><span class="chip sys">SỬA CADDY</span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>Lấy User-Agent, đường dẫn, tần suất thật của agent (cần cho điều kiện canary ở 3.6) mà không ghi log của 888 máy còn lại.</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li>Sao lưu: chép <code>D:\Caddy\Caddyfile</code> thành <code>Caddyfile.bak-&lt;ngày&gt;-log</code>.</li>
+          <li>Trong khối site <code>:5443</code> thêm (thay IP máy thử):
+<pre><button class="copy" type="button">Chép</button>@khong_phai_may_thu not client_ip 10.x.y.15/32
+log_skip @khong_phai_may_thu
+log {
+    output file D:\Caddy\capture_maythu.log
+    format json
+}</pre></li>
+          <li><code>cd D:\Caddy</code> → <code>.\caddy.exe validate --config .\Caddyfile</code> → <code>.\caddy.exe reload --config .\Caddyfile</code>.</li>
+          <li>Sau 1 ngày: gỡ khối vừa thêm, validate, reload. Đọc tệp log: đếm theo <code>request.uri</code>, ghi lại <code>request.headers.User-Agent</code>.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Biết User-Agent của agent khi gọi HTTP và khi mở websocket; không chứa chữ <code>Mozilla</code>.</dd>
+        <dt>Nếu lỗi</dt><dd><code>validate</code> báo lỗi cú pháp: không reload, sửa lại. Có bất kỳ dấu hiệu máy rớt: chép bản <code>.bak</code> đè lại, reload.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r3-3"><span class="t">3.3 Viết legacy_adapter</span></label>
+      <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>3 tuần</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Cấu trúc: <code>app/legacy_adapter/{http_routes.py, socket_handlers.py, mapping.py, update_gate.py, results.py}</code>.</li>
+          <li><b>Gắn tổ chức:</b> mọi request v2 thuộc tổ chức trong setting <code>legacy.tenant_code</code> (= PHENIKAA). Chỉ nhận từ dải IP trong <code>legacy.allowed_cidrs</code> (giao thức v2 không có xác thực agent).</li>
+          <li><b>Nhịp tim <code>/update</code>:</b> cập nhật RAM online (G4), ghi <code>computers</code> khi đổi trạng thái hoặc 60 giây/lần; trả về <b>đúng</b> định dạng hub cũ (theo fixture). Phân giải phòng bằng một hàm duy nhất có cache, tôn trọng <code>room_override</code>.</li>
+          <li><b>Socket:</b> <code>register</code> → join room <code>host_&lt;HOSTNAME&gt;</code> + ghi map host → sid; <code>disconnect</code> → đánh offline ngay; <code>cmd_ack</code> → xoá khỏi danh sách chờ.</li>
+          <li><b>Gửi lệnh:</b> <code>dispatch(host, payload)</code> gắn <code>command_id</code>, theo dõi ACK, gửi lại tối đa 3 lần; máy không có socket thì <b>không broadcast</b>, trả lỗi "máy không còn kênh lệnh".</li>
+          <li><b>Kết quả bất đồng bộ</b> (<code>ps_bulk_result</code>, kết quả đăng nhập/terminal): lưu theo token trong MongoDB (không để RAM), phát realtime tới Desktop, có API poll.</li>
+          <li><b>Định danh phần cứng:</b> bỏ qua serial rác (<code>N/A</code>, <code>...</code>, dài dưới 5 ký tự); trùng phần cứng thì ghi <code>machine_events</code>, <b>không xoá máy</b>.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Toàn bộ test <code>contract_v2</code> xanh; test tải giả lập 900 agent gửi nhịp tim mỗi 2 giây trong 30 phút: CPU Core dưới 50%, không rò bộ nhớ.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r3-4"><span class="t">3.4 Cập nhật agent cũ phục vụ từ Core</span></label>
+      <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>3 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Chép <code>Client_Management.exe</code>, <code>manifest.json</code>, <code>version.txt</code> từ <code>D:\Backup\Moc0\updates</code> vào kho tệp của Core (<code>D:\PlatformData\updates\</code>).</li>
+          <li><code>/check_update</code> và <code>/download_setup</code> trả đúng định dạng cũ; kiểm SHA-256 + size từ manifest.</li>
+          <li>Cổng chia đợt đọc từ <code>settings</code>: <code>update.rollout_rooms</code>, <code>update.rollout_percent</code>, <code>update.all</code>. <b>Mặc định tất cả tắt.</b></li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Máy thử (sau bước 3.6) gọi <code>/check_update</code> nhận "không có bản mới" khi các cổng tắt.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r3-5"><span class="t">3.5 Chuẩn bị trước khi chuyển máy thử</span></label>
+      <div class="m2"><span>Người làm: <b>H, Q</b></span><span>Thời lượng: <b>0,5 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Thêm hostname máy thử vào <code>D:\Backup\baseline\canary_hosts.txt</code> (script 0.7 sẽ không báo động khi máy này "biến mất" khỏi hub cũ).</li>
+          <li>Báo người phụ trách phòng có máy thử: máy sẽ hiện offline trên web cũ.</li>
+          <li>Thêm site Caddy <code>:7443</code> cho Desktop/kiểm thử trỏ về Core. Cấu hình hiện tại tắt automatic HTTPS, nên phải <b>chép đúng dòng <code>tls …</code> đang có trong khối <code>:5443</code></b> sang khối mới, nếu không cổng 7443 sẽ chạy HTTP thường:
+<pre><button class="copy" type="button">Chép</button>:7443 {
+    tls &lt;chép nguyên dòng tls của khối :5443&gt;
+    reverse_proxy itm-core.phenikaamec.local:7009
+}</pre>
+            validate → reload; mở tường lửa 7443 cho máy quản trị.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd><code>https://&lt;máy-chủ&gt;:7443/docs</code> mở được từ máy quản trị.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r3-6"><span class="t">3.6 Chuyển 1 máy thử sang Core bằng Caddy</span></label>
+      <div class="m2"><span>Người làm: <b>H</b> (C trực)</span><span>Thời lượng: <b>1 giờ + theo dõi</b></span><span class="chip s0">§0</span></div>
+      <dl class="f">
+        <dt>Cần có trước</dt><dd>Bước 3.2–3.5 xong; ngoài giờ có lớp ở phòng chứa máy thử.</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li>Chép <code>D:\Caddy\Caddyfile</code> → <code>Caddyfile.bak-&lt;ngày&gt;-canary</code>.</li>
+          <li>Trong khối <code>:5443</code>, <b>trước</b> dòng <code>handle @hub</code>, thêm:
+<pre><button class="copy" type="button">Chép</button>@core_canary {
+    client_ip 10.x.y.15/32
+    not header User-Agent *Mozilla*
+}
+handle @core_canary {
+    reverse_proxy itm-core.phenikaamec.local:7009
+}</pre></li>
+          <li>Kiểm và nạp:
+<pre><button class="copy" type="button">Chép</button>cd D:\Caddy
+.\caddy.exe validate --config .\Caddyfile
+.\caddy.exe adapt --config .\Caddyfile --pretty &gt; .\adapt_check.json
+.\caddy.exe reload --config .\Caddyfile</pre>
+            Mở <code>adapt_check.json</code>, tìm <code>core_canary</code>: khối này phải nằm trước khối chứa <code>/socket.io/*</code> của <code>@hub</code>.</li>
+          <li>Trong 2 phút: <code>https://&lt;máy-chủ&gt;:7443/docs</code> → API danh sách thiết bị → máy thử <b>online</b>; trên web cũ máy thử <b>offline</b>.</li>
+          <li>Thử lệnh qua <code>/docs</code> (nút <span class="click">Try it out</span>): PowerShell <code>hostname; whoami</code> → trả tên máy và <code>nt authority\system</code>. Thử giao một tệp nhỏ, mở VNC.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Máy online trên Core, lệnh chạy, không có lỗi trong <code>core-err.log</code>.</dd>
+        <dt>Nếu lỗi</dt><dd>Máy không lên Core sau 5 phút: chép bản <code>.bak</code> đè <code>Caddyfile</code>, reload; máy phải về hub cũ trong 2 phút. Phân tích log rồi thử lại.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r3-7"><span class="t">3.7 Diễn tập quay lui</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>30 phút</b></span><span class="chip s0">§0</span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Bấm giờ. Xoá khối <code>@core_canary</code> + <code>handle @core_canary</code> → validate → reload.</li>
+          <li>Theo dõi web cũ tới khi máy thử online lại; dừng đồng hồ.</li>
+          <li>Ghi biên bản: thời gian, người làm, điều bất thường. Đưa khối canary trở lại (bước 3.6).</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Máy về hub cũ dưới 2 phút, không phải đụng máy trạm.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r3-8"><span class="t">3.8 Theo dõi 72 giờ</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>3 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd>Sáng và chiều mỗi ngày ghi: máy thử online trên Core? · số dòng lỗi mới trong <code>core-err.log</code> · RAM tiến trình Core (Task Manager → <span class="click">Details</span> → <code>python.exe</code>) · số máy online toàn trường so với baseline · một lệnh thử.</dd>
+        <dt>Kiểm tra đạt</dt><dd>Không lần nào máy thử mất kết nối quá 2 phút ngoài các lần khởi động lại máy; RAM Core không tăng đều theo thời gian.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r3-9"><span class="t">3.9 Mở rộng sang 1 phòng ít dùng (1 tuần)</span></label>
+      <div class="m2"><span>Người làm: <b>H</b>, <b>Q</b> báo người dùng</span><span>Thời lượng: <b>1 tuần</b></span><span class="chip s0">§0</span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Chọn phòng ít lịch (hoặc phòng kỹ thuật) theo bảng 0.9; thêm hostname các máy vào <code>canary_hosts.txt</code>.</li>
+          <li>Sao lưu Caddyfile; thêm dải IP phòng (<code>/24</code> hoặc danh sách <code>/32</code>) vào dòng <code>client_ip</code> của <code>@core_canary</code>; validate → adapt → reload.</li>
+          <li>Trong 30 phút: số máy online của phòng trên Core bằng số trên web cũ trước khi chuyển.</li>
+          <li><b>Chưa</b> chuyển phòng đang dạy cho tới khi Desktop đủ chức năng (GĐ5–GĐ8).</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>1 tuần không rớt máy; lệnh hàng loạt cho cả phòng trả đủ kết quả.</dd>
+        <dt>Nếu lỗi</dt><dd>Bớt dải IP của phòng → reload.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r3-10"><span class="t">3.10 Họp đi tiếp hoặc dừng</span></label>
+      <div class="m2"><span>Người làm: <b>L, Q</b></span><span>Thời lượng: <b>1 giờ</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd>Duyệt danh sách ở <a href="#p">Phụ lục P3</a>. Đi tiếp: phê duyệt GĐ4–GĐ9. Dừng: giữ nguyên hệ cũ (đã nguyên vẹn), lưu nền Core và MongoDB để dùng lại.</dd>
+        <dt>Kiểm tra đạt</dt><dd>Biên bản có quyết định và chữ ký.</dd>
+      </dl></li>
+  </ol>
+</section>
+<!-- ======================= GĐ4 ======================= -->
+<section id="g4">
+  <h2><span class="k">GĐ4</span>Nền Desktop App</h2>
+  <div class="chips"><span class="chip safe">KHÔNG ĐỤNG HỆ ĐANG CHẠY</span><span class="chip par">SONG SONG GĐ2–GĐ3</span><span class="chip dec">Tuần 6–16 · Người chính: D</span></div>
+  <div class="grid g2">
+    <div class="note"><b>Điều kiện vào</b>Core có <code>/api/auth/*</code> và <code>/openapi.json</code> (bước 2.8–2.9) chạy trên máy phát triển.</div>
+    <div class="note ok"><b>Cổng ra</b>Bộ cài cài được trên 2 máy quản trị · đăng nhập theo tổ chức · Dashboard khớp số với Core · tự cập nhật lên bản 0.1.1 có chữ ký.</div>
+  </div>
+  <ol class="steps">
+    <li><label><input type="checkbox" data-id="r4-1"><span class="t">4.1 Cài Node.js 24 LTS và pnpm</span></label>
+      <div class="m2"><span>Người làm: <b>D</b></span><span>Thời lượng: <b>1 giờ</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li><a href="https://nodejs.org" target="_blank" rel="noopener">nodejs.org</a> → trang Download → chọn bản <span class="click">LTS</span> · <span class="click">Windows Installer (.msi)</span> · x64.</li>
+          <li>Chạy: <span class="click">Next</span> → chấp nhận điều khoản → giữ thư mục mặc định → màn <b>Tools for Native Modules</b> <b>bỏ tích</b> tự cài công cụ → <span class="click">Install</span> → <span class="click">Finish</span>.</li>
+          <li>Mở PowerShell mới:
+<pre><button class="copy" type="button">Chép</button>node -v
+corepack enable
+corepack prepare pnpm@latest --activate
+pnpm -v</pre></li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd><code>node -v</code> in <code>v24.…</code>; <code>pnpm -v</code> in số phiên bản.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r4-2"><span class="t">4.2 Cài Visual Studio Build Tools và Rust</span></label>
+      <div class="m2"><span>Người làm: <b>D</b></span><span>Thời lượng: <b>2 giờ</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li><a href="https://visualstudio.microsoft.com/downloads/" target="_blank" rel="noopener">visualstudio.microsoft.com/downloads</a> → mục <b>Tools for Visual Studio</b> → <span class="click">Build Tools for Visual Studio</span> → <span class="click">Download</span>.</li>
+          <li>Chạy → tab <span class="click">Workloads</span> → tích <span class="click">Desktop development with C++</span> → khung <b>Installation details</b> bên phải: có <b>MSVC … C++ x64/x86 build tools</b> và <b>Windows 11 SDK</b> → <span class="click">Install</span> → khởi động lại máy.</li>
+          <li><a href="https://rustup.rs" target="_blank" rel="noopener">rustup.rs</a> → tải <code>rustup-init.exe</code> (x64) → chạy → khi hiện <b>1) Proceed with standard installation</b> nhấn <kbd>Enter</kbd>.</li>
+          <li>Mở PowerShell mới: <code>rustc -V</code>, <code>cargo -V</code>.</li>
+          <li>Kiểm WebView2: <span class="click">Settings</span> → <span class="click">Apps</span> → có <b>Microsoft Edge WebView2 Runtime</b> (Windows 11/Server 2022 có sẵn).</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Cả <code>rustc</code> và <code>cargo</code> in phiên bản.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r4-3"><span class="t">4.3 Tạo desktop-app từ mẫu React + TypeScript (Vite) của Tauri</span></label>
+      <div class="m2"><span>Người làm: <b>D</b></span><span>Thời lượng: <b>0,5 ngày</b></span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>Dùng đúng mẫu chính thức của Tauri cho React: ứng dụng một trang build bằng Vite 8, không có máy chủ Node.</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li><code>cd D:\Platform</code> → <code>pnpm create tauri-app</code>, trả lời:
+            <div class="tbl"><table><tbody>
+              <tr><td>Project name</td><td><code>desktop-app</code></td></tr>
+              <tr><td>Identifier</td><td><code>vn.edu.phenikaa.itmonitor</code></td></tr>
+              <tr><td>Choose which language to use for your frontend</td><td>TypeScript / JavaScript (pnpm, yarn, npm, deno, bun)</td></tr>
+              <tr><td>Choose your package manager</td><td>pnpm</td></tr>
+              <tr><td>Choose your UI template</td><td>React</td></tr>
+              <tr><td>Choose your UI flavor</td><td>TypeScript</td></tr>
+            </tbody></table></div></li>
+          <li><code>cd desktop-app</code> → <code>pnpm install</code> → <code>pnpm tauri dev</code>: cửa sổ mẫu của Tauri hiện ra.</li>
+          <li>Mở <code>vite.config.ts</code> của mẫu, kiểm có: <code>server.port: 1420</code>, <code>strictPort: true</code>, bỏ theo dõi <code>src-tauri</code>. Không đổi cổng 1420.</li>
+          <li>Thêm thư viện: <code>pnpm add react-router @tanstack/react-query</code>. Router dùng <code>createHashRouter</code> (đường dẫn dạng <code>#/rooms/301</code>) để tải lại cửa sổ không lỗi.</li>
+          <li>Tạo các thư mục module theo đặc tả §9.4 trong <code>src/</code>: <code>authentication dashboard rooms devices remote terminal file-manager work chat incidents reports settings admin api-client realtime-client tenant-context session shared</code>.</li>
+          <li><code>pnpm build</code> → phải sinh thư mục <code>dist/</code>.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Có <code>dist/index.html</code>; <code>pnpm tauri dev</code> chạy; chuyển trang trong ứng dụng rồi bấm <kbd>F5</kbd> vẫn đúng trang.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r4-4"><span class="t">4.4 Cấu hình Tauri, plugin và khoá ký cập nhật</span></label>
+      <div class="m2"><span>Người làm: <b>D</b></span><span>Thời lượng: <b>1 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Thêm plugin:
+<pre><button class="copy" type="button">Chép</button>pnpm tauri add updater
+pnpm tauri add notification
+pnpm tauri add store
+pnpm tauri add process
+pnpm tauri signer generate -w "$env:USERPROFILE\.tauri\itmonitor.key"</pre>
+            Nhập mật khẩu khoá 2 lần. Cất <code>itmonitor.key</code> + mật khẩu vào kho bí mật; chỉ máy build có.</li>
+          <li>Sửa <code>src-tauri/tauri.conf.json</code> (các trường chính):
+<pre><button class="copy" type="button">Chép</button>{
+  "productName": "Phenikaa IT Monitor",
+  "identifier": "vn.edu.phenikaa.itmonitor",
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "pnpm build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [{ "title": "Phenikaa IT Monitor", "width": 1440, "height": 900, "minWidth": 1280, "minHeight": 720 }],
+    "security": { "csp": "default-src 'self'; connect-src 'self' https://&lt;may-chu&gt;:7443 wss://&lt;may-chu&gt;:7443; img-src 'self' data: blob: https://&lt;may-chu&gt;:7443" }
+  },
+  "bundle": { "active": true, "targets": ["nsis"], "createUpdaterArtifacts": true },
+  "plugins": {
+    "updater": {
+      "pubkey": "&lt;nội dung tệp itmonitor.key.pub&gt;",
+      "endpoints": ["https://&lt;may-chu&gt;:7443/desktop/latest.json"]
+    }
+  }
+}</pre></li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd><code>pnpm tauri dev</code> vẫn chạy sau khi thêm plugin; <code>pnpm tauri build</code> sinh bộ cài NSIS.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r4-5"><span class="t">4.5 api-client, realtime-client, phiên đăng nhập</span></label>
+      <div class="m2"><span>Người làm: <b>D</b></span><span>Thời lượng: <b>1 tuần</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Kiểu dữ liệu API sinh từ Core:
+<pre><button class="copy" type="button">Chép</button>pnpm add openapi-fetch @tanstack/react-query socket.io-client zustand
+pnpm add -D openapi-typescript
+pnpm openapi-typescript https://&lt;may-chu&gt;:7443/openapi.json -o src/api-client/schema.d.ts</pre></li>
+          <li><code>src/api-client/index.ts</code>: <code>createClient&lt;paths&gt;({ baseUrl })</code>, tự gắn header <code>Authorization: Bearer</code>; 401 → về màn đăng nhập.</li>
+          <li><code>src/realtime-client/index.ts</code> (khung mẫu):
+<pre><button class="copy" type="button">Chép</button>import { io, Socket } from "socket.io-client";
+let s: Socket | null = null;
+export function connect(base: string, token: string) {
+  s = io(base + "/desktop", { transports: ["websocket"], auth: { token } });
+  s.on("connect", () =&gt; banner(false));
+  s.on("disconnect", () =&gt; banner(true));
+  s.on("connect_error", () =&gt; banner(true));
+  return s;
+}
+<span class="c">// banner(true) hiện dải đỏ "MẤT KẾT NỐI. Đang kết nối lại…"; kết nối lại thì tải lại số tuyệt đối</span></pre></li>
+          <li>Phiên: lưu token bằng plugin <b>store</b> của Tauri (không dùng localStorage); lưu cả mã tổ chức gần nhất.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Đổi một trường trong API của Core → chạy lại lệnh sinh kiểu → <code>pnpm typecheck</code> báo lỗi đúng chỗ dùng trường đó.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r4-6"><span class="t">4.6 Màn Đăng nhập và Dashboard</span></label>
+      <div class="m2"><span>Người làm: <b>D</b></span><span>Thời lượng: <b>1,5 tuần</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li><b>Đăng nhập (§10):</b> ô Mã tổ chức (nhớ lần trước), Tài khoản, Mật khẩu, TOTP (hiện khi server yêu cầu); hiển thị tổ chức + người dùng ở góc trên sau khi vào.</li>
+          <li><b>Dashboard (§11):</b> tổng máy, online, phiếu sự cố, cảnh báo phần cứng, thẻ theo phòng (Phòng chờ tách riêng), tỉ lệ online, đồng hồ, biểu đồ Chart.js.</li>
+          <li>Số online <b>chỉ ghi đè</b> từ <code>room_stats</code>/<code>total_online</code> trong sự kiện realtime; cấm cộng/trừ 1.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Dashboard khớp số máy online với API của Core cho các máy canary; rút mạng máy quản trị thì hiện banner đỏ, cắm lại thì tự đồng bộ.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r4-7"><span class="t">4.7 Đóng gói, phát hành thử, tự cập nhật</span></label>
+      <div class="m2"><span>Người làm: <b>D</b></span><span>Thời lượng: <b>2 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Đặt biến môi trường trong phiên build: <code>$env:TAURI_SIGNING_PRIVATE_KEY = Get-Content "$env:USERPROFILE\.tauri\itmonitor.key" -Raw</code> và <code>$env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD = "&lt;mật khẩu&gt;"</code> (gõ tay, không lưu vào tệp).</li>
+          <li><code>pnpm tauri build</code> → bộ cài ở <code>src-tauri\target\release\bundle\nsis\</code> (tệp <code>…-setup.exe</code> và <code>…-setup.exe.sig</code>).</li>
+          <li>Cài trên 2 máy quản trị: chạy <code>…-setup.exe</code> → <span class="click">Next</span> → <span class="click">Install</span> → <span class="click">Finish</span>.</li>
+          <li>Tăng <code>version</code> trong <code>tauri.conf.json</code> lên 0.1.1, build lại; đặt lên Core <code>desktop/latest.json</code>:
+<pre><button class="copy" type="button">Chép</button>{
+  "version": "0.1.1",
+  "notes": "Ban thu tu cap nhat",
+  "pub_date": "2026-10-20T08:00:00Z",
+  "platforms": {
+    "windows-x86_64": {
+      "signature": "&lt;nội dung tệp .sig&gt;",
+      "url": "https://&lt;may-chu&gt;:7443/desktop/Phenikaa-IT-Monitor_0.1.1_x64-setup.exe"
+    }
+  }
+}</pre></li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Mở ứng dụng 0.1.0 → nhận thông báo có bản mới → cập nhật → khởi động lại ở 0.1.1. Sửa 1 ký tự trong <code>signature</code> → ứng dụng từ chối cập nhật.</dd>
+      </dl></li>
+  </ol>
+</section>
+
+<!-- ======================= GĐ5 ======================= -->
+<section id="g5">
+  <h2><span class="k">GĐ5</span>Phòng, thiết bị, sơ đồ, View desktop</h2>
+  <div class="chips"><span class="chip par">SONG SONG</span><span class="chip safe">KHÔNG ĐỤNG HỆ ĐANG CHẠY</span><span class="chip dec">Tuần 14–20 · Người chính: C, D</span></div>
+  <div class="note ok"><b>Cổng ra</b>2 người dùng thật làm việc 1 tuần trên phòng canary chỉ bằng Desktop · nhóm "Phòng/Thiết bị" trong bảng đối chiếu đạt 100% · ThiPM vẫn đọc được sơ đồ.</div>
+  <ol class="steps">
+    <li><label><input type="checkbox" data-id="r5-1"><span class="t">5.1 API phòng và thiết bị (Core)</span></label>
+      <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>1 tuần</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ul>
+          <li><code>GET /api/rooms</code> · <code>GET /api/rooms/{id}</code> · <code>GET /api/devices?room_id=</code> · <code>GET /api/devices/{id}</code>.</li>
+          <li><code>POST /api/devices/{id}/move</code> · <code>POST /api/devices/move-bulk</code> · <code>GET /api/rooms/move-targets</code> · <code>DELETE /api/devices/{id}</code> (quyền Super Admin/Administrator như §8.1 cũ).</li>
+          <li>Một hàm phân giải phòng duy nhất, cache RAM, tôn trọng <code>room_override</code>; xoá máy phải dọn override; chỉ phòng dạng <code>Phòng &lt;số&gt;</code> được tính online chính thức.</li>
+          <li>Realtime <code>batch_device_update</code> gửi về room <code>t:&lt;tenant&gt;:room:&lt;room&gt;</code>, luôn kèm <code>room_stats</code> + <code>total_online</code> tuyệt đối; payload máy offline không có trường CPU/RAM/Disk.</li>
+        </ul></dd>
+      </dl></li>
+    <li><label><input type="checkbox" data-id="r5-2"><span class="t">5.2 Màn Phòng, chi tiết phòng, thiết bị (Desktop)</span></label>
+      <div class="m2"><span>Người làm: <b>D</b></span><span>Thời lượng: <b>1,5 tuần</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ul>
+          <li>Danh sách phòng; chi tiết phòng hiển thị CPU/RAM/Disk theo giây, model, service tag, serial, IP/MAC, CMOS, phiên bản agent, máy GV, sự cố.</li>
+          <li>Mọi chỗ vẽ chỉ số bọc <code>if (is_online)</code> (bài học 10.11).</li>
+          <li>Chuyển máy, chuyển nhiều máy, xoá máy với hộp xác nhận ngay trong giao diện.</li>
+        </ul></dd>
+      </dl></li>
+    <li><label><input type="checkbox" data-id="r5-3"><span class="t">5.3 Sơ đồ phòng + tương thích tệp sơ đồ cho hệ thi</span></label>
+      <div class="m2"><span>Người làm: <b>C, D</b></span><span>Thời lượng: <b>1,5 tuần</b></span><span class="chip sys">HỆ THI PHỤ THUỘC</span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>ThiPM đọc thẳng tệp JSON sơ đồ trong thư mục <code>MONITOR_MAPS_DIR</code>. Sơ đồ chuyển vào <code>rooms.map</code> mà không xuất ra tệp thì hệ thi mất sơ đồ.</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li>Desktop: zoom, kéo, đổi cỡ, nhóm có tên, undo/redo, nhập/xuất Excel (Core xử lý bằng <code>openpyxl</code>), lưu, Move PC.</li>
+          <li>Core: mỗi lần lưu sơ đồ, ghi <code>rooms.map</code> <b>và</b> xuất một tệp JSON <b>đúng định dạng tệp cũ</b> trong <code>Maps\</code> vào thư mục chia sẻ (vd. <code>\\itm-core\Maps$</code>, chỉ đọc cho máy chủ hệ thi).</li>
+          <li>So sánh tệp xuất ra với tệp gốc trong <code>D:\Backup\Moc0\Maps</code> bằng công cụ so sánh tệp: cùng cấu trúc trường.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Trên môi trường thử, đặt <code>MONITOR_MAPS_DIR</code> của ThiPM trỏ vào thư mục xuất → trang sơ đồ của ThiPM hiển thị đúng.</dd>
+      </dl></li>
+    <li><label><input type="checkbox" data-id="r5-4"><span class="t">5.4 View desktop và VNC</span></label>
+      <div class="m2"><span>Người làm: <b>C, D</b></span><span>Thời lượng: <b>1,5 tuần</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ul>
+          <li>Core chuyển tiếp <code>vnc_thumb_req</code>/<code>vnc_thumb</code> (kèm cờ <code>hd</code>) như hub cũ; ảnh lấy từ luồng RFB của agent.</li>
+          <li>Desktop: lưới card theo toạ độ sơ đồ (<code>{fx, fy}</code>), khung HD khi rê chuột, bấm đúp mở noVNC trong cửa sổ con; bố trí lưu <code>rooms.live_layout</code>.</li>
+          <li>Lệnh <code>vnc_start</code> mang <code>relay_url</code> + token của relay hiện có (<code>D:\RemoteControl</code>); mật khẩu VNC lấy từ kho bí mật (bất biến 4 chỗ, bài học 10.22).</li>
+        </ul></dd>
+        <dt>Kiểm tra đạt</dt><dd>Lưới 1 phòng canary hiện đủ ảnh trong 10 giây; mở VNC điều khiển được chuột/phím.</dd>
+      </dl></li>
+    <li><label><input type="checkbox" data-id="r5-5"><span class="t">5.5 Nhật ký thay đổi máy và Xuất cấu hình</span></label>
+      <div class="m2"><span>Người làm: <b>C, D</b></span><span>Thời lượng: <b>3 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><code>GET /api/devices/events</code> (chỉ đọc, quyền <code>machine_events.view</code>); <code>GET /api/reports/config-export</code> trả Excel 3 sheet như hệ cũ (bỏ phòng không chính thức). Cập nhật bảng đối chiếu.</dd>
+      </dl></li>
+  </ol>
+</section>
+
+<!-- ======================= GĐ6 ======================= -->
+<section id="g6">
+  <h2><span class="k">GĐ6</span>Điều khiển từ xa</h2>
+  <div class="chips"><span class="chip par">SONG SONG</span><span class="chip dec">Tuần 18–26 · Người chính: C, D</span></div>
+  <div class="note ok"><b>Cổng ra</b>Mỗi lệnh thử trên máy thật của phòng canary · PowerShell hàng loạt cho 1 phòng trả đủ kết quả từng máy · Ngắt Internet không cắt kết nối tới Core.</div>
+  <ol class="steps">
+    <li><label><input type="checkbox" data-id="r6-1"><span class="t">6.1 Nguồn và Wake-on-LAN</span></label>
+      <div class="m2"><span>Người làm: <b>C, D</b></span><span>Thời lượng: <b>1 tuần</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ul>
+          <li><code>POST /api/power</code> (<code>shutdown</code>/<code>restart</code>/<code>wake</code>) cho 1 máy, nhiều máy, cả phòng; tuỳ chọn loại trừ máy GV.</li>
+          <li>WoL luôn qua agent cùng subnet (<code>relay_wake</code>/<code>relay_wake_batch</code>); Core không gửi gói ma thuật trực tiếp.</li>
+          <li>Ghi nhận "tắt có chủ ý" ngay lúc ra lệnh (để không báo động giả).</li>
+        </ul></dd>
+        <dt>Kiểm tra đạt</dt><dd>Tắt rồi bật lại 1 phòng canary; tất cả lên lại; script cảnh báo 0.7 không báo động.</dd>
+      </dl></li>
+    <li><label><input type="checkbox" data-id="r6-2"><span class="t">6.2 Đăng nhập/đăng xuất từ xa</span></label>
+      <div class="m2"><span>Người làm: <b>C, D</b></span><span>Thời lượng: <b>3 ngày</b></span></div>
+      <dl class="f"><dt>Thao tác</dt><dd><code>POST /api/remote-login</code>, <code>POST /api/remote-login/logout</code>; mã hoá AES-GCM như hệ cũ; kết quả từ <code>/login_result/…</code> trả về đúng người bấm qua room <code>t:&lt;tenant&gt;:u:&lt;user&gt;</code>.</dd></dl></li>
+    <li><label><input type="checkbox" data-id="r6-3"><span class="t">6.3 Internet: chặn/mở, website, App-ID, cổng, IP</span></label>
+      <div class="m2"><span>Người làm: <b>C, D</b></span><span>Thời lượng: <b>1 tuần</b></span><span class="chip s0">§0</span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li><code>POST /api/internet</code> với <code>sub_action</code> như hệ cũ (<code>disable</code>, <code>enable</code>, <code>block_web</code>, <code>unblock_web</code>…).</li>
+          <li>Xác nhận dải IP của <code>itm-core</code> và máy chủ Caddy nằm trong phạm vi "giữ nguyên mạng LAN" mà agent đang chừa ra khi chặn. Nếu Core đặt ở VLAN khác, phải bổ sung vào danh sách đó trước khi chuyển phòng.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Trên 1 máy canary: bật <b>Ngắt Internet</b> → máy vẫn online trên Core 15 phút liên tục → lệnh <b>Mở Internet</b> vẫn tới được.</dd>
+        <dt>Nếu lỗi</dt><dd>Máy rớt khỏi Core khi chặn: dừng ngay, mở Internet bằng cách bớt máy khỏi canary (máy về hub cũ, gửi lệnh mở từ web cũ).</dd>
+      </dl></li>
+    <li><label><input type="checkbox" data-id="r6-4"><span class="t">6.4 PowerShell, ConPTY, chạy hàng loạt</span></label>
+      <div class="m2"><span>Người làm: <b>C, D</b></span><span>Thời lượng: <b>2 tuần</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ul>
+          <li>Terminal xterm.js: lịch sử, dán, <kbd>Ctrl</kbd>+<kbd>C</kbd>, <kbd>Tab</kbd>; ConPTY: ANSI, resize, xem/thôi xem.</li>
+          <li>Hàng loạt: <code>POST /api/terminal/bulk</code> trả <code>token</code>; kết quả từng máy lưu MongoDB theo token; Desktop <b>đệm kết quả về sớm</b> + <b>poll</b> <code>GET /api/terminal/bulk/{token}</code> mỗi 3 giây + hết hạn 135 giây đánh dấu Timeout (bài học 18b).</li>
+          <li>Script hàng loạt chạy quyền SYSTEM: không truyền user/pass.</li>
+        </ul></dd>
+        <dt>Kiểm tra đạt</dt><dd>Chạy <code>hostname; whoami</code> cho cả phòng canary: đủ kết quả, mỗi máy <code>nt authority\system</code>; một máy tắt thì hiện Timeout sau 135 giây.</dd>
+      </dl></li>
+    <li><label><input type="checkbox" data-id="r6-5"><span class="t">6.5 Ra lệnh bằng giọng nói</span></label>
+      <div class="m2"><span>Người làm: <b>C, D</b></span><span>Thời lượng: <b>3 ngày</b></span></div>
+      <dl class="f"><dt>Thao tác</dt><dd>Desktop thu âm (Web Audio/MediaRecorder trong WebView2) → <code>POST /api/voice</code> → Core gọi Gemini REST, ép JSON → trả lệnh để người dùng <b>xác nhận</b> trước khi chạy. Khoá Gemini chỉ ở Core.</dd></dl></li>
+  </ol>
+</section>
+
+<!-- ======================= GĐ7 ======================= -->
+<section id="g7">
+  <h2><span class="k">GĐ7</span>Tệp, giao bài, thu bài</h2>
+  <div class="chips"><span class="chip par">SONG SONG</span><span class="chip safe">KHÔNG ĐỤNG HỆ ĐANG CHẠY</span><span class="chip dec">Tuần 24–30 · Người chính: C, D</span></div>
+  <div class="note ok"><b>Cổng ra</b>Giao 500 MB cho 1 phòng và thu bài 1 phòng không chậm hơn baseline quá 10% · bộ nhớ agent không tăng khi truyền tệp lớn.</div>
+  <ol class="steps">
+    <li><label><input type="checkbox" data-id="r7-1"><span class="t">7.1 StorageService bản cục bộ</span></label>
+      <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>4 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ul>
+          <li>Giao diện: <code>put_stream(key, stream)</code>, <code>get_stream(key)</code>, <code>delete(key)</code>, <code>list(prefix)</code>.</li>
+          <li>Gốc <code>D:\PlatformData\tenants\&lt;tenant_id&gt;\{work,collected,thu,chat,report,temp}</code>; khoá luôn bắt đầu bằng <code>tenants/&lt;tenant_id&gt;/</code>; chặn <code>..</code> trong khoá.</li>
+          <li>Ghi <code>file_metadata</code> có <code>expires_at</code>: temp 48h, work 48h, collected 168h; worker dọn mỗi giờ.</li>
+        </ul></dd>
+      </dl></li>
+    <li><label><input type="checkbox" data-id="r7-2"><span class="t">7.2 Trình quản lý tệp 2 khung</span></label>
+      <div class="m2"><span>Người làm: <b>C, D</b></span><span>Thời lượng: <b>2 tuần</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ul>
+          <li>Token tệp do Core cấp (<code>POST /api/files/token</code>); agent tải/nộp bằng <code>/fs_serve</code>, <code>/fs_bridge</code>, <code>/fs_recv_raw</code> (giữ đường cũ cho agent v2).</li>
+          <li>Mang các hành vi đã tinh chỉnh của <code>fbrowser.js</code>: giữ chỗ cuộn và chọn mục sau thao tác, Back về đúng vị trí, tự nén/giải nén thư mục, thanh % theo <code>fs_progress</code>.</li>
+          <li>Ô "Máy chủ" chỉ hiện với Super Admin.</li>
+        </ul></dd>
+      </dl></li>
+    <li><label><input type="checkbox" data-id="r7-3"><span class="t">7.3 Giao bài, thu bài, nhật ký thu</span></label>
+      <div class="m2"><span>Người làm: <b>C, D</b></span><span>Thời lượng: <b>2 tuần</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ul>
+          <li>Giao: một/nhiều phòng, máy SV/GV, ghi đè, Desktop Public; ghi <code>pushed_files</code>; xoá xếp hàng khi máy offline.</li>
+          <li>Thu: trạng thái <code>ok/nofile/nofolder/fail/offline</code>, cấu trúc THU, tải từng bài hoặc ZIP, xoá nguồn tuỳ chọn; nhật ký thu có nút chép.</li>
+        </ul></dd>
+        <dt>Kiểm tra đạt</dt><dd>So thời gian với baseline 0.8; theo dõi RAM của <code>Client_Manager.exe</code> trên 1 máy trong lúc nhận tệp 500 MB (không tăng theo kích thước tệp).</dd>
+      </dl></li>
+  </ol>
+</section>
+
+<!-- ======================= GĐ8 ======================= -->
+<section id="g8">
+  <h2><span class="k">GĐ8</span>Chat, sự cố, báo cáo, quản trị, tích hợp, cập nhật agent</h2>
+  <div class="chips"><span class="chip par">SONG SONG</span><span class="chip safe">KHÔNG ĐỤNG HỆ ĐANG CHẠY</span><span class="chip dec">Tuần 28–36 · Người chính: C, D</span></div>
+  <div class="note ok"><b>Cổng ra</b>Bảng đối chiếu chức năng 100% "Đạt" · 5 người dùng thật làm việc 2 tuần không cần mở web cũ · bộ test của hệ thi xanh khi trỏ vào Core.</div>
+  <ol class="steps">
+    <li><label><input type="checkbox" data-id="r8-1"><span class="t">8.1 Chat LAB/HSK</span></label>
+      <div class="m2"><span>Người làm: <b>C, D</b></span><span>Thời lượng: <b>1,5 tuần</b></span></div>
+      <dl class="f"><dt>Thao tác</dt><dd><code>/api/chat/*</code> có <code>scope</code> LAB/HSK; ảnh dán nén JPEG lưu qua StorageService; reaction emoji; chưa đọc theo <code>(tenant, user, room)</code>; thông báo hệ điều hành thật bằng plugin notification (nháy taskbar), kèm âm và toast trong ứng dụng.</dd>
+      <dt>Kiểm tra đạt</dt><dd>Tin nhắn tới khi Desktop thu nhỏ → hiện thông báo Windows; chat LAB và HSK cùng phòng không lẫn nhau.</dd></dl></li>
+    <li><label><input type="checkbox" data-id="r8-2"><span class="t">8.2 Sự cố và báo cáo</span></label>
+      <div class="m2"><span>Người làm: <b>C, D</b></span><span>Thời lượng: <b>1,5 tuần</b></span></div>
+      <dl class="f"><dt>Thao tác</dt><dd>Sự cố: tạo, bổ sung, xử lý, ghi chú IT, người xử lý, trạng thái PENDING/PROCESSING/DONE, nguồn USER/SYSTEM_WATCHDOG, email + Telegram, log máy trạm. Báo cáo: lịch sử RAM/ổ đĩa, sự cố, ngày/tháng, xuất Excel; mọi aggregation mở đầu bằng <code>$match: {tenant_id}</code>.</dd></dl></li>
+    <li><label><input type="checkbox" data-id="r8-3"><span class="t">8.3 Quản trị nền tảng</span></label>
+      <div class="m2"><span>Người làm: <b>C, D</b></span><span>Thời lượng: <b>1,5 tuần</b></span></div>
+      <dl class="f"><dt>Thao tác</dt><dd>Người dùng Local/AD, policy, quyền, người đang online, cấu hình LDAP (có nút thử), mạng, SMTP, Telegram, Gemini, mật khẩu admin, xem nhật ký (lọc theo hệ). Secret không bao giờ trả về dạng rõ (chỉ hiện "đã đặt").</dd></dl></li>
+    <li><label><input type="checkbox" data-id="r8-4"><span class="t">8.4 Màn Quản trị → Cập nhật Agent</span></label>
+      <div class="m2"><span>Người làm: <b>C, D</b></span><span>Thời lượng: <b>1 tuần</b></span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>Công cụ chính của GĐ10; phải có trước khi đụng tới agent 3.0.</dd>
+        <dt>Thao tác</dt><dd>Bộ lọc <b>Tất cả / Chưa đúng version / Offline</b> · chọn máy · nút <b>Cập nhật đã chọn</b> · chọn phòng · công tắc <b>All Update</b> có hộp xác nhận ngay trên giao diện · cột trạng thái tải/cài từng máy · nút <b>Cài lại bản cũ</b> cho máy chọn.</dd>
+        <dt>Kiểm tra đạt</dt><dd>Với agent hiện tại (2.7.5.3): chọn 1 máy thử → "Cập nhật đã chọn" với chính bản 2.7.5.3 → máy cài lại và online lại đúng phiên bản.</dd>
+      </dl></li>
+    <li><label><input type="checkbox" data-id="r8-5"><span class="t">8.5 API nội bộ cho hệ thi + chạy bộ test của hệ thi</span></label>
+      <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>1,5 tuần</b></span><span class="chip sys">HỆ THI PHỤ THUỘC</span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Core cài đặt đủ <code>/internal/ping</code>, <code>/internal/machines</code> (cả <code>online</code> lẫn <code>nhan_lenh</code>, <code>tat_sach</code>, tuỳ chọn <code>with_ip</code>, <code>incl_teacher</code>), <code>/internal/dispatch</code>, <code>/internal/track/*</code>, <code>/internal/upload_work</code>, <code>/internal/thu/*</code>, <code>/internal/collect/*</code> đúng định dạng cũ.</li>
+          <li>Xác thực: <code>X-Internal-Token</code> + chỉ nhận từ IP máy chủ hệ thi (thay cho điều kiện "localhost" vì Core ở máy khác).</li>
+          <li>Trên môi trường thử của hệ thi: đặt <code>MONITOR_INTERNAL_URL=http://itm-core.phenikaamec.local:7009</code> rồi chạy các test sẵn có trong <code>D:\ExaminationSystem</code> (<code>test_relay.py</code>, <code>test_xfer.py</code>, <code>test_stage_e.py</code>).</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Các test của hệ thi xanh giống hệt khi trỏ về hub cũ.</dd>
+      </dl></li>
+  </ol>
+</section>
+<!-- ======================= GĐ9 ======================= -->
+<section id="g9">
+  <h2><span class="k">GĐ9</span>Chuyển dữ liệu và chuyển toàn trường</h2>
+  <div class="chips"><span class="chip s0">§0 KẾT NỐI</span><span class="chip sys">TOÀN HỆ THỐNG</span><span class="chip dec">Tuần 34–40 · Người chính: H, C, Q</span></div>
+  <div class="grid g2">
+    <div class="note crit"><b>Điều kiện vào</b>Bảng đối chiếu 100% "Đạt" (GĐ8) · test hệ thi xanh trên Core · Desktop cài cho mọi người dùng quản trị · lịch thi của học kỳ đã có để tránh.</div>
+    <div class="note ok"><b>Cổng ra</b>Mọi phòng chạy trên Core bằng agent cũ · hệ thi trỏ Core và chạy trọn 1 kỳ thi · 2 tuần online không thấp hơn baseline · hệ cũ dừng ở chế độ chờ.</div>
+  </div>
+  <ol class="steps">
+    <li><label><input type="checkbox" data-id="r9-1"><span class="t">9.1 Script chuyển dữ liệu chạy lại được nhiều lần</span></label>
+      <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>1,5 tuần</b></span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>Chuyển 24 bảng theo ánh xạ G9 của tài liệu Lộ trình; chạy lại không sinh bản ghi trùng (upsert theo khoá cũ).</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li><code>platform-core/app/db/migrations/sqlite_import.py</code> (khung mẫu, phần <code>computers</code>):
+<pre><button class="copy" type="button">Chép</button>import sqlite3, argparse, datetime
+from pymongo import UpdateOne
+from app.db.client import db
+
+def run(sqlite_path, tenant_code, dry, rooms=None):
+    tid = db.tenants.find_one({"code": tenant_code})["_id"]
+    src = sqlite3.connect(f"file:{sqlite_path}?mode=ro", uri=True)   <span class="c"># chỉ đọc bản sao</span>
+    src.row_factory = sqlite3.Row                                   <span class="c"># get_db_conn cũ KHÔNG đặt sẵn</span>
+    now = datetime.datetime.utcnow()
+    ops = []
+    for r in src.execute("SELECT * FROM computers"):
+        if rooms and r["room"] not in rooms: continue
+        ops.append(UpdateOne(
+            {"tenant_id": tid, "legacy_hostname": r["hostname"].upper()},
+            {"$set": {"hostname": r["hostname"], "mac": r["mac"], "ip": r["ip"], "serial": r["serial"],
+                      "model": r["model"], "client_version": r["client_version"],
+                      "room_override": r["room_override"], "move_seat": r["move_seat"], "updated_at": now},
+             "$setOnInsert": {"created_at": now, "is_online": False}},
+            upsert=True))
+    print("computers:", len(ops))
+    if not dry and ops: db.computers.bulk_write(ops, ordered=False)
+    <span class="c"># ... tương tự: usage_stats (lô 5.000), incidents, audit_log, machine_events, computers_archive,
+    #     users (giữ băm cũ), policies, settings (mã hoá lại secret), Maps\*.json -&gt; rooms.map</span>
+
+if __name__ == "__main__":
+    a = argparse.ArgumentParser()
+    a.add_argument("--sqlite", required=True); a.add_argument("--tenant", default="PHENIKAA")
+    a.add_argument("--rooms", nargs="*"); a.add_argument("--dry-run", action="store_true")
+    o = a.parse_args(); run(o.sqlite, o.tenant, o.dry_run, o.rooms)</pre></li>
+          <li>Không chuyển: <code>online_state</code>, phiên đăng nhập, <code>thu_room_users</code>, <code>thu_sbd</code>, <code>exam_admins</code> (thuộc hệ thi).</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Chạy 2 lần liên tiếp trên CSDL thử: số tài liệu sau lần 2 bằng sau lần 1.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r9-2"><span class="t">9.2 Chạy thử toàn bộ và đối chiếu số dòng</span></label>
+      <div class="m2"><span>Người làm: <b>C, H</b></span><span>Thời lượng: <b>2 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Lấy bản sao mới nhất trong <code>D:\Backup\daily\</code>; chạy trên database thử <code>itm_core_trial</code>.</li>
+          <li>Đếm hai phía và lập bảng: <code>computers</code> · <code>usage_stats</code> · <code>incidents</code> · <code>audit_log</code> · <code>machine_events</code> · <code>computers_archive</code> · <code>client_logs</code> (90 ngày) · <code>users</code> · <code>policies</code>.</li>
+          <li>Mở Desktop trỏ vào môi trường thử, xem ngẫu nhiên 10 máy, 3 sơ đồ phòng, 5 sự cố.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Mọi bảng khớp số (trừ <code>client_logs</code> theo hạn 90 ngày); dữ liệu xem ngẫu nhiên đúng.</dd>
+        <dt>Nếu lỗi</dt><dd>Lệch số: dừng, tìm nguyên nhân, sửa script, chạy lại từ đầu trên database thử mới.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r9-3"><span class="t">9.3 Lập lịch các đợt chuyển</span></label>
+      <div class="m2"><span>Người làm: <b>Q</b></span><span>Thời lượng: <b>1 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd>Điền mẫu <a href="#p">Phụ lục P4</a>: mỗi đợt 2–4 phòng, thứ Hai đến thứ Tư, vào khung giờ ít lớp và có người trực; <b>không xếp trong tuần thi</b>; phòng dùng chung dải IP đi cùng đợt. Gửi lịch cho giảng viên các phòng trước 3 ngày.</dd>
+        <dt>Kiểm tra đạt</dt><dd>Lãnh đạo duyệt lịch.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r9-4"><span class="t">9.4 Thực hiện từng đợt (lặp lại cho mỗi đợt)</span></label>
+      <div class="m2"><span>Người làm: <b>H</b> (C trực)</span><span>Thời lượng: <b>2 giờ/đợt</b></span><span class="chip s0">§0</span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li><b>T−1 ngày:</b> chạy <code>sqlite_import.py --rooms &lt;các phòng&gt; --dry-run</code> trên bản sao mới; xem số lượng hợp lý.</li>
+          <li><b>T0:</b> ghi số máy online của các phòng trên web cũ (mốc so sánh).</li>
+          <li>Chạy <code>sqlite_import.py --sqlite &lt;bản sao mới nhất&gt; --rooms &lt;các phòng&gt;</code> vào database thật.</li>
+          <li>Thêm hostname các máy vào <code>canary_hosts.txt</code> của script cảnh báo.</li>
+          <li>Chép <code>Caddyfile</code> → <code>Caddyfile.bak-&lt;ngày&gt;-dot&lt;n&gt;</code>; thêm dải IP các phòng vào <code>client_ip</code> của <code>@core_canary</code>; <code>validate</code> → <code>adapt</code> → <code>reload</code>.</li>
+          <li><b>T+30 phút:</b> số online các phòng trên Desktop bằng mốc ở T0. Thiếu máy nào: bớt dải IP của phòng đó, reload, điều tra sau.</li>
+          <li><b>T+1 ngày:</b> gặp giảng viên một phòng, cùng làm thử giao bài, thu bài, khoá Internet bằng Desktop.</li>
+          <li>Ghi kết quả vào bảng P4.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Đủ máy online sau 30 phút; giảng viên thao tác được trên Desktop.</dd>
+        <dt>Nếu lỗi</dt><dd>Bớt dải IP của đợt → reload → các phòng về hub cũ trong 2 phút.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r9-5"><span class="t">9.5 Chuyển hệ thi sang Core</span></label>
+      <div class="m2"><span>Người làm: <b>H, C</b></span><span>Thời lượng: <b>2 giờ</b></span><span class="chip sys">TOÀN HỆ THỐNG</span></div>
+      <dl class="f">
+        <dt>Cần có trước</dt><dd>Mọi phòng thi đã ở Core; không có ca thi trong 24 giờ tới.</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li>Ghi lại giá trị hiện tại của <code>MONITOR_INTERNAL_URL</code>, <code>INTERNAL_API_TOKEN</code>, <code>MONITOR_MAPS_DIR</code> tại nơi hệ thi đang đặt (biến môi trường của dịch vụ NSSM hoặc biến hệ thống; xem <code>HUONG_DAN_CAI_DAT.md</code> của hệ thi).</li>
+          <li>Nếu đặt trong NSSM: <code>nssm edit &lt;tên dịch vụ hệ thi&gt;</code> → tab <span class="click">Environment</span> → sửa <code>MONITOR_INTERNAL_URL=http://itm-core.phenikaamec.local:7009</code> và <code>MONITOR_MAPS_DIR=\\itm-core\Maps$</code> (giữ nguyên token) → <span class="click">Edit service</span>. Lặp cho các dịch vụ của hệ thi.</li>
+          <li>Khởi động lại các dịch vụ hệ thi bằng menu <code>QuanLy_HeThongThi.bat</code>.</li>
+          <li>Thử: mở trang hệ thi, xem danh sách máy và sơ đồ một phòng; gửi một lệnh mở phần mềm thi lên một máy thử; giao một tệp đề mẫu.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Danh sách máy, sơ đồ, lệnh và giao tệp đều chạy; <code>/internal/ping</code> từ máy chủ hệ thi trả <code>{"ok": true}</code>.</dd>
+        <dt>Nếu lỗi</dt><dd>Trả 3 biến về giá trị đã ghi ở thao tác 1, khởi động lại dịch vụ hệ thi.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r9-6"><span class="t">9.6 Toàn bộ cổng 5443 về Core</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>1 giờ</b></span><span class="chip s0">§0</span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Sao lưu Caddyfile. Trong khối <code>:5443</code>: đổi mọi <code>reverse_proxy 127.0.0.1:5009</code> và <code>reverse_proxy 127.0.0.1:5008</code> thành <code>reverse_proxy itm-core.phenikaamec.local:7009</code>; bỏ khối <code>@core_canary</code>.</li>
+          <li><b>Không đụng khối <code>:5444</code></b> (hệ thi) và dòng <code>tls</code> (agent cũ ghim chứng thư).</li>
+          <li>Core trả trang "IT Monitor đã chuyển sang ứng dụng Desktop" kèm liên kết tải bộ cài cho mọi đường dẫn web cũ khi người dùng mở bằng trình duyệt.</li>
+          <li><code>validate</code> → <code>reload</code>. Đổi URL trong script cảnh báo 0.7 sang <code>/internal/machines</code> của Core; làm rỗng <code>canary_hosts.txt</code>.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Tổng online trên Desktop bằng tổng trước khi đổi; mở địa chỉ web cũ thấy trang thông báo.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r9-7"><span class="t">9.7 Dừng hệ cũ ở chế độ chờ, sau 4 tuần thì lưu trữ</span></label>
+      <div class="m2"><span>Người làm: <b>H, Q</b></span><span>Thời lượng: <b>4 tuần theo dõi</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Dừng dịch vụ Hub và UI của IT Monitor cũ (tên trong <code>QuanLyServerPhongMay.bat</code>): <code>nssm stop &lt;tên&gt;</code> rồi <code>nssm set &lt;tên&gt; Start SERVICE_DEMAND_START</code> (không tự chạy khi khởi động lại máy chủ, nhưng vẫn cài sẵn).</li>
+          <li>Lưu <code>database.db</code> ở thời điểm chuyển vào <code>D:\Backup\Moc_Chuyen</code>.</li>
+          <li>4 tuần: theo dõi số liệu hằng ngày so với baseline.</li>
+          <li>Sau 4 tuần ổn định: lưu trữ nguyên trạng thư mục hệ cũ (không sửa mã nguồn); <code>D:\Platform\CLAUDE.md</code> là tài liệu chính; giữ bản cài hệ cũ thêm 3 tháng rồi mới gỡ.</li>
+        </ol></dd>
+        <dt>Nếu lỗi</dt><dd>Quay lui toàn cục: chép Caddyfile trước bước 9.6, <code>nssm start</code> hai dịch vụ cũ, reload Caddy, trả biến hệ thi. Thống kê phát sinh trên Core trong thời gian đó có thể chép ngược sau.</dd>
+      </dl></li>
+  </ol>
+</section>
+
+<!-- ======================= GĐ10 ======================= -->
+<section id="g10">
+  <h2><span class="k">GĐ10</span>Agent 3.0</h2>
+  <div class="chips"><span class="chip s0">§0 KẾT NỐI</span><span class="chip sys">TOÀN HỆ THỐNG khi mở rộng</span><span class="chip dec">Tuần 40–48 · Người chính: C, H</span></div>
+  <div class="grid g2">
+    <div class="note crit"><b>Điều kiện vào</b>100% máy chạy ổn trên Core bằng agent 2.7.5.3 ít nhất 4 tuần · có chứng thư ký mã · màn Cập nhật Agent đã thử (8.4) · agent 3.0 do Claude viết mới đã qua bảng tương đương chức năng (10.2–10.3).</div>
+    <div class="note ok"><b>Cổng ra</b>Toàn trường chạy 3.0 qua kênh mới · 0 máy phải xử lý tại chỗ · quay về 2.7.5.3 đã diễn tập.</div>
+  </div>
+  <ol class="steps">
+    <li><label><input type="checkbox" data-id="r10-1"><span class="t">10.1 Mua và cài chứng thư ký mã</span></label>
+      <div class="m2"><span>Người làm: <b>Q, H</b></span><span>Thời lượng: <b>2–4 tuần (thủ tục CA)</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Chọn nhà cung cấp chứng thư ký mã (OV hoặc EV) có hỗ trợ tổ chức tại Việt Nam; chuẩn bị hồ sơ pháp nhân của Trường. (Dịch vụ ký của Microsoft chưa mở cho tổ chức Việt Nam.)</li>
+          <li>Nhận token USB/HSM; cài driver; cài <b>Windows SDK</b> để có <code>signtool.exe</code> trên máy build.</li>
+          <li>Ký thử một tệp: <code>signtool sign /fd sha256 /tr &lt;URL timestamp của CA&gt; /td sha256 /a &lt;tệp.exe&gt;</code>; kiểm: chuột phải tệp → <span class="click">Properties</span> → tab <span class="click">Digital Signatures</span>.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Tệp ký thử hiện chữ ký hợp lệ có tên tổ chức.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r10-2"><span class="t">10.2 Claude viết mới platform-agent theo module</span></label>
+      <div class="m2"><span>Người làm: <b>C</b> (Claude viết, lập trình viên duyệt)</span><span>Thời lượng: <b>4 tuần</b></span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>Agent 3.0 là mã mới, dễ bảo trì, nhưng phải làm được mọi việc agent 2.7.5.3 đang làm trên 889 máy.</dd>
+        <dt>Cần có trước</dt><dd>Rào chỉ đọc (0.11); hợp đồng giao thức v2 (3.1).</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li>Claude đọc (không sửa, không chép nguyên khối) <code>D:\NetworkInventory\agent_build\client.py</code>, <code>TaoApp.iss</code>, <code>build_client.bat</code>, <code>publish_release.ps1</code>, <code>watchdog.ps1</code>, thư mục <code>vnc\</code>.</li>
+          <li>Viết mới trong <code>platform-agent/agent/</code> theo module: <code>transport_v2</code> (giao thức cũ, theo <code>contract_v2</code>) · <code>transport_v3</code> · <code>identity</code> · <code>heartbeat</code> · <code>hwinfo</code> (WMI, placeholder phần cứng = <code>N/A</code>) · <code>commands/</code> (mỗi action một tệp) · <code>ps</code> · <code>pty</code> · <code>fs</code> · <code>vnc</code> (đảm bảo winvnc + luồng RFB thumbnail) · <code>wfp</code> (chặn Internet) · <code>login</code> · <code>work</code> (giao/thu bài) · <code>update</code> (tự cập nhật qua task tách rời).</li>
+          <li>Mỗi module có test chạy được trên Windows; phần gọi hệ thống (WMI, WFP, Task Scheduler) tách lớp để giả lập trong test.</li>
+          <li>Tệp cấu hình do bộ cài ghi: <code>C:\ProgramData\PhenikaaIT\agent.json</code> (địa chỉ máy chủ, mã enroll); không hardcode IP máy chủ trong mã.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Toàn bộ test của <code>platform-agent</code> xanh; test hợp đồng v2 chạy với <code>transport_v2</code> xanh.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r10-2b"><span class="t">10.2b Bảng tương đương chức năng 2.7.5.3 ↔ 3.0 và chạy song song</span></label>
+      <div class="m2"><span>Người làm: <b>C, H</b></span><span>Thời lượng: <b>2 tuần</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Lập bảng mỗi dòng một hành vi của 2.7.5.3: nhịp tim + chỉ số CPU/RAM/Disk (<code>dl:dn:pct:free_gb:total_gb</code>) · thông tin phần cứng · các action <code>powershell</code>, <code>start_ps/stop_ps</code>, <code>start_pty/stop_pty/pty_validate</code>, <code>login_encrypted</code>, <code>internet_control</code>, <code>relay_wake</code>, <code>relay_wake_batch</code>, <code>kill_and_update</code>, <code>receive_work</code>, <code>collect_work</code>, <code>hsk_launch</code>, <code>show_sbd/hide_sbd</code>, <code>vnc_start/vnc_stop</code>, <code>vnc_thumb_req</code>, <code>fs_request</code> · tắt/khởi động lại/đăng xuất · báo <code>/offline</code> · <code>/client_log</code> · tự chữa winvnc (mật khẩu, SAS, con trỏ) · tự cập nhật. Cột: hành vi · tệp/hàm cũ · module mới · test · kết quả thực địa.</li>
+          <li>Trên 2 máy thử: chạy agent 3.0 2 tuần, thực hiện từng dòng của bảng bằng Desktop, ghi kết quả.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>100% dòng "Đạt" trên máy thật. Dòng nào chưa đạt: không phát hành.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r10-3"><span class="t">10.3 Danh tính agent: agent_id + khoá Ed25519</span></label>
+      <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>4 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li><code>agent/identity.py</code> (khung mẫu):
+<pre><button class="copy" type="button">Chép</button>import os, uuid, subprocess
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+from cryptography.hazmat.primitives import serialization as ser
+
+BASE = r"C:\ProgramData\PhenikaaIT"
+ID_F, KEY_F = os.path.join(BASE, "agent_id"), os.path.join(BASE, "agent.key")
+
+def load_or_create():
+    os.makedirs(BASE, exist_ok=True)
+    if not os.path.exists(ID_F):
+        open(ID_F, "w").write(str(uuid.uuid4()))
+    if not os.path.exists(KEY_F):
+        k = Ed25519PrivateKey.generate()
+        open(KEY_F, "wb").write(k.private_bytes(ser.Encoding.PEM, ser.PrivateFormat.PKCS8, ser.NoEncryption()))
+        <span class="c"># chỉ SYSTEM và Administrators đọc được khoá riêng</span>
+        subprocess.run(["icacls", KEY_F, "/inheritance:r", "/grant:r", "*S-1-5-18:F", "*S-1-5-32-544:F"],
+                       capture_output=True)
+    key = ser.load_pem_private_key(open(KEY_F, "rb").read(), None)
+    return open(ID_F).read().strip(), key</pre></li>
+          <li>Không đổi <code>agent_id</code> khi cài lại (tệp nằm ngoài thư mục cài).</li>
+        </ol></dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r10-4"><span class="t">10.4 Enroll 889 máy qua kênh cũ (không ra tận nơi)</span></label>
+      <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>3 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Agent 3.0 lần đầu chạy, nếu chưa enroll: gửi <code>POST /api/agents/enroll-legacy</code> gồm <code>hostname</code>, <code>agent_id</code>, khoá công khai, qua địa chỉ cổng 5443 cũ.</li>
+          <li>Core chỉ chấp nhận khi: IP nguồn trong <code>legacy.allowed_cidrs</code> và hostname đang có nhịp tim trên kênh v2 từ cùng IP → gắn <code>agent_id</code> + khoá vào máy đó trong <code>agents</code>/<code>computers</code>.</li>
+          <li>Máy mới/tổ chức mới dùng mã enroll có hạn từ <code>agent_enrollments</code> (đặc tả 8.5).</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Gửi yêu cầu enroll giả từ IP không khớp hostname → bị từ chối.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r10-5"><span class="t">10.5 Kênh v3 + tự rơi về kênh v2</span></label>
+      <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>1,5 tuần</b></span><span class="chip s0">§0</span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Kết nối v3: <code>wss://&lt;máy-chủ&gt;:7443</code> namespace <code>/agent</code>, chỉ websocket; Core gửi chuỗi ngẫu nhiên → agent ký → Core xác minh → join room <code>t:&lt;tenant&gt;:dev:&lt;device&gt;</code>.</li>
+          <li>Quy tắc kênh (khung mẫu):
+<pre><button class="copy" type="button">Chép</button><span class="c"># v3 là ưu tiên; mất v3 liên tục 10 phút -&gt; bật kênh v2 (transport_v2 viết lại theo contract_v2)</span>
+<span class="c"># đang ở v2 thì cứ 30 phút thử lại v3; v3 ổn định 5 phút -&gt; tắt v2</span>
+<span class="c"># KHÔNG BAO GIỜ tắt kênh đang chạy trước khi kênh kia đã kết nối được</span></pre></li>
+          <li>Nhịp tim HTTP <code>/update</code> giữ nguyên trong 3.0 (nguồn sự thật của trạng thái online).</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Trên máy thử: chặn cổng 7443 bằng tường lửa → sau 10 phút máy hiện "kênh v2" trên Desktop và vẫn nhận lệnh → mở lại → trong 35 phút về "kênh v3".</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r10-6"><span class="t">10.6 Kiểm chữ ký và hạn dùng của lệnh</span></label>
+      <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>3 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Core ký envelope bằng khoá Ed25519 trong <code>D:\PlatformSecrets</code>; khoá công khai của Core đóng gói sẵn trong bộ cài agent.</li>
+          <li>Agent kiểm (khung mẫu):
+<pre><button class="copy" type="button">Chép</button>import json, base64, datetime
+def verify(env, core_pub):
+    sig = base64.b64decode(env["sig"])
+    body = {k: v for k, v in env.items() if k != "sig"}
+    data = json.dumps(body, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
+    core_pub.verify(sig, data)                       <span class="c"># sai chữ ký -&gt; ném lỗi, bỏ lệnh</span>
+    exp = datetime.datetime.fromisoformat(env["expires_at"].replace("Z", "+00:00"))
+    if datetime.datetime.now(datetime.timezone.utc) &gt; exp + datetime.timedelta(minutes=5):
+        raise ValueError("EXPIRED")                  <span class="c"># cho lệch giờ tối đa 5 phút</span></pre></li>
+          <li>Lệnh bị từ chối vẫn gửi ACK kèm trạng thái <code>REJECTED</code>/<code>EXPIRED</code> để Core không gửi lại vô hạn.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Gửi lệnh sửa 1 ký tự trong payload → agent từ chối; lệnh hết hạn → <code>EXPIRED</code>.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r10-7"><span class="t">10.7 Đóng gói thành phần mềm .exe, ký số, phát hành 2 giai đoạn</span></label>
+      <div class="m2"><span>Người làm: <b>C</b> viết script, <b>H</b> build và ký</span><span>Thời lượng: <b>3 ngày</b></span></div>
+      <dl class="f">
+        <dt>Mục đích</dt><dd>Máy trạm chỉ cần một tệp Setup .exe; cài đè tại chỗ lên 2.7.5.3 mà không để lại hai bản agent.</dd>
+        <dt>Thao tác</dt><dd><ol>
+          <li>Biên dịch <code>Client_Manager.exe</code> (khung lệnh trong <code>platform-agent/build/build.ps1</code>):
+<pre><button class="copy" type="button">Chép</button>python -m nuitka --standalone --windows-console-mode=disable `
+  --windows-icon-from-ico=build\logo.ico --company-name="Phenikaa University" `
+  --product-name="Phenikaa IT Monitor Agent" --file-version=3.0.0.0 --product-version=3.0.0.0 `
+  --file-description="Phenikaa IT Monitor Agent" --output-dir=dist agent\main.py
+Rename-Item dist\main.dist\main.exe Client_Manager.exe</pre></li>
+          <li>Ký: <code>signtool sign /fd sha256 /tr &lt;URL timestamp của CA&gt; /td sha256 /a dist\main.dist\Client_Manager.exe</code>.</li>
+          <li>Script bộ cài <code>platform-agent/build/PhenikaaITMonitor-Agent.iss</code> (các dòng then chốt):
+<pre><button class="copy" type="button">Chép</button>[Setup]
+AppId=Phenikaa IT Inventory            <span class="c">; = giá trị ngầm định của bộ cài cũ -&gt; nâng cấp tại chỗ</span>
+AppName=Phenikaa IT Monitor Agent
+AppVersion=3.0.0.0
+DefaultDirName={autopf}\PhenikaaIT     <span class="c">; cùng thư mục bản cũ</span>
+PrivilegesRequired=admin
+OutputBaseFilename=PhenikaaITMonitor-Agent-Setup-3.0.0.0
+SetupLogging=yes
+
+[Files]
+Source: "..\dist\main.dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
+Source: "watchdog.ps1"; DestDir: "{app}"; Flags: ignoreversion
+
+[Run]
+<span class="c">; ghi cấu hình từ tham số /SERVER= /ENROLL= vào C:\ProgramData\PhenikaaIT\agent.json (đoạn [Code])</span>
+Filename: "schtasks.exe"; Parameters: "/create /tn ""PhenikaaITMonitor"" /tr ""\""{app}\Client_Manager.exe\"""" /sc onstart /ru ""SYSTEM"" /rl HIGHEST /f"; Flags: runhidden
+Filename: "schtasks.exe"; Parameters: "/create /tn ""PhenikaaITMonitorWD"" /tr ""powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -NonInteractive -File \""{app}\watchdog.ps1\"""" /sc minute /mo 1 /ru ""SYSTEM"" /rl HIGHEST /f"; Flags: runhidden
+Filename: "schtasks.exe"; Parameters: "/run /tn ""PhenikaaITMonitor"""; Flags: runhidden
+<span class="c">; bước cuối (đoạn [Code]): chờ tối đa 60 giây, kiểm tiến trình Client_Manager.exe đang chạy, ghi kết quả vào log</span></pre></li>
+          <li>Biên dịch bộ cài bằng Inno Setup 6.7 (<code>ISCC.exe PhenikaaITMonitor-Agent.iss</code>), ký tệp Setup .exe.</li>
+          <li>Thử trên 2 máy ảo: (a) máy sạch, cài lần đầu; (b) máy đang chạy 2.7.5.3, cài đè. Sau mỗi lần kiểm: chỉ một thư mục <code>PhenikaaIT</code>, đúng 2 task, một tiến trình <code>Client_Manager.exe</code>, máy online trên Core.</li>
+          <li>Phát hành 2 giai đoạn: đặt vào staging → kiểm → chuyển sang kho phát hành của Core → ghi <code>manifest.json</code> (SHA-256 + size) → ghi phiên bản <b>cuối cùng</b>. All Update vẫn <b>Tắt</b>.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Hai exe có chữ ký hợp lệ; cài đè trên máy đang chạy 2.7.5.3 không để lại hai bản; manifest khớp tệp.</dd>
+        <dt>Nếu lỗi</dt><dd>Còn hai bản hoặc hai task cùng chạy: kiểm <code>AppId</code>, <code>DefaultDirName</code>, tên task; không phát hành tới khi sạch.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r10-8"><span class="t">10.8 Canary 2–3 máy</span></label>
+      <div class="m2"><span>Người làm: <b>H</b> (C trực)</span><span>Thời lượng: <b>1 ngày</b></span><span class="chip s0">§0</span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Desktop → <span class="click">Quản trị</span> → <span class="click">Cập nhật Agent</span> → lọc <span class="click">Chưa đúng version</span> → tích 2–3 máy thử → <span class="click">Cập nhật đã chọn</span>.</li>
+          <li>Chờ 10 phút → <span class="click">Làm mới</span>. Mỗi máy phải: online · phiên bản 3.0.0.0 · có <code>agent_id</code> (xem trong Compass, collection <code>agents</code>) · kênh "v3" · lệnh <code>hostname; whoami</code> trả đúng.</li>
+          <li>Khởi động lại 1 máy canary: phải tự lên lại với 3.0 trong 5 phút (Task Scheduler + watchdog).</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Cả 2–3 máy đạt mọi điểm trên và chạy 24 giờ không rớt.</dd>
+        <dt>Nếu lỗi</dt><dd>Máy không lên lại sau cài: đây chính là lý do canary; dừng mọi đợt, cài lại 2.7.5.3 cho máy đó (bước 10.9), phân tích log cài.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r10-9"><span class="t">10.9 Diễn tập quay về 2.7.5.3</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>1 giờ</b></span><span class="chip s0">§0</span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd>Chọn 1 máy canary → <span class="click">Cài lại bản cũ</span> (Core giữ sẵn bộ cài 2.7.5.3 + manifest) → chờ 10 phút → máy online bằng kênh v2, đúng phiên bản 2.7.5.3. Sau đó cập nhật lại lên 3.0.</dd>
+        <dt>Kiểm tra đạt</dt><dd>Quay về và đi lên lại đều thành công trên cùng một máy.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r10-9b"><span class="t">10.9b Cài cho máy mới (lẻ và hàng loạt)</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>theo nhu cầu</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li><b>Máy lẻ:</b> đăng nhập tài khoản quản trị → chạy <code>PhenikaaITMonitor-Agent-Setup-3.0.0.0.exe</code> → <span class="click">Next</span> → <span class="click">Install</span> → <span class="click">Finish</span>.</li>
+          <li><b>Cài im lặng</b> (một máy, chạy bằng quyền Administrator):
+<pre><button class="copy" type="button">Chép</button>Start-Process .\PhenikaaITMonitor-Agent-Setup-3.0.0.0.exe -Wait -ArgumentList `
+  '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SERVER=&lt;dia-chi-may-chu&gt; /ENROLL=&lt;ma-enroll&gt; /LOG="C:\ProgramData\PhenikaaIT\install.log"'</pre></li>
+          <li><b>Hàng loạt:</b> đặt bộ cài ở thư mục chia sẻ chỉ đọc; dùng PowerShell từ xa (<code>Invoke-Command -ComputerName …</code>) hoặc script khởi động máy của GPO chạy đúng lệnh trên. Làm theo đợt 1 phòng/lần.</li>
+          <li><b>Gỡ:</b> <code>"C:\Program Files (x86)\PhenikaaIT\unins000.exe" /VERYSILENT</code>.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Máy mới hiện online trên Desktop trong 5 phút sau khi cài, có <code>agent_id</code>, kênh v3.</dd>
+      </dl></li>
+
+    <li><label><input type="checkbox" data-id="r10-10"><span class="t">10.10 Mở rộng: 1 phòng → nhiều phòng → toàn trường</span></label>
+      <div class="m2"><span>Người làm: <b>H, Q</b></span><span>Thời lượng: <b>3–4 tuần</b></span><span class="chip sys">TOÀN HỆ THỐNG</span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>1 phòng (chọn phòng, Cập nhật đã chọn) → chờ 1 ngày học.</li>
+          <li>3–5 phòng → chờ 2 ngày học.</li>
+          <li>Theo tầng/nhóm phòng → mỗi nhóm chờ 1 ngày.</li>
+          <li>Phần còn lại: bật <span class="click">All Update</span> (hộp xác nhận) chỉ khi trên 80% máy đã ở 3.0 mà không sự cố.</li>
+          <li>Suốt đợt: theo dõi cảnh báo Telegram; số online tụt bất thường → gạt <span class="click">All Update</span> về <b>Tắt</b> ngay, phân tích sau.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>100% máy ở 3.0, kênh v3; 0 máy phải xử lý tại chỗ.</dd>
+      </dl></li>
+  </ol>
+</section>
+
+<!-- ======================= GĐ11 ======================= -->
+<section id="g11">
+  <h2><span class="k">GĐ11</span>Platform-Master, Deployment, tổ chức thứ hai, cloud</h2>
+  <div class="chips"><span class="chip safe">KHÔNG ẢNH HƯỞNG PHENIKAA nếu cô lập đúng</span><span class="chip dec">Tuần 46 trở đi · Người chính: C, H, Q</span></div>
+  <div class="note ok"><b>Cổng ra</b>Master quản lý tổ chức/giấy phép/phiên bản · pipeline build-ký-phát hành tự động · tổ chức thứ hai chạy thử, test cô lập đạt trên môi trường thật.</div>
+  <ol class="steps">
+    <li><label><input type="checkbox" data-id="r11-1"><span class="t">11.1 Dựng platform-master</span></label>
+      <div class="m2"><span>Người làm: <b>C</b></span><span>Thời lượng: <b>3 tuần</b></span></div>
+      <dl class="f"><dt>Thao tác</dt><dd>DB <code>itm_master</code> riêng (tài khoản <code>master_app</code>); collection <code>tenants</code> (vòng đời ACTIVE/SUSPENDED/DISABLED), <code>platform_licenses</code>, <code>platform_activations</code>, <code>platform_versions</code>, <code>support_tokens</code>; giữ thuật toán Ed25519/AES-GCM/SHA-256 của <code>master_server.py</code> hiện có; dịch vụ NSSM <code>PlatformMaster</code> cổng 7010, chỉ mở cho máy quản trị và Core.</dd></dl></li>
+    <li><label><input type="checkbox" data-id="r11-2"><span class="t">11.2 Runner build tự host trên Windows</span></label>
+      <div class="m2"><span>Người làm: <b>H</b></span><span>Thời lượng: <b>0,5 ngày</b></span></div>
+      <dl class="f">
+        <dt>Thao tác</dt><dd><ol>
+          <li>Máy build có: Python, Nuitka, Inno Setup, Node, Rust, VS Build Tools, token ký mã.</li>
+          <li>GitHub → repo → <span class="click">Settings</span> → <span class="click">Actions</span> → <span class="click">Runners</span> → <span class="click">New self-hosted runner</span> → chọn <span class="click">Windows</span>, <span class="click">x64</span> → làm đúng các lệnh trang hiện ra (tải, <code>config.cmd --url … --token …</code>).</li>
+          <li>Khi <code>config.cmd</code> hỏi chạy thành dịch vụ: trả lời <b>Y</b>. Thêm label <code>build-windows</code>.</li>
+        </ol></dd>
+        <dt>Kiểm tra đạt</dt><dd>Runner hiện trạng thái <b>Idle</b> trong trang Runners.</dd>
+      </dl></li>
+    <li><label><input type="checkbox" data-id="r11-3"><span class="t">11.3 Quy trình phát hành tự động</span></label>
+      <div class="m2"><span>Người làm: <b>C, H</b></span><span>Thời lượng: <b>1 tuần</b></span></div>
+      <dl class="f"><dt>Thao tác</dt><dd>Workflow chạy khi đẩy tag <code>v*</code> trên runner <code>build-windows</code>: test → build agent (Nuitka) → build Desktop (Tauri) → ký → tải bộ cài, manifest, <code>latest.json</code> lên Master/Core ở trạng thái <b>chưa phát hành</b>. Bật phát hành vẫn là thao tác tay qua màn Cập nhật Agent (giữ canary).</dd></dl></li>
+    <li><label><input type="checkbox" data-id="r11-4"><span class="t">11.4 Chọn hạ tầng cloud (nếu lên cloud)</span></label>
+      <div class="m2"><span>Người làm: <b>Q, H, L</b></span><span>Thời lượng: <b>2 tuần</b></span></div>
+      <dl class="f"><dt>Thao tác</dt><dd>Lập bảng so sánh tối thiểu 2 nhà cung cấp trong nước theo: nơi đặt dữ liệu, cam kết dịch vụ, MongoDB dịch vụ hay tự quản (replica set), S3 tương thích, băng thông, chi phí, hỗ trợ. Nhờ pháp chế xác nhận yêu cầu của Luật Bảo vệ dữ liệu cá nhân 2025. Thiết kế relay tại trường cho VNC và tệp lớn; agent 3.x thêm whitelist địa chỉ Core vào luật chặn Internet.</dd></dl></li>
+    <li><label><input type="checkbox" data-id="r11-5"><span class="t">11.5 Đưa tổ chức thứ hai vào chạy thử</span></label>
+      <div class="m2"><span>Người làm: <b>Q, C, H</b></span><span>Thời lượng: <b>3 tuần</b></span></div>
+      <dl class="f"><dt>Thao tác</dt><dd><ol>
+        <li>Master: tạo tổ chức mới (mã riêng) → Core tạo policy mặc định → tạo Administrator của tổ chức đó.</li>
+        <li>Tạo mã enroll có hạn → đóng gói bộ cài agent cho tổ chức đó → cài trên 3–5 máy thử của họ.</li>
+        <li>Chạy lại toàn bộ test cô lập trên môi trường thật có 2 tổ chức; kiểm thử xâm nhập cơ bản (đổi ID tài nguyên trong request, dùng token tổ chức A gọi dữ liệu B, gửi lệnh chéo).</li>
+      </ol></dd>
+      <dt>Kiểm tra đạt</dt><dd>Không có đường nào đọc/ghi/ra lệnh chéo tổ chức; số liệu PHENIKAA không đổi.</dd></dl></li>
+  </ol>
+</section>
+
+<!-- ======================= Phụ lục ======================= -->
+<section id="p">
+  <h2><span class="k">P</span>Phụ lục</h2>
+
+  <h3>P1. Tình huống khẩn cấp và cách quay lui</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Tình huống</th><th>Làm ngay</th><th>Người</th><th>Mục tiêu</th></tr></thead>
+    <tbody>
+      <tr><td>Máy rớt sau khi sửa Caddy</td><td>Chép <code>Caddyfile.bak-…</code> đè <code>Caddyfile</code> → <code>caddy reload</code></td><td>H</td><td>Máy về trong 2 phút</td></tr>
+      <tr><td>Máy rớt khi cập nhật agent</td><td>All Update = Tắt; dừng chọn thêm máy; cài lại bản cũ cho máy lỗi</td><td>H</td><td>Ngừng lan trong 1 phút</td></tr>
+      <tr><td>Core không phản hồi</td><td><code>nssm restart PlatformCore</code> → <code>nssm status</code>; quá 5 phút: trỏ Caddy về hub cũ (GĐ3–GĐ9) hoặc bật VM Core dự phòng</td><td>H</td><td>Dịch vụ lại trong 5 phút</td></tr>
+      <tr><td>Mất primary MongoDB</td><td>Replica set tự bầu; kiểm <code>rs.status()</code>; node hỏng sửa sau</td><td>H</td><td>Tự động, khoảng 15 giây</td></tr>
+      <tr><td>Hệ thi lỗi sau khi chuyển</td><td>Trả 3 biến <code>MONITOR_*</code> về giá trị cũ, khởi động lại dịch vụ hệ thi</td><td>H</td><td>15 phút</td></tr>
+      <tr><td>Dữ liệu sai sau chuyển</td><td>Khôi phục bản sao MongoDB gần nhất vào database thử, so sánh, chép lại phần đúng</td><td>C</td><td>Trong ngày</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>P2. Mẫu biên bản 8 quyết định</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>#</th><th>Nội dung cần quyết</th><th>Đề xuất</th><th>Quyết định</th><th>Người chịu trách nhiệm</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Phương án chuyển đổi</td><td>PA2: song song, chuyển từng phòng</td><td></td><td></td></tr>
+      <tr><td>2</td><td>Nơi triển khai</td><td>Tại trường trước, cloud ở GĐ11</td><td></td><td></td></tr>
+      <tr><td>3</td><td>Vỏ ứng dụng Desktop</td><td>Tauri 2</td><td></td><td></td></tr>
+      <tr><td>4</td><td>CSDL</td><td>MongoDB 8.0 replica set 3 node</td><td></td><td></td></tr>
+      <tr><td>5</td><td>Cách nhận diện tổ chức khi đăng nhập</td><td>Mã tổ chức + tài khoản + mật khẩu</td><td></td><td></td></tr>
+      <tr><td>6</td><td>Khối A (tách hub)</td><td>Dừng ở Pha 1</td><td></td><td></td></tr>
+      <tr><td>7</td><td>Ngân sách</td><td>3 VM MongoDB + 1 VM Core + dự phòng, ổ lưu tệp, chứng thư ký mã</td><td></td><td></td></tr>
+      <tr><td>8</td><td>Nhân sự</td><td>L, Q, C, D, H và người thay thế</td><td></td><td></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>P3. Checklist đi tiếp/dừng cuối GĐ3</h3>
+  <ul>
+    <li>Máy thử 72 giờ và phòng thử 1 tuần trên Core, không rớt quá 2 phút ngoài lần khởi động lại.</li>
+    <li>Quay lui đã diễn tập, dưới 2 phút, có biên bản.</li>
+    <li>Test hợp đồng v2 xanh; test tải 900 agent đạt.</li>
+    <li>Tổng online toàn trường không thấp hơn baseline cùng khung giờ.</li>
+    <li>Cảnh báo Telegram hoạt động và không báo giả quá 1 lần/tuần.</li>
+    <li>Desktop bản đầu đăng nhập được, Dashboard khớp số.</li>
+    <li>Ước lượng thời gian GĐ4–GĐ9 được cập nhật theo tốc độ thực tế của GĐ2–GĐ3.</li>
+  </ul>
+
+  <h3>P4. Mẫu kế hoạch đợt chuyển (GĐ9)</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Đợt</th><th>Phòng</th><th>Dải IP</th><th>Ngày · giờ</th><th>Người trực</th><th>Tránh lịch thi</th><th>Online trước/sau</th><th>Kết quả</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>…</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>P5. Mẫu bảng baseline</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Chỉ số</th><th>Cách đo</th><th>T2</th><th>T3</th><th>T4</th><th>T5</th><th>T6</th></tr></thead>
+    <tbody>
+      <tr><td>Online cao nhất</td><td>Tệp <code>online_*.csv</code> (bước 0.7)</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>Nhịp tim/phút cao nhất</td><td>Dòng <code>[SYNC]</code> trong log hub</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>Giao 200 MB / 1 phòng (giây)</td><td>Bấm giờ</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>Thu bài 1 phòng (giây)</td><td>Bấm giờ</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>Mở trang phòng (giây)</td><td><kbd>F12</kbd> → Network → Load</td><td></td><td></td><td></td><td></td><td></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>P6. Thuật ngữ</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Thuật ngữ</th><th>Nghĩa trong sổ tay</th></tr></thead>
+    <tbody>
+      <tr><td>Tổ chức (tenant)</td><td>Một khách hàng dùng nền tảng; dữ liệu tách bằng <code>tenant_id</code>. Tổ chức đầu tiên là PHENIKAA.</td></tr>
+      <tr><td>Canary</td><td>Thử thay đổi trên vài máy trước rồi mới mở rộng.</td></tr>
+      <tr><td>Agent v2 / v3</td><td>v2 = agent 2.7.5.x đang chạy (giao thức cũ); v3 = agent 3.0 có danh tính và lệnh ký số.</td></tr>
+      <tr><td>legacy_adapter</td><td>Phần của Core nói đúng giao thức agent v2, cho phép chuyển máy bằng định tuyến Caddy.</td></tr>
+      <tr><td>Replica set</td><td>Cụm 3 máy MongoDB giữ cùng dữ liệu, tự chọn máy chính khi một máy hỏng.</td></tr>
+      <tr><td>Baseline</td><td>Số liệu đo trên hệ cũ trước khi chuyển, dùng làm mốc "không tệ hơn".</td></tr>
+      <tr><td>Cổng ra</td><td>Điều kiện phải đạt để kết thúc một giai đoạn.</td></tr>
+      <tr><td>Quay lui</td><td>Đưa hệ về trạng thái trước thay đổi; phải được diễn tập trước khi cần dùng thật.</td></tr>
+    </tbody>
+  </table></div>
+  <footer>Sổ tay soạn ngày 02/10/2026, đi kèm tài liệu "Lộ trình IT Monitor SaaS". Các đoạn mã là khung mẫu để đội phát triển hoàn thiện; phiên bản phần mềm cần kiểm lại trước khi cài. Việc soạn sổ tay không thay đổi gì trên hệ thống đang chạy.</footer>
+</section>
+
+</main>
+</div>
+
+<script>
+(function(){
+  /* Lịch Gantt (tuần trên 52) */
+  var rows=[["GĐ0 Quyết định",0,2,"dec"],["GĐ1 MongoDB",2,5,""],["GĐ2 Nền Core",4,10,""],["GĐ3 Tương thích + canary",10,16,"s0"],
+    ["GĐ4 Nền Desktop",6,16,"par"],["GĐ5 Phòng/thiết bị",14,20,"par"],["GĐ6 Điều khiển",18,26,"par"],["GĐ7 Tệp/giao-thu",24,30,"par"],
+    ["GĐ8 Chat/quản trị",28,36,"par"],["GĐ9 Chuyển toàn trường",34,40,"s0"],["GĐ10 Agent 3.0",40,48,"s0"],["GĐ11 Master/cloud",46,52,""]];
+  var g=document.querySelector(".gantt");
+  if(g){ rows.forEach(function(r){
+      var l=document.createElement("div"); l.className="lbl"; l.textContent=r[0]; g.appendChild(l);
+      var t=document.createElement("div"); t.className="b"; t.style.gridColumn="2 / span 12";
+      var i=document.createElement("i"); if(r[3]==="s0") i.className="s0"; else if(r[3]==="par") i.className="par"; else if(r[3]==="dec") i.className="sys";
+      i.style.left=(r[1]/52*100)+"%"; i.style.right=(100-r[2]/52*100)+"%"; i.title=r[0]+": tuần "+(r[1]+1)+"–"+r[2];
+      t.appendChild(i); g.appendChild(t); }); }
+
+  /* Đánh dấu bước: lưu trên trình duyệt này */
+  var KEY="itm-saas-runbook-v1", st={};
+  try{ st=JSON.parse(localStorage.getItem(KEY)||"{}")||{}; }catch(e){ st={}; }
+  var boxes=[].slice.call(document.querySelectorAll('ol.steps input[type="checkbox"]'));
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
+  function refresh(){
+    var done=0;
+    boxes.forEach(function(b){ var li=b.closest("li"); li.classList.toggle("done", b.checked); if(b.checked) done++; });
+    document.getElementById("progTxt").textContent=done+" / "+boxes.length+" bước";
+    document.getElementById("progBar").style.width=(boxes.length? done/boxes.length*100:0)+"%";
+    [].forEach.call(document.querySelectorAll("main section"), function(p){
+      var bs=p.querySelectorAll('ol.steps input[type="checkbox"]'), d=0;
+      [].forEach.call(bs,function(b){ if(b.checked) d++; });
+      var pp=p.querySelector(".pp");
+      if(!bs.length) return; if(!pp){ pp=document.createElement("span"); pp.className="pp"; p.querySelector("h2").appendChild(pp); }
+      pp.textContent=d+"/"+bs.length+" bước xong";
+    });
+  }
+  boxes.forEach(function(b){ b.checked=!!st[b.dataset.id];
+    b.addEventListener("change", function(){ st[b.dataset.id]=b.checked; save(); refresh(); }); });
+  refresh();
+
+  /* Nút chép */
+  [].forEach.call(document.querySelectorAll("button.copy"), function(btn){
+    btn.addEventListener("click", function(){
+      var pre=btn.closest("pre"), txt;
+      if(btn.dataset.target){ txt=document.getElementById(btn.dataset.target).textContent; }
+      else { var c=pre.cloneNode(true); var x=c.querySelector("button.copy"); if(x) x.remove(); txt=c.textContent.replace(/^\n+/,""); }
+      function ok(){ var o=btn.textContent; btn.textContent="Đã chép"; setTimeout(function(){ btn.textContent=o; },1500); }
+      function fallback(){ var r=document.createRange(); r.selectNodeContents(pre); var s=window.getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent="Đã chọn, nhấn Ctrl+C"; }
+      try{ navigator.clipboard.writeText(txt).then(ok, fallback); }catch(e){ fallback(); }
+    });
+  });
+
+  /* Mục lục: tô mục đang đọc */
+  var links=[].slice.call(document.querySelectorAll("nav.toc a"));
+  if("IntersectionObserver" in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ links.forEach(function(a){ a.classList.toggle("on", a.getAttribute("href")==="#"+e.target.id); }); } });
+    },{rootMargin:"-30% 0px -60% 0px"});
+    [].forEach.call(document.querySelectorAll("main section[id]"), function(s){ io.observe(s); });
+  }
+})();
+</script>

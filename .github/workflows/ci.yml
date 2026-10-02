@@ -1,0 +1,32 @@
+# CI cho Platform-Core (Sổ tay bước 2.10). Chạy khi có Pull Request và khi đẩy lên main.
+# Test mặc định chạy trên mongomock; nhóm "atlas" chạy trên MongoDB 8.0 dựng sẵn trong CI (không dùng Atlas thật).
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:8.0
+        ports: ["27017:27017"]
+    env:
+      MONGO_URI: mongodb://localhost:27017
+      MONGO_DB: itm_ci
+    defaults:
+      run:
+        working-directory: platform-core
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+      - run: uv sync --locked
+      - run: uv run ruff check .
+      - run: uv run pyright
+      - run: uv run pytest -q
+      - run: uv run pytest -q -m atlas
+      - run: uv run pytest -q -o addopts="" ../platform-deployment/qa
+      - run: uv run python ../platform-deployment/qa/check_routes.py
+      - run: uv run python ../platform-deployment/qa/check_eol.py

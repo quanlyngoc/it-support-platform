@@ -1,0 +1,53 @@
+[project]
+name = "platform-core"
+version = "0.1.0"
+description = "Platform-Core: backend trung tâm của ITSupportPlatform (Phenikaa IT Monitor 3.0)"
+requires-python = ">=3.14"
+dependencies = [
+    "apiflask>=3.1.2",
+    "argon2-cffi>=25.1.0",
+    "cryptography>=50.0.2",
+    "flask>=3.1.3",
+    "flask-socketio>=5.6.1",
+    "gevent>=26.9.0",
+    "gevent-websocket>=0.10.1",
+    "ldap3>=2.9.1",
+    "openpyxl>=3.1.5",
+    "pydantic>=2.13.5",
+    "pymongo[srv]>=4.18.2",
+    "pyotp>=2.10.0",
+    "python-dotenv>=1.2.4",
+    "requests>=2.34.2",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-m 'not atlas'"  # mặc định chạy nhanh trên mongomock; Atlas: uv run pytest -m atlas
+markers = ["atlas: test chạy trên MongoDB thật (cần MONGO_URI trong tệp bí mật)"]
+filterwarnings = ["ignore:datetime.datetime.utcnow:DeprecationWarning:mongomock"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+
+[dependency-groups]
+dev = [
+    "mongomock>=4.3.0",
+    "pyright>=1.1.414",
+    "pytest>=9.1.1",
+    "ruff>=0.16.10",
+]
+
+[tool.pyright]
+include = ["app", "tests"]
+pythonVersion = "3.14"
+typeCheckingMode = "standard"
+venvPath = "."
+venv = ".venv"
