@@ -70,6 +70,27 @@ def is_official_room(room: str) -> bool:
     return bool(re.match(r"^Phòng\s+\d+", str(room or "").strip()))
 
 
+def expected_host_for_seat(room: str, seat: object) -> str:
+    """Tên máy CHUẨN của 1 vị trí: ('Phòng 301 - A6', 5) → 'A6-301-05'. Thiếu dữ kiện → '' (không tự gỡ được)."""
+    m = re.match(r"^Phòng\s+(\d+)\s*-\s*(.+)$", str(room or "").strip())
+    s = str(seat or "").strip()
+    if not m or not s.isdigit():
+        return ""
+    return f"{m.group(2).strip().upper()}-{m.group(1)}-{int(s):02d}"
+
+
+def host_matches_seat(hostname: str, room: str, seat: object) -> bool:
+    """Tên máy đã khớp đúng vị trí được chuyển? Chấp nhận 'A6-301-5' lẫn 'A6-301-05' (utils.py host_matches_seat)."""
+    exp = expected_host_for_seat(room, seat)
+    if not exp:
+        return False
+
+    def norm(s: str) -> str:
+        return re.sub(r"0+(\d)", r"\1", re.sub(r"[^A-Z0-9]", "-", str(s or "").upper()))
+
+    return norm(hostname) == norm(exp)
+
+
 def room_number(room_or_host: str) -> str:
     """Cụm 3 chữ số đầu tiên ('Phòng 405 - A6' / 'A6-405-12' → '405'); '' nếu không có."""
     m = re.search(r"\d{3}", str(room_or_host or ""))

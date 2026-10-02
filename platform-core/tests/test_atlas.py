@@ -80,6 +80,7 @@ def test_bo_ghi_agent_v2_tren_mongodb_that(adb):
     for i in range(1, 31):
         st.ingest(heartbeat(f"A6-301-{i:02d}", f"aa:bb:cc:00:30:{i:02x}", serial=f"SN{i:05d}"), "10.0.0.1")
     assert w.tick() == 30  # 30 máy trong một lượt mạng
+    assert len(w.ids) == 30 and len(w.room_ids) == 1  # _id máy mới (upserted_ids) + phòng tạo tự động
     clock[0] += 61
     for i in range(1, 31):
         st.ingest(heartbeat(f"A6-301-{i:02d}", f"aa:bb:cc:00:30:{i:02x}", serial="N/A"), "10.0.0.1")

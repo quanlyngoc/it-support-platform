@@ -20,8 +20,9 @@ from bson import ObjectId
 from pymongo.database import Database
 
 from app.legacy_adapter.hardware import CMOS, ThayDoi, disk_doi, het_pin_cmos, ram_doi
-from app.legacy_adapter.identity import is_placeholder, mac12, room_from_hostname_raw, valid_serial
+from app.legacy_adapter.identity import host_matches_seat, is_placeholder, mac12, room_from_hostname_raw, valid_serial
 from app.legacy_adapter.state import Host, LegacyState
+from app.rooms.service import ensure_room, room_ids
 from app.tenants.repo import repo_for
 
 log = logging.getLogger("legacy.writer")
@@ -42,6 +43,7 @@ class Writer:
                  today: Callable[[], str] = lambda: datetime.now().strftime("%Y-%m-%d")):
         self.state = state
         self.today = today
+        self.db, self.tid = db, tenant_id
         self.computers = repo_for(db, tenant_id, "computers")
         self.events = repo_for(db, tenant_id, "machine_events")
         self.archive = repo_for(db, tenant_id, "computers_archive")
@@ -51,12 +53,14 @@ class Writer:
         self.serial_owner: dict[str, set[str]] = {}
         self.mac_owner: dict[str, set[str]] = {}
         self.ids: dict[str, ObjectId] = {}
-        self.overrides: dict[str, str] = {}             # HOST → phòng ép tay (computers.room_override)
+        self.overrides: dict[str, tuple[str, str]] = {}  # HOST → (phòng ép tay, số vị trí) — Move PC
+        self.room_ids: dict[str, ObjectId] = {}           # tên phòng → rooms._id
         self._mevt_seen: dict[tuple, float] = {}
         self.hw_last: dict[str, tuple[str, str]] = {}   # HOST → (ram, disk) thật lần trước — so trong RAM
         self.cmos_bao: dict[str, bool] = {}              # HOST → đang báo hết pin CMOS (chỉ xét lúc chuyển trạng thái)
         self.on_incident: Callable[[dict], object] | None = None  # adapter gắn để phát realtime cho Desktop
         self.primed = False
+        self.vua_doi: set[str] = set()
         self.last_usage = state.clock()
 
     # ------------------------------------------------------------------ nạp nền so sánh
@@ -64,22 +68,45 @@ class Writer:
         """Nạp 1 lần lúc khởi động: thiếu bước này thì tráo phần cứng xảy ra TRONG lúc Core tắt sẽ lọt lưới."""
         n = 0
         for d in self.computers.find({"legacy_hostname": {"$type": "string"}},
-                                     {"legacy_hostname": 1, "serial": 1, "mac": 1, "room_override": 1, "ram": 1,
-                                      "disk": 1}):
+                                     {"legacy_hostname": 1, "serial": 1, "mac": 1, "room_override": 1, "move_seat": 1,
+                                      "ram": 1, "disk": 1}):
             host = d["legacy_hostname"]
             self.ids[host] = d["_id"]
             self._remember(host, str(d.get("serial") or "") if valid_serial(d.get("serial")) else "",
                            mac12(d.get("mac")))
             if d.get("room_override"):
-                self.overrides[host] = str(d["room_override"])
+                self.overrides[host] = (str(d["room_override"]), str(d.get("move_seat") or ""))
             if d.get("ram") or d.get("disk"):
                 self.hw_last[host] = (str(d.get("ram") or ""), str(d.get("disk") or ""))
             n += 1
+        self.room_ids = room_ids(self.db, self.tid)
         self.primed = True
         return n
 
     def room_of(self, host: str, hostname: str = "") -> str:
-        return self.overrides.get(host) or room_from_hostname_raw(hostname or host)
+        """HÀM PHÂN GIẢI PHÒNG DUY NHẤT (bài học §8.1 hệ cũ): phòng ép tay nếu có, không thì suy từ tên máy."""
+        ov = self.overrides.get(host)
+        return ov[0] if ov else room_from_hostname_raw(hostname or host)
+
+    def room_id_of(self, name: str) -> ObjectId:
+        """`_id` của phòng theo tên — tạo tài liệu `rooms` khi gặp tên mới (hiếm; chỉ lúc đó mới chạm CSDL)."""
+        rid = self.room_ids.get(name)
+        if rid is None:
+            rid = self.room_ids[name] = ensure_room(self.db, self.tid, name)
+        return rid
+
+    def set_override(self, host: str, room: str, seat: str = "") -> None:
+        self.overrides[host] = (room, seat)
+
+    def clear_override(self, host: str) -> None:
+        self.overrides.pop(host, None)
+
+    def forget(self, host: str) -> None:
+        """Máy bị XOÁ tay: dọn mọi bộ nhớ đệm (sót phòng ép là máy bật lại bị ép về phòng cũ — §8.1)."""
+        for d in (self.overrides, self.ids, self.hw_last, self.cmos_bao):
+            d.pop(host, None)
+        self._remember(host, "", "")
+        self.hwid.pop(host, None)
 
     # ------------------------------------------------------------------ nhịp ghi
     def tick(self) -> int:
@@ -90,6 +117,7 @@ class Writer:
         now = self.state.clock()
         hosts = self.state.hosts.values()
         changed = [h for h in hosts if h.state_dirty][:MAX_WRITES_PER_TICK]
+        self.vua_doi = {h.host for h in changed}  # máy vừa đổi online/offline nhịp này (cờ bị hạ sau khi ghi)
         due = sorted((h for h in hosts if not h.state_dirty and h.online and now - h.written_at >= SNAPSHOT_EVERY),
                      key=lambda h: h.written_at)
         batch = changed + due[:max(0, min(MAX_SNAPSHOTS_PER_TICK, MAX_WRITES_PER_TICK - len(changed)))]
@@ -98,7 +126,10 @@ class Writer:
                 if h.online:
                     self._identity(h)
                     self._hardware(h)
-            self.computers.bulk_upsert([self._upsert(h) for h in batch])
+                    self._tu_go_ep_phong(h)
+            res = self.computers.bulk_upsert([self._upsert(h) for h in batch])
+            for i, _id in (getattr(res, "upserted_ids", None) or {}).items():  # máy mới: nhớ _id ngay (device_id)
+                self.ids[batch[i].host] = _id
             for h in batch:  # chỉ hạ cờ SAU khi ghi thành công — Atlas lỗi thì nhịp sau ghi lại
                 h.state_dirty, h.written_at = False, now
         if now - self.last_usage >= USAGE_EVERY:
@@ -109,8 +140,9 @@ class Writer:
     def _upsert(self, h: Host) -> tuple[dict, dict]:
         dt = datetime.now(UTC)
         hb = h.hb
+        room = self.room_of(h.host, h.hostname)
         s: dict = {"hostname": h.hostname or h.host, "legacy_hostname": h.host, "is_online": h.online,
-                   "room_name": self.room_of(h.host, h.hostname), "source": "agent_v2", "updated_at": dt}
+                   "room_name": room, "room_id": self.room_id_of(room), "source": "agent_v2", "updated_at": dt}
         for k in _HW_TEXT:
             if k in hb and not is_placeholder(hb[k]):
                 s[k] = hb[k]
@@ -201,6 +233,19 @@ class Writer:
             snap = {k: v for k, v in doc.items() if k not in ("_id", "tenant_id")}
             self.archive.insert_one({**snap, "original_id": doc["_id"], "archived_at": datetime.now(UTC),
                                      "reason": f"trung {by} voi {new_host}"})
+
+    # ------------------------------------------------------------------ chuyển phòng tay (Move PC)
+    def _tu_go_ep_phong(self, h: Host) -> None:
+        """Phòng ép tự hết hiệu lực khi tên máy đã khớp đúng vị trí được chuyển, hoặc tên máy tự suy ra đúng
+        phòng đích (workers.py hệ cũ) — override không còn lý do tồn tại."""
+        ov = self.overrides.get(h.host)
+        if not ov:
+            return
+        room, seat = ov
+        if host_matches_seat(h.hostname or h.host, room, seat) or room_from_hostname_raw(h.hostname or h.host) == room:
+            self.overrides.pop(h.host, None)
+            self.computers.update_one({"legacy_hostname": h.host}, {"$unset": {"room_override": "", "move_seat": ""}})
+            log.info("MOVE-PC %s đã về đúng tên vị trí → tự gỡ phòng ép", h.host)
 
     # ------------------------------------------------------------------ thay đổi phần cứng → sự cố
     def _hardware(self, h: Host) -> None:

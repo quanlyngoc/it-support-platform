@@ -13,25 +13,8 @@ from app.legacy_adapter.state import QUEUE_TTL
 from app.legacy_adapter.update_gate import CLOSED
 from app.server import create_app
 from app.tenants.repo import repo_for
-from tests.conftest import TEST_SETTINGS, _make_tenant, auth, fake_ldap, login
-
-
-@pytest.fixture
-def world(db, tmp_path):
-    """Core có tổ chức PHENIKAA (gắn agent v2) + tổ chức BBB không liên quan; đồng hồ giả điều khiển được."""
-    t = {"P": _make_tenant(db, "PHENIKAA"), "B": _make_tenant(db, "BBB")}
-    a = create_app(db=db, settings=dataclasses.replace(TEST_SETTINGS, DATA_DIR=str(tmp_path / "data")),
-                   async_mode="threading", ldap_bind=fake_ldap)
-    ad = a.extensions["legacy"]
-    clock = [time.time()]
-    ad.state.clock = lambda: clock[0]
-    return {"app": a, "ad": ad, "c": a.test_client(), "clock": clock, "tid": t["P"]["tenant"]["_id"], "t": t}
-
-
-def _tok(w, tenant="PHENIKAA", user="admin", pw="Admin@123"):
-    code, j = login(w["c"], tenant, user, pw)
-    assert code == 200, j
-    return j["token"]
+from tests.conftest import TEST_SETTINGS, _make_tenant, auth, fake_ldap
+from tests.unit.conftest import tok as _tok
 
 
 # ====================================================================== định danh

@@ -145,7 +145,11 @@ CLI/server in tiếng Việt phải gọi `app.utils.console.utf8_stdio()` trư�
   thể chạy lệnh 2 lần.
 - Kết quả bất đồng bộ lưu MongoDB `command_results` (TTL 2 ngày) + phát socket room `t:<tenant_id>:res:<token>` + poll
   `GET /api/legacy/results/<token>`. Room phía Desktop luôn mang mã tổ chức: `t:<tid>:{ps|pty|watch}:<mac12>`,
-  `t:<tid>:devices` (sự kiện `legacy_devices` mỗi 2 s).
+  `t:<tid>:room:<room_id>` + `t:<tid>:devices` (sự kiện `batch_device_update` mỗi 2 s: `room_stats` + `total_online`
+  TUYỆT ĐỐI, chỉ phòng chính thức — Desktop ghi đè, cấm cộng dồn; máy offline không kèm CPU/RAM/Disk),
+  `t:<tid>:incidents` (`incident_new`).
+- API Desktop: `app/devices/routes.py` (`/api/rooms*`, `/api/devices*`, `/api/reports/config-export`). Hàm phân giải
+  phòng DUY NHẤT là `Writer.room_of` (phòng ép tay → tên máy); mỗi tên phòng có tài liệu `rooms` → `computers.room_id`.
 - Online: RAM `LegacyState`; bộ ghi nền (2 s/nhịp) ghi `computers` khi đổi trạng thái + định kỳ 60 s/máy (tối đa 60
   máy/nhịp, giãn đều), `usage_stats` +1 phút/máy/60 s. KHÔNG ghi Mongo mỗi nhịp tim. Không bao giờ xoá máy; tráo phần
   cứng → `machine_events` + `computers_archive`. Giá trị tạm `N/A`/`...` không đè dữ liệu thật.
@@ -304,6 +308,7 @@ Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay l�
 | 02/10/2026 | 2.11 Core thành dịch vụ NSSM | Xong | Người vận hành cài tay theo lệnh nssm; dịch vụ `PlatformCore` Running, Delayed Auto, LocalSystem, nghe `127.0.0.1:7009`, ping Atlas ≈ 0,4 s, giết tiến trình → tự lên lại. Quản lý: `platform-deployment/nssm/dich_vu_core.ps1` (KiemTra không cần Admin; CapNhat/Go cần Admin) |
 | 02/10/2026 | 3.1 Hợp đồng agent v2 | Xong | `tests/contract_v2/HOP_DONG.md` + 45 fixture (xfail strict chờ 3.3). Phát hiện: agent gửi UA `Mozilla/5.0` ở `/check_update`/`/download_setup` → sửa điều kiện canary 3.6 (mục A11) |
 | 02/10/2026 | 3.3 legacy_adapter | Xong | 45/45 test hợp đồng xanh; 133 test; thử tải 900 agent/30 phút: 0 lỗi, CPU Core TB 22,5% một lõi, RAM không rò, p99 14 ms. Dịch vụ `PlatformCore` cần `dich_vu_core.ps1 -Lenh CapNhat` để chạy mã này |
+| 03/10/2026 | 5.1 + 5.5 API phòng/thiết bị/nhật ký máy/xuất cấu hình (Core) | Xong (chờ `CapNhat`) | `app/devices`, `app/rooms`, `app/reports/config_export.py`; quyền `device.manage`; realtime `batch_device_update` theo phòng. 5.2–5.4 là Desktop (GĐ4) |
 | 03/10/2026 | 0.6 + 0.7 sao lưu + cảnh báo online | Xong (đã cài, đang chạy) | `platform-deployment/ops/cai_dat_ops.ps1 -Lenh CaiDat` (Admin); script chỉ đọc hệ cũ, có test, đã chạy thử trên dữ liệu thật |
 | — | 3.4 Cập nhật agent từ Core · 3.5–3.9 Caddy canary | Kế tiếp (sau 0.6 + 0.7) | 3.4 phần mã đã có trong `update_gate.py`; chỉ chép bộ cài khi có bản > 2.7.5.3; 3.2 không còn bắt buộc |
 

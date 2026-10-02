@@ -210,20 +210,50 @@ class LegacyAdapter:
         return n
 
     def _emit_devices(self, w: Writer) -> None:
+        """`batch_device_update` (Sổ tay 5.1, bài học 10.9–10.11 hệ cũ): mỗi phòng có máy đổi → room `t:<tid>:room:<id>`
+        nhận danh sách máy + `room_stats` + `total_online` TUYỆT ĐỐI (Desktop chỉ ghi đè, cấm cộng dồn); bảng tổng
+        `t:<tid>:devices` nhận số đếm các phòng đó. Máy offline KHÔNG kèm CPU/RAM/Disk (bài học 10.11)."""
         changed, self.state.ui_changed = self.state.ui_changed, set()
         if not changed:
             return
-        devs = []
+        online_by_room: dict[str, int] = {}
+        for x in self.state.online_hosts():
+            r = w.room_of(x, self.state.hosts[x].hostname)
+            online_by_room[r] = online_by_room.get(r, 0) + 1
+        total = sum(n for r, n in online_by_room.items() if is_official_room(r))
+        by_room: dict[str, list[dict]] = {}
         for host in changed:
             h = self.state.hosts.get(host)
             if h is None:
                 continue
-            d = {"hostname": h.hostname or host, "room_name": w.room_of(host, h.hostname), "is_online": h.online}
+            room = w.room_of(host, h.hostname)
+            d = {"hostname": h.hostname or host, "device_id": str(w.ids[host]) if host in w.ids else None,
+                 "room_name": room, "is_online": h.online, "state_changed": host in w.vua_doi}
             if h.online:
                 d.update({k: h.hb.get(k) for k in ("cpu_usage", "ram_usage", "disk_usage", "client_version")})
-            devs.append(d)
-        total = sum(1 for x in self.state.online_hosts() if is_official_room(w.room_of(x)))
-        self.emit("legacy_devices", {"devices": devs, "total_online": total}, self.room_devices())
+            by_room.setdefault(room, []).append(d)
+        stats: dict[str, int] = {}
+        for room, devs in by_room.items():
+            rid = w.room_ids.get(room)  # phòng chưa có _id (chưa kịp ghi lần đầu) → chỉ cập nhật ở nhịp sau
+            if rid is None:
+                continue
+            stats[str(rid)] = online_by_room.get(room, 0)
+            self.emit("batch_device_update", {"room_id": str(rid), "devices": devs,
+                                              "room_stats": {str(rid): stats[str(rid)]}, "total_online": total},
+                      f"t:{self.tenant_id}:room:{rid}")
+        self.emit("batch_device_update", {"devices": [], "room_stats": stats, "total_online": total},
+                  self.room_devices())
+
+    def notify_rooms(self, room_names: set[str]) -> None:
+        """Sau Chuyển phòng / Xoá máy: đẩy ngay số tuyệt đối của các phòng bị ảnh hưởng (không chờ F5 — hệ cũ)."""
+        w = self._writer
+        if w is None:
+            return
+        online = [w.room_of(x, self.state.hosts[x].hostname) for x in self.state.online_hosts()]
+        total = sum(1 for r in online if is_official_room(r))
+        stats = {str(w.room_ids[r]): sum(1 for o in online if o == r) for r in room_names if r in w.room_ids}
+        self.emit("batch_device_update", {"devices": [], "room_stats": stats, "total_online": total},
+                  self.room_devices())
 
     def _report(self) -> None:
         now = self.state.clock()

@@ -43,6 +43,9 @@ def create_app(db=None, settings: Settings | None = None, async_mode: str | None
     app.register_blueprint(health_bp)
     app.register_blueprint(auth_bp)
     legacy_init(app, db, s, socketio)
+    from app.devices.routes import bp as devices_bp
+
+    app.register_blueprint(devices_bp)
 
     mode = async_mode or s.ASYNC_MODE
     if mode not in ("gevent", "threading"):

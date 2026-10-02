@@ -22,6 +22,7 @@ PERMISSIONS: list[tuple[str, str]] = [
     ("room_map.edit", "Sửa sơ đồ phòng"),
     # Tính năng đang chạy ở hệ cũ, giữ lại (đặc tả V3 §1.3)
     ("agent.update", "Cập nhật agent theo đợt"),
+    ("device.manage", "Chuyển phòng / xoá máy (Move PC)"),
     ("remote.vnc", "Xem/điều khiển màn hình (VNC)"),
     ("machine_events.view", "Xem nhật ký thay đổi máy"),
     ("audit.view", "Xem nhật ký hệ thống"),
