@@ -7,6 +7,7 @@ from __future__ import annotations
 from typing import Any
 
 from bson import ObjectId
+from pymongo import UpdateOne
 from pymongo.database import Database
 
 from app.db.collections import TENANT_OWNED
@@ -95,6 +96,14 @@ class TenantRepo:
 
     def update_by_id(self, _id: ObjectId, update: dict):
         return self.col.update_one(self._q({"_id": _id}), self._upd(update))
+
+    def bulk_upsert(self, items: list[tuple[dict, dict]], ordered: bool = False):
+        """Nhiều update_one(upsert=True) trong MỘT lượt mạng (bộ ghi nền gộp nhịp tim; Atlas RTT ≈ 55 ms).
+        Mỗi cặp (điều kiện, cập nhật) đi qua đúng các chốt _q/_upd như update_one."""
+        if not items:
+            return None
+        ops = [UpdateOne(self._q(q), self._upd(u), upsert=True) for q, u in items]
+        return self.col.bulk_write(ops, ordered=ordered)
 
     def delete_one(self, q: dict):
         return self.col.delete_one(self._q(q))

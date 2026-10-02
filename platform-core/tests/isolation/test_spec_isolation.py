@@ -6,6 +6,7 @@ test mức API đang `skip` ghi rõ giai đoạn sẽ làm — để luôn hiệ
 """
 from __future__ import annotations
 
+import dataclasses
 from datetime import UTC, datetime
 
 import pytest
@@ -14,10 +15,11 @@ from pymongo.errors import DuplicateKeyError
 
 from app.rbac.catalog import UnknownPermission, validate_permission_ids
 from app.rbac.service import create_policy
+from app.server import create_app
 from app.tenants import service as tsvc
 from app.tenants.refs import RefNotFound, require_refs
 from app.tenants.repo import repo_for
-from tests.conftest import auth, login
+from tests.conftest import TEST_SETTINGS, auth, fake_ldap, login
 
 
 def _r(db, tid, col):
@@ -93,9 +95,23 @@ def test_4a36_07_agent_khong_thay_ket_qua_lenh_cua_to_chuc_khac(db, world):
     assert _r(db, a["tid"], "command_results").find_one({"token": "tok-b"}) is None
 
 
-@pytest.mark.skip(reason="GĐ3/GĐ10: dispatch lệnh qua socket room t:<tenant>:host:<host> — agent A không nhận lệnh B")
-def test_4a36_07b_agent_khong_nhan_lenh_qua_socket():
-    pass
+def test_4a36_07b_agent_khong_nhan_lenh_qua_socket(db, two_tenants, tmp_path):
+    """Agent v2 gắn với tổ chức AAA: người của BBB gọi API lệnh → 404 và agent KHÔNG nhận gì; người của AAA → nhận.
+    (Agent v3 đa tổ chức — room t:<tenant>:dev:<device> — kiểm lại ở GĐ10.)"""
+    from app.legacy_adapter import contract as k
+
+    s = dataclasses.replace(TEST_SETTINGS, DATA_DIR=str(tmp_path), LEGACY_TENANT_CODE="AAA")
+    app = create_app(db=db, settings=s, async_mode="threading", ldap_bind=fake_ldap)
+    c = app.test_client()
+    ag = k.agent(app)
+    body = {"hostname": k.FX_HOST, "command": "logout"}
+    _, jb = login(c, "BBB", "admin", "Admin@123")
+    assert c.post("/api/legacy/command", json=body, headers=auth(jb["token"])).status_code == 404
+    assert c.get("/api/legacy/online", headers=auth(jb["token"])).status_code == 404
+    assert not k.got(ag, "execute_command")
+    _, ja = login(c, "AAA", "admin", "Admin@123")
+    assert c.post("/api/legacy/command", json=body, headers=auth(ja["token"])).status_code == 200
+    assert k.got(ag, "execute_command")
 
 
 def test_4a36_08_device_khong_gan_duoc_room_cua_to_chuc_khac(db, world):

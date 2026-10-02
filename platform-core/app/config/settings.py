@@ -30,6 +30,11 @@ class Settings:
     ALLOWED_ORIGINS: str = "*"  # HOAN_BAO_MAT: siết lại theo địa chỉ Desktop khi chạy thật
     ASYNC_MODE: str = "gevent"
     VERSION: str = "3.0.0-dev"
+    # Kho tệp của Core (bộ cài agent, giao/thu bài, truyền tệp) — chia theo mã tổ chức bên trong
+    DATA_DIR: str = str(CORE_ROOT.parent / ".dev" / "data")
+    # Bộ tương thích agent v2 (2.7.5.x): giao thức không xác thực agent → gắn cứng vào MỘT tổ chức
+    LEGACY_TENANT_CODE: str = "PHENIKAA"
+    LEGACY_ALLOWED_CIDRS: tuple[str, ...] = ()  # HOAN_BAO_MAT: rỗng = nhận mọi IP; chạy thật đặt dải IP phòng máy
 
 
 def _load_env() -> None:
@@ -56,4 +61,11 @@ def get_settings() -> Settings:
         TRUSTED_PROXIES=proxies,
         ALLOWED_ORIGINS=os.getenv("ALLOWED_ORIGINS", "*"),
         ASYNC_MODE=os.getenv("ASYNC_MODE", "gevent"),
+        DATA_DIR=os.getenv("DATA_DIR", "").strip() or str(CORE_ROOT.parent / ".dev" / "data"),
+        LEGACY_TENANT_CODE=os.getenv("LEGACY_TENANT_CODE", "PHENIKAA").strip().upper() or "PHENIKAA",
+        LEGACY_ALLOWED_CIDRS=_csv(os.getenv("LEGACY_ALLOWED_CIDRS", "")),
     )
+
+
+def _csv(raw: str) -> tuple[str, ...]:
+    return tuple(p.strip() for p in raw.replace(";", ",").split(",") if p.strip())

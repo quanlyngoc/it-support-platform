@@ -132,12 +132,27 @@ CLI/server in tiếng Việt phải gọi `app.utils.console.utf8_stdio()` trư�
   TRƯỚC khi sửa bất cứ gì trong `legacy_adapter`. Ba luật dễ phạm nhất: `/update` **luôn 200, không bao giờ 426**
   (mã khác ×3 → agent đi "săn server"); `/check_update` luôn 200 + khoá `version` (agent dùng nó để nhận ra server);
   Core **không** trả lời UDP 5010.
-- **KHÔNG BAO GIỜ broadcast lệnh.** Không tìm thấy room của máy → ghi log `KENH-LENH`, trả lỗi cho người bấm.
-  Máy còn nhịp tim mà mất socket → xếp lệnh vào hàng đợi HTTP `/check_command/<mac>` (agent poll 1,6–3 s).
-- ACK: `command_id`, `ACK_TIMEOUT=8s`, `ACK_MAX_TRIES=3`; agent chống chạy đúp theo `command_id`.
-- Kết quả bất đồng bộ (PowerShell hàng loạt, giao/thu bài): **đệm kết quả về sớm + API poll dự phòng**.
-- Online: RAM `ONLINE[tenant][device]=ts`; ghi `online_state` CHỈ khi đổi trạng thái + flush `last_seen` mỗi 60s.
-  KHÔNG ghi Mongo mỗi nhịp tim.
+- **Mã `app/legacy_adapter/`** (bước 3.3 xong 02/10/2026): `state.py` (RAM: online, socket, hàng đợi HTTP, ACK — thuần,
+  không Flask) · `adapter.py` (ghép + `dispatch` + vòng nền) · `fastpath.py` (đường nhanh WSGI cho `/update` +
+  `/check_command`, ≈ 95% lưu lượng — KHÔNG đi qua Flask) · `http_routes.py` (16 route còn lại) · `socket_handlers.py` ·
+  `writer.py` (ghi `computers` theo lô) · `store.py` (MongoDB `command_results`/`file_metadata` + tệp đĩa) ·
+  `update_gate.py` · `identity.py` · `api.py` (`/api/legacy/*` cho Desktop/vận hành) · `contract.py` (bộ chạy test hợp đồng).
+- **KHÔNG BAO GIỜ broadcast lệnh.** Máy có socket → room `host_<HOST>` + ACK; còn nhịp tim mà mất socket → hàng đợi HTTP
+  `/check_command/<mac>` (lệnh quá **5 phút** bị bỏ — máy bật lại không chạy `shutdown` cũ); máy tắt → kênh `none` →
+  API trả 409. Kể cả `server_ps_input` (hub cũ broadcast) nay tra MAC → máy rồi gửi trúng đích.
+- ACK: `command_id`, `ACK_TIMEOUT=8s`, `ACK_MAX_TRIES=3`. Hết lượt/mất socket → **bỏ cuộc, KHÔNG chuyển sang hàng đợi
+  HTTP**: đường `/check_command` của agent KHÔNG chống chạy đúp theo `command_id` (client.py 3922-3931) → chuyển là có
+  thể chạy lệnh 2 lần.
+- Kết quả bất đồng bộ lưu MongoDB `command_results` (TTL 2 ngày) + phát socket room `t:<tenant_id>:res:<token>` + poll
+  `GET /api/legacy/results/<token>`. Room phía Desktop luôn mang mã tổ chức: `t:<tid>:{ps|pty|watch}:<mac12>`,
+  `t:<tid>:devices` (sự kiện `legacy_devices` mỗi 2 s).
+- Online: RAM `LegacyState`; bộ ghi nền (2 s/nhịp) ghi `computers` khi đổi trạng thái + định kỳ 60 s/máy (tối đa 60
+  máy/nhịp, giãn đều), `usage_stats` +1 phút/máy/60 s. KHÔNG ghi Mongo mỗi nhịp tim. Không bao giờ xoá máy; tráo phần
+  cứng → `machine_events` + `computers_archive`. Giá trị tạm `N/A`/`...` không đè dữ liệu thật.
+- Cổng cập nhật: `settings` `update.all|hosts|rollout_rooms|rollout_percent` (mặc định tắt hết) + bộ cài phải khớp
+  `manifest.json`; kho bộ cài `<DATA_DIR>/<MÃ>/updates/`. Kho tệp khác: `<DATA_DIR>/<MÃ>/{work,collect,fs_tmp}`.
+- Nhật ký: `geventwebsocket.handler` ghi MỌI request ở INFO (bỏ qua `log_output`) → `app/server.py` hạ về WARNING;
+  quên là ≈ 10 GB/ngày. Tóm tắt `SYNC` 1 dòng/60 s.
 - `engineio.payload.Payload.max_decode_packets = 500` (bài học View desktop).
 - Agent v3 mất kênh mới 10 phút liên tục → tự rơi về kênh v2 (Core vẫn phục vụ) → không bao giờ mồ côi.
 
@@ -286,7 +301,8 @@ Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay l�
 | 02/10/2026 | 2.3–2.10 Nền platform-core | Xong (trừ CI chạy thật) | Atlas `itm_core` đã khởi tạo; tổ chức PHENIKAA + `admin`; 58 test + 3 test Atlas xanh; ruff/pyright sạch; CI viết sẵn, chờ repo GitHub |
 | 02/10/2026 | 2.11 Core thành dịch vụ NSSM | Xong | Người vận hành cài tay theo lệnh nssm; dịch vụ `PlatformCore` Running, Delayed Auto, LocalSystem, nghe `127.0.0.1:7009`, ping Atlas ≈ 0,4 s, giết tiến trình → tự lên lại. Quản lý: `platform-deployment/nssm/dich_vu_core.ps1` (KiemTra không cần Admin; CapNhat/Go cần Admin) |
 | 02/10/2026 | 3.1 Hợp đồng agent v2 | Xong | `tests/contract_v2/HOP_DONG.md` + 45 fixture (xfail strict chờ 3.3). Phát hiện: agent gửi UA `Mozilla/5.0` ở `/check_update`/`/download_setup` → sửa điều kiện canary 3.6 (mục A11) |
-| — | 3.3 legacy_adapter | Kế tiếp | Theo `docs/TIEN_DO.md` |
+| 02/10/2026 | 3.3 legacy_adapter | Xong (chờ thử tải 30 phút) | 45/45 test hợp đồng xanh; 133 test; đường nhanh WSGI: 300 agent ≈ 5% một lõi, p99 ≈ 3 ms. Dịch vụ `PlatformCore` cần `dich_vu_core.ps1 -Lenh CapNhat` để chạy mã này |
+| — | 3.4 Cập nhật agent từ Core · 3.2/3.5–3.9 Caddy canary | Kế tiếp | 3.4 phần mã đã có trong `update_gate.py`; còn chép bộ cài + kiểm |
 
 Chi tiết bàn giao từng bước: `docs/TIEN_DO.md`.
 

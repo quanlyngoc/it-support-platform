@@ -1,9 +1,12 @@
 """Fixture dùng chung. Mặc định chạy trên mongomock (nhanh, không cần mạng); test `atlas` chạy trên CSDL thật."""
 from __future__ import annotations
 
+import dataclasses
+
 import mongomock
 import pytest
 from apiflask import APIBlueprint
+from mongomock.collection import BulkOperationBuilder
 
 from app.auth import service as auth_service
 from app.config.settings import Settings
@@ -16,6 +19,17 @@ from app.tenants import service as tsvc
 
 TEST_SETTINGS = Settings(MONGO_URI="mongodb://khong-dung", MONGO_DB="itm_test")
 AD_PASSWORD = "ad-pass-dung"
+
+# mongomock 4.3 chưa biết tham số `sort` mà PyMongo 4.x truyền cho UpdateOne trong bulk_write → vá CHỈ trong test.
+# Hành vi thật của bulk_upsert được kiểm trên MongoDB thật ở tests/test_atlas.py.
+_orig_add_update = BulkOperationBuilder.add_update
+
+
+def _add_update_compat(self, *a, sort=None, **kw):
+    return _orig_add_update(self, *a, **kw)
+
+
+BulkOperationBuilder.add_update = _add_update_compat
 
 
 def fake_ldap(cfg: dict, principal: str, password: str) -> bool:
@@ -49,8 +63,9 @@ def two_tenants(db):
 
 
 @pytest.fixture
-def app(db):
-    a = create_app(db=db, settings=TEST_SETTINGS, async_mode="threading", ldap_bind=fake_ldap)
+def app(db, tmp_path):
+    settings = dataclasses.replace(TEST_SETTINGS, DATA_DIR=str(tmp_path / "data"))  # không ghi vào kho tệp thật
+    a = create_app(db=db, settings=settings, async_mode="threading", ldap_bind=fake_ldap)
     a.config["TESTING"] = True
 
     # Route thử nghiệm để kiểm quyền + nhật ký (chỉ có trong test)

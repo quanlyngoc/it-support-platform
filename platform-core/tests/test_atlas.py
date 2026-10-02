@@ -62,3 +62,29 @@ def test_unique_theo_to_chuc(adb):
     repo.insert_one({"hostname": "A6-301-01", "agent_id": "ag-1"})
     with pytest.raises(DuplicateKeyError):
         repo.insert_one({"hostname": "A6-301-02", "agent_id": "ag-1"})
+
+
+def test_bo_ghi_agent_v2_tren_mongodb_that(adb):
+    """bulk_upsert + Writer với PyMongo thật (mongomock không phản ánh đúng bulk_write của PyMongo 4.x)."""
+    import time
+
+    from app.legacy_adapter.contract import heartbeat
+    from app.legacy_adapter.state import LegacyState
+    from app.legacy_adapter.writer import Writer
+    from app.tenants.repo import repo_for
+
+    t = tsvc.create_tenant(adb, f"V{secrets.token_hex(3).upper()}", "Agent v2")
+    clock = [time.time()]
+    st = LegacyState(clock=lambda: clock[0])
+    w = Writer(adb, t["_id"], st)
+    for i in range(1, 31):
+        st.ingest(heartbeat(f"A6-301-{i:02d}", f"aa:bb:cc:00:30:{i:02x}", serial=f"SN{i:05d}"), "10.0.0.1")
+    assert w.tick() == 30  # 30 máy trong một lượt mạng
+    clock[0] += 61
+    for i in range(1, 31):
+        st.ingest(heartbeat(f"A6-301-{i:02d}", f"aa:bb:cc:00:30:{i:02x}", serial="N/A"), "10.0.0.1")
+    w.tick()
+    comp = repo_for(adb, t["_id"], "computers")
+    doc = comp.find_one({"legacy_hostname": "A6-301-07"})
+    assert comp.count({}) == 30 and doc is not None and doc["serial"] == "SN00007"
+    assert repo_for(adb, t["_id"], "usage_stats").count({"online_minutes": 1}) == 30

@@ -1,7 +1,8 @@
 """Test hợp đồng agent v2 (Sổ tay 3.1). Mỗi fixture trong fixtures/ là một test.
 
-Chưa có legacy_adapter (bước 3.3) nên mọi test hợp đồng đang `xfail(strict=True)`: khi adapter làm đúng, test tự qua →
-pytest báo XPASS(strict) = ĐỎ → thêm id vào IMPLEMENTED để test thành xanh chính thức. Nhờ vậy không mục nào bị quên.
+Fixture có id trong IMPLEMENTED là test xanh bắt buộc. Fixture MỚI thêm vào (chưa có trong IMPLEMENTED) tự chạy dạng
+`xfail(strict=True)`: khi adapter làm đúng, test tự qua → pytest báo XPASS(strict) = ĐỎ → thêm id vào IMPLEMENTED.
+Nhờ vậy không mục nào bị quên.
 
 Adapter phải cung cấp `app.legacy_adapter.contract` với:
     apply_setup(app, step: str) -> None          # các bước "setup" trong fixture (agent_registered:..., fs_token:...)
@@ -18,7 +19,19 @@ import pytest
 
 FIX_DIR = pathlib.Path(__file__).parent / "fixtures"
 FIXTURES = sorted((json.loads(p.read_text(encoding="utf-8")) for p in FIX_DIR.glob("*.json")), key=lambda f: f["id"])
-IMPLEMENTED: set[str] = set()  # id fixture đã có adapter phục vụ đúng (điền ở bước 3.3)
+IMPLEMENTED: set[str] = {  # id fixture adapter đã phục vụ đúng (bước 3.3 xong 02/10/2026: đủ 45/45)
+    "http_check_command_empty", "http_check_command_obj", "http_check_command_str", "http_check_update_closed",
+    "http_check_update_open", "http_check_update_probe", "http_client_log", "http_collect_report",
+    "http_collect_upload", "http_collect_upload_unknown", "http_download_setup", "http_fs_bridge_pending",
+    "http_fs_recv_legacy", "http_fs_recv_raw", "http_fs_recv_raw_bad_token", "http_fs_serve", "http_login_result",
+    "http_offline", "http_ps_auth_result", "http_ps_bulk_result_ok", "http_ps_bulk_result_unknown",
+    "http_pty_auth_result", "http_send_report", "http_update_boot_placeholders", "http_update_dang_tat",
+    "http_update_missing_hostname", "http_update_no_socket", "http_update_ok", "http_update_old_version_no_426",
+    "http_work_file", "sock_in_client_ps_output", "sock_in_client_pty_output", "sock_in_client_update_legacy",
+    "sock_in_cmd_ack", "sock_in_disconnect", "sock_in_fs_progress", "sock_in_fs_response", "sock_in_register",
+    "sock_in_vnc_thumb", "sock_out_execute_command", "sock_out_fs_request", "sock_out_server_ps_input",
+    "sock_out_server_pty_input", "sock_out_server_pty_resize", "sock_out_vnc_thumb_req"
+}
 
 
 def _param(f: dict):
@@ -69,7 +82,7 @@ def test_luat_song_con_nhip_tim_luon_200():
 
 # ---------------- Test hợp đồng (đỏ có chủ đích tới bước 3.3) ----------------
 def _contract():
-    from app.legacy_adapter import contract  # type: ignore[attr-defined]  # có ở bước 3.3
+    from app.legacy_adapter import contract
 
     return contract
 

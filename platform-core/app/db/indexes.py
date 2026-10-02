@@ -51,6 +51,7 @@ INDEXES: dict[str, list[tuple[list, dict]]] = {
                   ([("created_at", A)], {"expireAfterSeconds": 180 * 86400})],
     "pushed_files": [([("tenant_id", A), ("batch_id", A)], {}), ([("tenant_id", A), ("device_id", A)], {})],
     "file_metadata": [([("tenant_id", A), ("scope", A), ("created_at", Z)], {}),
+                      ([("tenant_id", A), ("scope", A), ("token", A)], {}),  # token truyền tệp agent v2
                       ([("expires_at", A)], {"expireAfterSeconds": 0, "partialFilterExpression":
                                              {"expires_at": {"$type": "date"}}})],
     "machine_events": [([("tenant_id", A), ("created_at", Z)], {}), ([("tenant_id", A), ("hostname", A)], {})],

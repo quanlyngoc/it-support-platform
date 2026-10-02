@@ -139,3 +139,35 @@ cài bằng tác vụ Task Scheduler tách rời, báo tiến độ qua `/ps_bul
 - Hệ thi (ThiHSK/ThiPM) gọi hub qua `/internal/*` + `/hubapi/*` (`X-Internal-Token`) — phòng chuyển sang Core thì hệ thi phải
   hỏi Core cho máy của phòng đó (GĐ9, xem `D:\ExaminationSystem\CLAUDE_THI.md`). Mốc "tắt có chủ ý" (`TAT_SACH`) cũng phải có ở Core.
 - Relay VNC (`PhenikaaVncRelay`, cổng 6080 qua Caddy `@vncws`) giữ nguyên; Core chỉ phát `vnc_start {relay_url, token}`.
+
+## H. Ánh xạ hành vi cũ ↔ mã mới ↔ test (bước 3.3, 02/10/2026)
+
+| Hành vi hub cũ (CHỈ ĐỌC) | Mã Core (`app/legacy_adapter/`) | Test |
+|---|---|---|
+| `/update` `_ingest_heartbeat` + `reconnect_socket` (app.py 2212-2263) | `fastpath.py` → `adapter.handle_update` → `state.ingest` | `http_update_*`, `test_a1_*`, `test_a3_*` |
+| `/check_command` `COMMAND_QUEUE` FIFO (4260) | `fastpath.py` → `adapter.handle_check_command` → `state.pop_command` | `http_check_command_*`, `test_a8_*` |
+| `dispatch_command` + `_ack_retry_loop` (408-445) | `adapter.dispatch` / `retry_tick` + `state.track`/`due_retries` | `sock_out_execute_command`, `test_ack_*` |
+| `register` / `disconnect` / `cmd_ack` (447-498) | `socket_handlers.py` | `sock_in_register|disconnect|cmd_ack` |
+| `ram_watchdog_worker` 35 s (538) | `state.sweep` (gọi trong `writer.tick`) | `test_mat_nhip_tim_35s_*` |
+| `async_db_writer_worker` + `_mevt_swap`/`_mevt_hwid` (workers.py 41-249) | `writer.py` | `test_trao_phan_cung_*`, `test_anti_ghost_*`, `test_cung_ten_doi_*` |
+| `usage_stats_worker` (551) | `writer._usage` | `test_phut_su_dung_*` |
+| `/check_update` + `/download_setup` cổng chia đợt (1871-2011, 2182) | `update_gate.py` + `http_routes.py` | `http_check_update_*`, `test_cong_*`, `test_tai_bo_cai_*` |
+| `ps_bulk_result`/`send_report`/`collect_*` RAM (4474, 4925-5031) | `store.py` (MongoDB) + `http_routes.py` | `http_ps_bulk_*`, `http_send_report`, `http_collect_*`, `test_api_powershell_*` |
+| `FS_TOK`/`FS_PULL`/`FS_PUSH` RAM (697-717, 1395-1456) | `store.py` (`file_metadata` scope `fs_token`) | `http_fs_*` |
+| `client_ps_output`/`client_pty_output`/`fs_*`/`vnc_thumb` (650-816) | `socket_handlers.py` | `sock_in_*` |
+| `/offline` + `TAT_SACH` (4556-4580) | `http_routes.offline` + `state.tat_sach` | `http_offline`, `test_lenh_tat_*` |
+
+**Cố ý KHÁC hub cũ (đừng "sửa lại cho giống"):**
+1. Không broadcast ở bất kỳ đâu (hub cũ broadcast khi chưa `register`, `server_ps_input`, `ps_output`, `*_auth_response`,
+   `login_response`, `pty_output` thiếu MAC).
+2. Thiếu `hostname` ở `/update` → 200 `{"status":"error"}` (hub cũ 400) — luật A1.
+3. Không bao giờ 426 dù agent cũ hơn `version.txt` — luật A2.
+4. Hàng đợi HTTP có hạn 5 phút; ACK hết lượt không chuyển sang hàng đợi HTTP (đường HTTP của agent không chống đúp).
+5. `/check_update` chỉ mời cập nhật khi bộ cài KHỚP manifest; hub cũ trả version kể cả khi thiếu manifest.
+6. Giá trị tạm `N/A`/`...` không đè thông tin phần cứng thật; ghi `computers` gộp (đổi trạng thái + 60 s) thay vì mỗi nhịp.
+7. Kết quả bất đồng bộ + token truyền tệp lưu MongoDB (hub cũ để RAM).
+8. Cổng chia đợt cộng dồn kiểu HOẶC (`all` / máy / phòng / %); hub cũ: có danh sách phòng thì bỏ qua %.
+
+Chưa làm trong 3.3 (ghi để không quên): cảnh báo đổi RAM/ổ cứng → `incidents` (`check_hardware_changes`, GĐ incidents);
+Desktop tham gia room `t:<tid>:{ps|pty|watch}` qua socket có xác thực (GĐ4); API cấp phiên giao/thu bài + token
+truyền tệp cho Desktop (GĐ7); `/internal/*` + `/hubapi/*` cho hệ thi (GĐ9); dọn tệp cũ trong `<DATA_DIR>`.

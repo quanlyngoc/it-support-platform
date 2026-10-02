@@ -8,6 +8,8 @@ if __name__ == "__main__":  # PHẢI là câu lệnh đầu tiên: monkey-patch 
 
     monkey.patch_all()
 
+import logging  # noqa: E402
+
 from apiflask import APIFlask  # noqa: E402
 from flask.json.provider import DefaultJSONProvider  # noqa: E402
 
@@ -34,11 +36,13 @@ def create_app(db=None, settings: Settings | None = None, async_mode: str | None
     from app.audit import hooks as audit_hooks
     from app.auth.routes import bp as auth_bp
     from app.auth.routes import load_context
+    from app.legacy_adapter import init_app as legacy_init
 
     app.before_request(load_context)
     audit_hooks.register(app)
     app.register_blueprint(health_bp)
     app.register_blueprint(auth_bp)
+    legacy_init(app, db, s, socketio)
 
     mode = async_mode or s.ASYNC_MODE
     if mode not in ("gevent", "threading"):
@@ -51,8 +55,14 @@ def main() -> None:
     from app.utils.console import utf8_stdio
 
     utf8_stdio()
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+    # gevent-websocket ghi MỌI request ở mức INFO (bỏ qua log_output) → ≈ 840 dòng/giây với 900 máy ≈ 10 GB/ngày
+    # (đúng lỗi server.log phình GB của hub cũ). Chỉ giữ cảnh báo/lỗi.
+    for noisy in ("geventwebsocket.handler", "engineio.server", "socketio.server"):
+        logging.getLogger(noisy).setLevel(logging.WARNING)
     s = get_settings()
     app = create_app()
+    app.extensions["legacy"].start()  # vòng nền: ghi computers theo lô + gửi lại lệnh chưa ACK
     print(f"Platform-Core {s.VERSION} chạy {s.HOST}:{s.PORT} (CSDL {s.MONGO_DB})", flush=True)
     socketio.run(app, host=s.HOST, port=s.PORT)
 
