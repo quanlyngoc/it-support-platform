@@ -52,7 +52,11 @@ function Get-KetQua([int64]$ma) {
 
 function Show-TacVu([string]$ten) {
     $t = Get-ScheduledTask -TaskName $ten -ErrorAction SilentlyContinue
-    if (-not $t) { Canh "Chưa có tác vụ '$($ten)'"; return $null }
+    if (-not $t) {
+        if (Test-LaAdmin) { Canh "Chưa có tác vụ '$($ten)'" }
+        else { Write-Host "    $($ten): tài khoản thường KHÔNG xem được tác vụ chạy bằng SYSTEM — xem bằng chứng bên dưới (hoặc chạy KiemTra bằng Administrator)" }
+        return $null
+    }
     $i = $t | Get-ScheduledTaskInfo
     Write-Host "    $($ten): $($t.State) · chạy cuối $($i.LastRunTime) → $(Get-KetQua $i.LastTaskResult) · lần tới $($i.NextRunTime)"
     return $i
@@ -92,13 +96,21 @@ switch ($Lenh) {
         $null = Show-TacVu $TK_CB
         Buoc 'Sao lưu (0.6)'
         $b = Get-ChildItem $Daily -Filter 'database_*.db' -ErrorAction SilentlyContinue | Sort-Object Name | Select-Object -Last 1
-        if ($b) { Write-Host "    Mới nhất: $($b.Name) · $([math]::Round($b.Length / 1MB, 1)) MB · $($b.LastWriteTime)" }
+        if ($b) {
+            Write-Host "    Mới nhất: $($b.Name) · $([math]::Round($b.Length / 1MB, 1)) MB · $($b.LastWriteTime)"
+            if (((Get-Date) - $b.LastWriteTime).TotalHours -le 26) { Dat 'Bản sao lưu không cũ quá 26 giờ' }
+            else { Canh 'Bản sao lưu mới nhất đã quá 26 giờ — tác vụ sao lưu có thể không chạy' }
+        }
         else { Canh "Chưa có bản sao lưu trong $Daily" }
         $l = Join-Path $Daily 'sao_luu.log'
         if (Test-Path $l) { Get-Content $l -Tail 3 -Encoding UTF8 | ForEach-Object { Write-Host "    $_" } }
         Buoc 'Cảnh báo online (0.7)'
         $c = Get-ChildItem $Baseline -Filter 'online_*.csv' -ErrorAction SilentlyContinue | Sort-Object Name | Select-Object -Last 1
-        if ($c) { Write-Host "    Baseline cuối (giờ, online, còn kênh lệnh, tổng máy): $(Get-Content $c.FullName -Tail 1)" }
+        if ($c) {
+            Write-Host "    Baseline cuối (giờ, online, còn kênh lệnh, tổng máy): $(Get-Content $c.FullName -Tail 1)"
+            if (((Get-Date) - $c.LastWriteTime).TotalMinutes -le 3) { Dat 'Tác vụ cảnh báo đang chạy mỗi phút (baseline mới < 3 phút)' }
+            else { Canh "Baseline không có dòng mới từ $($c.LastWriteTime) — tác vụ cảnh báo có thể đã dừng" }
+        }
         else { Canh "Chưa có baseline trong $Baseline" }
         $e = Join-Path $Baseline 'canh_bao.log'
         if (Test-Path $e) { Write-Host '    Sự kiện gần nhất:'; Get-Content $e -Tail 5 -Encoding UTF8 | ForEach-Object { Write-Host "      $_" } }

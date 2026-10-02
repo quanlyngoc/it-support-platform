@@ -58,6 +58,7 @@ Cập nhật lần cuối: 02/10/2026 tối (3.3 legacy_adapter xong; Sổ tay s
 | 3.3 (đưa lên dịch vụ) | Người vận hành chạy `dich_vu_core.ps1 -Lenh CapNhat` (02/10/2026 18:20) | `KiemTra`: bản `ac6d8a9` = main, có `DATA_DIR`, ping CSDL 53 ms; `/check_update` → `0.0.0.0`; `/update` → 200; 7 dịch vụ hệ cũ Running. Hai lần dừng/bật 18:20 + 18:21 là lệnh STOP có chủ đích (nhật ký NSSM), không phải sập |
 | — | Core dừng êm khi NSSM gửi Ctrl+C (commit `d2aaaa8`): không còn ~30 dòng traceback `KeyboardInterrupt` trong `core-err.log` mỗi lần dừng | Thử: tắt phần chặn → stderr có traceback; bật → stderr trống, mã thoát 0. Có hiệu lực ở lần `CapNhat` kế |
 | 0.6 + 0.7 (chuẩn bị) | `platform-deployment/ops/`: `sao_luu_csdl_cu.py` (API backup SQLite từ kết nối `mode=ro` — CSDL cũ chạy WAL, `-wal` 36 MB > tệp chính 30 MB nên chép thô là mất dữ liệu; giữ 14 bản + `may_<ngày>.csv`), `canh_bao_online.py` (mỗi phút đọc `/internal/machines`, Telegram khi rớt ≥ max(5, 10%), bỏ máy tắt có chủ ý + canary; báo khi mất hub 2 lần liên tiếp + khi hồi), `lay_cau_hinh_cu.py`, `cai_dat_ops.ps1` (CaiDat/KiemTra/Go) | 9 test mới trong `qa/test_ops.py`; chạy thật (không gửi Telegram): sao lưu 889 máy 29 MB ≈ 1 s, `-shm` hệ cũ không đổi; hub trả 48 online/48 còn kênh lệnh; trigger lặp mỗi phút mặc định vô hạn trên WS2019. Sổ tay 0.6/0.7 thêm "Cách nhanh" (artifact bản 4) |
+| 0.6 + 0.7 | **Đã cài** (người vận hành chạy `cai_dat_ops.ps1 -Lenh CaiDat`, 03/10/2026 00:15–00:20) | Sao lưu `database_20261003.db` 29 MB / 889 máy + `may_20261003.csv`; tin thử Telegram gửi được (script dừng ngay nếu lỗi, đã qua bước sau đó); baseline có dòng mỗi phút (00:16 → nay), hub_loi 0; kho bí mật đã khoá (tài khoản thường bị từ chối). `KiemTra` bằng tài khoản thường suy trạng thái từ độ mới của baseline/bản sao vì không xem được tác vụ SYSTEM |
 | 3.1 | Hợp đồng agent v2: `platform-core/tests/contract_v2/HOP_DONG.md` (luật sống còn A1–A11, thông số, 18 route HTTP, 15 sự kiện socket, 15 action lệnh) + 45 fixture + `test_contract_v2.py` | 3 test kiểm fixture xanh; 45 test hợp đồng `xfail strict` chờ 3.3 |
 
 ## Đang làm
@@ -66,9 +67,7 @@ Cập nhật lần cuối: 02/10/2026 tối (3.3 legacy_adapter xong; Sổ tay s
 
 ## BƯỚC TIẾP THEO
 
-1. **Người vận hành: cài 0.6 + 0.7** (điều kiện bắt buộc trước canary) — PowerShell Run as Administrator:
-   `Set-ExecutionPolicy -Scope Process Bypass -Force; & D:\ITSupportPlatform\platform-deployment\ops\cai_dat_ops.ps1 -Lenh CaiDat`
-   Đạt khi in đủ [ĐẠT] (sao lưu thử, tin thử Telegram tới nhóm, baseline có dòng). Sau đó Claude kiểm bằng `-Lenh KiemTra`.
+1. ~~Cài 0.6 + 0.7~~ — xong 03/10/2026.
 2. Theo dõi baseline vài ngày (`D:\Backup\baseline\online_<ngày>.csv`) để biết ngưỡng cảnh báo có gây báo động giả giờ tan
    học không (Sổ tay 0.8 dùng chính số liệu này).
 3. **Canary 1 máy (3.5 → 3.8)** theo Sổ tay đã sửa: chọn máy thử không dạy, người trực có mặt; ghi tên máy vào
@@ -85,7 +84,7 @@ Cập nhật lần cuối: 02/10/2026 tối (3.3 legacy_adapter xong; Sổ tay s
       `Set-ExecutionPolicy -Scope Process Bypass -Force; & D:\ITSupportPlatform\platform-deployment\nssm\dich_vu_core.ps1 -Lenh CapNhat`
       (máy chủ thiếu System32 trong PATH nên KHÔNG gõ `powershell -File ...`; Claude không tự làm được vì cần dừng dịch vụ).
 - [x] `dich_vu_core.ps1 -Lenh CapNhat` — dịch vụ chạy mã 3.3 (02/10/2026 18:20).
-- [ ] Bước 0.6, 0.7: `platform-deployment\ops\cai_dat_ops.ps1 -Lenh CaiDat` (xem BƯỚC TIẾP THEO 1).
+- [x] Bước 0.6, 0.7: đã cài 03/10/2026 (`ops\cai_dat_ops.ps1 -Lenh KiemTra` để xem).
 - [ ] 3.5–3.9: canary bằng Caddy — chỉ làm sau khi 0.6 + 0.7 chạy và có người trực (3.2 không còn bắt buộc).
 - [ ] Cài Node.js 24 LTS, Rust, VS Build Tools trên máy phát triển desktop-app (GĐ4).
 
