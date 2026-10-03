@@ -11,6 +11,7 @@
   --ok: #1d7438;
   --err: #b42318;
   --err-soft: #fce3e0;
+  --warn: #b25e09;
   --font: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
 }
 @media (prefers-color-scheme: dark) {
@@ -27,6 +28,7 @@
     --ok: #6fcf8e;
     --err: #f27a6e;
     --err-soft: #3c1916;
+    --warn: #f0a24b;
   }
 }
 * { box-sizing: border-box; }
@@ -55,7 +57,8 @@ input { font: 14px var(--font); padding: 8px 10px; border-radius: 6px; border: 1
 .login-card .server input { margin-top: 6px; }
 
 /* Khung ứng dụng */
-.app { display: grid; grid-template-rows: auto 1fr; height: 100%; }
+/* 3 hàng: thanh trên · dải báo (có thể rỗng) · nội dung. min-height:0 để nội dung cuộn được (bài học 10.1 hệ cũ) */
+.app { display: grid; grid-template-rows: auto auto minmax(0, 1fr); height: 100%; }
 .topbar { display: flex; align-items: center; gap: 18px; padding: 10px 20px; background: var(--surface);
           border-bottom: 1px solid var(--line); }
 .topbar .brand { font-weight: 700; color: var(--accent); }
@@ -65,11 +68,17 @@ input { font: 14px var(--font); padding: 8px 10px; border-radius: 6px; border: 1
 .content { overflow: auto; padding: 20px 24px 40px; }
 
 /* Tổng quan */
-.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.dash-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.clock { color: var(--muted); font-variant-numeric: tabular-nums; }
+.clock b { color: var(--ink); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
 .tile { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
 .tile b { display: block; font-size: 28px; font-variant-numeric: tabular-nums; }
 .tile span { color: var(--muted); font-size: 12px; }
 .tile.ok b { color: var(--ok); }
+.tile.warn b { color: var(--warn); }
+.chart { position: relative; height: 220px; background: var(--surface); border: 1px solid var(--line);
+         border-radius: 10px; padding: 10px 12px; }
 .rooms { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
 .room { display: grid; gap: 6px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--line);
         border-radius: 10px; text-decoration: none; color: var(--ink); }
@@ -89,3 +98,18 @@ table.grid tr.off td { color: var(--muted); }
 
 /* Dải đỏ mất kết nối (banner B1 hệ cũ) */
 .lost { background: var(--err); color: #fff; font-weight: 600; text-align: center; padding: 6px 12px; }
+
+/* Dải báo có bản Desktop mới */
+.update-strip { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 6px 12px;
+                background: var(--surface-2); border-bottom: 1px solid var(--line); }
+.update-strip button { padding: 4px 12px; }
+.update-err { color: var(--err); }
+
+/* Giới thiệu */
+.about dl { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.about dt { color: var(--muted); }
+.about dd { margin: 0; }
+.about .ok { color: var(--ok); }
+.about .err { color: var(--err); }
+.about-update { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.about-update p { flex-basis: 100%; margin: 4px 0 0; }

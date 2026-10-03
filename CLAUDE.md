@@ -76,6 +76,8 @@ docs/adr/             Quyết định kiến trúc (ADR-0001...)
 
 Ghim trong `.gitattributes`; kiểm bằng `platform-deployment/qa/check_eol.py` (mục 11).
 CLI/server in tiếng Việt phải gọi `app.utils.console.utf8_stdio()` trước (console máy chủ là cp1252 → `UnicodeEncodeError`).
+**Tham số dòng lệnh CÓ DẤU** đi qua launcher `.venv\Scripts\python.exe` của uv (kể cả `uv run`) bị đổi thành `?` (Python
+thật nhận đúng — đã thử 03/10/2026) → CLI nhận chữ có dấu phải có đường vào qua tệp UTF-8 / stdin (vd `--notes-file`).
 
 ---
 
@@ -188,9 +190,21 @@ sự kiện riêng `vnc_thumb_req`, `fs_request`. (`kill_and_update` KHÔNG còn
   (lần đầu ≈ 7,5 phút). PATH cần `C:\Program Files\nodejs` + `%APPDATA%\npm` (pnpm cài mức người dùng).
 - **Số liệu online luôn GHI ĐÈ số tuyệt đối** từ server (`room_stats`, `total_online`), cấm cộng dồn.
 - Payload máy offline không có CPU/RAM/Disk → mọi chỗ vẽ chỉ số bọc `if (is_online)`.
-- Thông báo chat: Tauri notification plugin → thông báo hệ điều hành thật (nháy taskbar).
-- Tự cập nhật: Tauri updater (chữ ký Ed25519/minisign); khoá riêng nằm trong kho bí mật, KHÔNG trong repo.
-- Phiên bản đang chạy: menu Trợ giúp → Giới thiệu (thay cho `FB_VER`/`CHATBOX_VER` của web cũ).
+- Thông báo hệ điều hành (nháy taskbar): `src/shared/notify.ts` → plugin notification, CHỈ khi cửa sổ không được xem
+  (`document.hidden || !hasFocus()`). Đang dùng cho `incident_new`; chat (GĐ6) dùng lại hàm này.
+- **Tự cập nhật** (`src/shared/updater.ts`): kiểm 5 s sau khi vào + mỗi 6 giờ + nút ở trang Giới thiệu; có bản mới → dải báo
+  "Cập nhật và mở lại". Endpoint `https://10.21.24.142:7443/desktop/latest.json` (chứng chỉ cấp cho IP — KHÔNG dùng tên
+  miền). `pubkey` trong `tauri.conf.json`; `requireSignedVersion: true` (số phiên bản nằm TRONG chữ ký — đừng tắt).
+  Khoá ký `%USERPROFILE%\.tauri\itmonitor.key` (+ `.password.txt`, `HOAN_BAO_MAT`), KHÔNG BAO GIỜ vào repo; build:
+  scratchpad `tauri_build_thap.ps1` (đặt `TAURI_SIGNING_PRIVATE_KEY*`, BelowNormal, ≈ 9 phút bản phát hành).
+  Mất khoá = bản đã cài không tự cập nhật được nữa (phải cài lại tay) → khi hoàn thiện cất khoá vào kho bí mật + sao lưu.
+- **Phát hành:** `pnpm tauri build` → `platform-deployment/desktop/phat_hanh_desktop.py --data-dir <DATA_DIR> --base-url
+  https://10.21.24.142:7443 --notes-file …` (kiểm phiên bản trong chữ ký, chép bộ cài + `.sig`, ghi `latest.json` CUỐI) →
+  Core phục vụ `GET /desktop/latest.json` (204 khi chưa có bản nào) + `/desktop/<tệp>.exe|.sig` (không cần đăng nhập —
+  an toàn nhờ chữ ký). Cổng `:7443`: khối Caddy soạn sẵn `platform-deployment/caddy/khoi_7443.caddy` (đã `caddy adapt`).
+- Phiên bản đang chạy: trang **Giới thiệu** (`#/about`) — phiên bản ứng dụng + Core + trạng thái realtime (thay cho
+  `FB_VER`/`CHATBOX_VER` của web cũ).
+- Địa chỉ Core mặc định: `pnpm dev` → `http://127.0.0.1:7009`; bản cài → `https://10.21.24.142:7443` (đổi ở ô "Máy chủ").
 
 ---
 
@@ -321,8 +335,9 @@ Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay l�
 | 03/10/2026 | 5.1 + 5.5 API phòng/thiết bị/nhật ký máy/xuất cấu hình (Core) | Xong (chờ `CapNhat`) | `app/devices`, `app/rooms`, `app/reports/config_export.py`; quyền `device.manage`; realtime `batch_device_update` theo phòng. 5.2–5.4 là Desktop (GĐ4) |
 | 03/10/2026 | 0.6 + 0.7 sao lưu + cảnh báo online | Xong (đã cài, đang chạy) | `platform-deployment/ops/cai_dat_ops.ps1 -Lenh CaiDat` (Admin); script chỉ đọc hệ cũ, có test, đã chạy thử trên dữ liệu thật |
 | 03/10/2026 | 4.1–4.3 + 4.5 Desktop: công cụ, khung `desktop-app`, api-client/realtime-client/phiên | Xong | Node 24.15, Rust 1.99, VS 2022 BT, pnpm 12.8.1; typecheck/build + `cargo build` đạt; Core thêm CORS + namespace `/desktop` (cần `CapNhat`); job `desktop` trong CI |
-| 03/10/2026 | 4.6 Đăng nhập + Dashboard + trang phòng (bản đầu) | Đang làm | Chạy thử đầu-cuối đạt (Chrome headless + Core thật trên DB tạm). Còn: phiếu sự cố, cảnh báo phần cứng, đồng hồ, biểu đồ |
-| — | 4.4 plugin updater/notification/process + khoá ký · 4.7 NSIS + tự cập nhật | Kế tiếp | 4.7 cần cổng HTTPS :7443 (Caddy) cho máy quản trị khác |
+| 03/10/2026 | 4.4 plugin updater/notification/process + khoá ký | Xong | `pnpm tauri build` sinh bộ cài NSIS 2,35 MB + `.sig` (chữ ký ghi `version:0.1.0`), 550 s BelowNormal |
+| 03/10/2026 | 4.6 Đăng nhập + Dashboard + trang phòng + Giới thiệu | Xong (chờ máy canary để đối chiếu số thật) | Core thêm `GET /api/incidents` + `/api/incidents/summary`; Dashboard: phiếu sự cố, cảnh báo phần cứng, đồng hồ, biểu đồ Chart.js, sự cố đang mở; `incident_new` → thông báo HĐH. Chạy thử đầu-cuối đạt |
+| — | 4.7 NSIS + tự cập nhật | Phần mã xong; chờ người vận hành | Core `/desktop/*` + script phát hành (đã chạy thật: tải bộ cài trùng SHA-256). Cần: khối Caddy `:7443` + tường lửa + tin chứng chỉ trên 2 máy quản trị, rồi thử 0.1.0 → 0.1.1 |
 | — | 3.4 Cập nhật agent từ Core · 3.5–3.9 Caddy canary | Kế tiếp (sau 0.6 + 0.7) | 3.4 phần mã đã có trong `update_gate.py`; chỉ chép bộ cài khi có bản > 2.7.5.3; 3.2 không còn bắt buộc |
 
 Chi tiết bàn giao từng bước: `docs/TIEN_DO.md`.

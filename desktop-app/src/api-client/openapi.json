@@ -685,6 +685,110 @@
     ]
    }
   },
+  "/api/incidents": {
+   "get": {
+    "parameters": [
+     {
+      "in": "query",
+      "name": "status",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "enum": [
+          "OPEN",
+          "PENDING",
+          "PROCESSING",
+          "DONE"
+         ],
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "description": "OPEN = đang chờ + đang xử lý",
+       "title": "Status"
+      }
+     },
+     {
+      "in": "query",
+      "name": "q",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "maxLength": 64,
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "description": "Tìm theo tên máy / tiêu đề / phòng",
+       "title": "Q"
+      }
+     },
+     {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+       "default": 200,
+       "maximum": 1000,
+       "minimum": 1,
+       "title": "Limit",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Danh sách sự cố (mới nhất trước)",
+    "tags": [
+     "Sự cố"
+    ]
+   }
+  },
+  "/api/incidents/summary": {
+   "get": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Số phiếu sự cố đang mở + cảnh báo phần cứng đang mở (số tuyệt đối)",
+    "tags": [
+     "Sự cố"
+    ]
+   }
+  },
   "/api/legacy/command": {
    "post": {
     "parameters": [],
@@ -967,6 +1071,63 @@
      "Phòng & thiết bị"
     ]
    }
+  },
+  "/desktop/latest.json": {
+   "get": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Bản Desktop mới nhất cho Tauri updater (204 khi chưa phát hành bản nào)",
+    "tags": [
+     "Cập nhật Desktop"
+    ]
+   }
+  },
+  "/desktop/{name}": {
+   "get": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "name",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Tải bộ cài Desktop / tệp chữ ký",
+    "tags": [
+     "Cập nhật Desktop"
+    ]
+   }
   }
  },
  "tags": [
@@ -981,6 +1142,12 @@
   },
   {
    "name": "Phòng & thiết bị"
+  },
+  {
+   "name": "Sự cố"
+  },
+  {
+   "name": "Cập nhật Desktop"
   }
  ]
 }

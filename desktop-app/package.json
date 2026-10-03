@@ -14,8 +14,12 @@
   "dependencies": {
     "@tanstack/react-query": "^5.104.0",
     "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-notification": "~2.5.1",
     "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/plugin-process": "~2.4.0",
     "@tauri-apps/plugin-store": "~2.5.0",
+    "@tauri-apps/plugin-updater": "~2.13.1",
+    "chart.js": "^4.5.1",
     "openapi-fetch": "^0.17.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

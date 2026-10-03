@@ -33,11 +33,13 @@ def create_app(db=None, settings: Settings | None = None, async_mode: str | None
     app.extensions["itm_db"] = db
 
     from app.api import cors
+    from app.api.desktop_release import bp as desktop_release_bp
     from app.api.health import bp as health_bp
     from app.audit import hooks as audit_hooks
     from app.auth.routes import bp as auth_bp
     from app.auth.routes import load_context
     from app.devices.routes import bp as devices_bp
+    from app.incidents.routes import bp as incidents_bp
     from app.legacy_adapter import init_app as legacy_init
 
     app.before_request(load_context)
@@ -47,6 +49,8 @@ def create_app(db=None, settings: Settings | None = None, async_mode: str | None
     app.register_blueprint(auth_bp)
     legacy_init(app, db, s, socketio)
     app.register_blueprint(devices_bp)
+    app.register_blueprint(incidents_bp)
+    app.register_blueprint(desktop_release_bp)
     from app.realtime import desktop  # noqa: F401  — đăng ký namespace /desktop lúc import
 
     mode = async_mode or s.ASYNC_MODE

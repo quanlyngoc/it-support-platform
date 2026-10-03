@@ -1,0 +1,32 @@
+# =============================================================================
+# IT Monitor 3.0 - cong :7443 cho Desktop (va agent v3 sau nay) -> Platform-Core 127.0.0.1:7009
+# So tay 4.7. NGUOI VAN HANH chen khoi duoi vao CUOI D:\Caddy\Caddyfile (sau khoi :5444),
+# KHONG sua khoi :5443 / :5444. Kiem truoc khi nap:
+#   & D:\Caddy\caddy.exe validate --config D:\Caddy\Caddyfile --adapter caddyfile
+#   & D:\Caddy\caddy.exe reload   --config D:\Caddy\Caddyfile --adapter caddyfile   (nap nong qua admin :2019)
+# Mo tuong lua (Admin):
+#   New-NetFirewallRule -DisplayName "ITM Core 7443" -Direction Inbound -Protocol TCP -LocalPort 7443 -Action Allow
+#
+# Chung chi: dung CHUNG dong tls cua khoi :5443 (tu ky, SAN = IP 10.21.24.142, CA:TRUE) -> Desktop phai goi
+# https://10.21.24.142:7443 (KHONG dung ten mien: sai ten). May quan tri phai TIN chung chi nay:
+#   Import-Certificate -FilePath D:\NetworkInventory\certs\server.crt -CertStoreLocation Cert:\LocalMachine\Root
+# (WebView2 va Tauri updater - reqwest + rustls-platform-verifier - deu doc kho chung chi Windows.)
+# HOAN_BAO_MAT: server.crt la CA:TRUE khong gioi han ten -> ai giu server.key gia duoc MOI trang web tren may da tin
+# no. Khi hoan thien: CA rieng co Name Constraints (chi 10.21.24.142) hoac chung chi that cho ten mien.
+# =============================================================================
+https://10.21.24.142:7443 {
+	tls D:/NetworkInventory/certs/server.crt D:/NetworkInventory/certs/server.key
+
+	encode {
+		zstd
+		gzip
+		match {
+			header Content-Type application/json*
+			header Content-Type text/html*
+		}
+	}
+
+	# Toan bo -> Core: /api/* (Desktop), /socket.io/* namespace /desktop (websocket), /desktop/* (ban cap nhat),
+	# /openapi.json, /docs. Agent v2 KHONG di cong nay (van :5443).
+	reverse_proxy 127.0.0.1:7009
+}

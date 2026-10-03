@@ -6,6 +6,8 @@ const host = process.env.TAURI_DEV_HOST;
 // https://vite.dev/config/
 export default defineConfig(() => ({
   plugins: [react()],
+  // Desktop nạp gói JS từ đĩa (Tauri), không tải qua mạng → một gói ~600 KB (React + Chart.js) không làm chậm mở ứng dụng
+  build: { chunkSizeWarningLimit: 1024 },
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //

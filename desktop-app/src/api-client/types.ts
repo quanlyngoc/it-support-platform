@@ -55,3 +55,20 @@ export type Device = {
 export type RoomDetail = Room & { devices: Device[]; live_layout: Record<string, { fx: number; fy: number }> };
 
 export type ListResult<T> = { items: T[]; total: number };
+
+export type Incident = {
+  id: string;
+  hostname?: string;
+  device_id?: string;
+  room_name?: string;
+  title?: string;
+  description?: string;
+  category?: string; // hardware_ram | hardware_disk | cmos | …
+  status: "PENDING" | "PROCESSING" | "DONE";
+  source?: string;
+  created_at?: string;
+};
+
+export type IncidentSummary = { open: number; pending: number; processing: number; hardware_open: number };
+
+export type Health = { ok: boolean; service: string; version: string };

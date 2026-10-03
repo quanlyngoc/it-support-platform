@@ -3,7 +3,9 @@ import { create } from "zustand";
 import { readValue, writeValue } from "./storage";
 import type { SessionInfo } from "../api-client/types";
 
-export const DEFAULT_BASE_URL = "http://127.0.0.1:7009";
+// Phát triển (pnpm dev / tauri dev): Core chạy cùng máy. Bản cài cho máy quản trị: đi qua Caddy :7443 — chứng chỉ
+// hiện cấp cho IP (không phải tên miền) nên địa chỉ mặc định dùng IP. Người dùng đổi được ở ô "Máy chủ" khi đăng nhập.
+export const DEFAULT_BASE_URL = import.meta.env.DEV ? "http://127.0.0.1:7009" : "https://10.21.24.142:7443";
 
 type State = {
   ready: boolean;

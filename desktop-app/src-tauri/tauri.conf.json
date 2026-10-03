@@ -37,6 +37,19 @@
       "icons/icon.ico"
     ],
     "publisher": "Trung tâm CNTT - Đại học Phenikaa",
-    "shortDescription": "Quản lý phòng máy Phenikaa IT Monitor"
+    "shortDescription": "Quản lý phòng máy Phenikaa IT Monitor",
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "requireSignedVersion": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJDOUVDMEYzMkIyNDgxOEEKUldTS2dTUXI4OENldlA2VkRoTno3YTBnM2pqQnJhQUh6RDVzeGVtdkVqZkZ5QmhFUVl5dHpVM3YK",
+      "endpoints": [
+        "https://10.21.24.142:7443/desktop/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
   }
 }
