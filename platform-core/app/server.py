@@ -41,6 +41,7 @@ def create_app(db=None, settings: Settings | None = None, async_mode: str | None
     from app.devices.routes import bp as devices_bp
     from app.incidents.routes import bp as incidents_bp
     from app.legacy_adapter import init_app as legacy_init
+    from app.rooms.map_routes import bp as room_maps_bp
 
     app.before_request(load_context)
     audit_hooks.register(app)
@@ -50,6 +51,7 @@ def create_app(db=None, settings: Settings | None = None, async_mode: str | None
     legacy_init(app, db, s, socketio)
     app.register_blueprint(devices_bp)
     app.register_blueprint(incidents_bp)
+    app.register_blueprint(room_maps_bp)
     app.register_blueprint(desktop_release_bp)
     from app.realtime import desktop  # noqa: F401  — đăng ký namespace /desktop lúc import
 

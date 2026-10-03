@@ -35,6 +35,10 @@ class Settings:
     # Bộ tương thích agent v2 (2.7.5.x): giao thức không xác thực agent → gắn cứng vào MỘT tổ chức
     LEGACY_TENANT_CODE: str = "PHENIKAA"
     LEGACY_ALLOWED_CIDRS: tuple[str, ...] = ()  # HOAN_BAO_MAT: rỗng = nhận mọi IP; chạy thật đặt dải IP phòng máy
+    # Sơ đồ phòng (Sổ tay 5.3): kho tệp sơ đồ của hệ cũ — CHỈ ĐỌC, dùng khi Core chưa có sơ đồ của phòng
+    LEGACY_MAPS_DIR: str = ""
+    # Nơi Core xuất tệp sơ đồ ĐÚNG định dạng cũ cho hệ thi (MONITOR_MAPS_DIR); rỗng = <DATA_DIR>/<MÃ TỔ CHỨC>/Maps
+    MAPS_EXPORT_DIR: str = ""
 
 
 def _load_env() -> None:
@@ -64,7 +68,15 @@ def get_settings() -> Settings:
         DATA_DIR=os.getenv("DATA_DIR", "").strip() or str(CORE_ROOT.parent / ".dev" / "data"),
         LEGACY_TENANT_CODE=os.getenv("LEGACY_TENANT_CODE", "PHENIKAA").strip().upper() or "PHENIKAA",
         LEGACY_ALLOWED_CIDRS=_csv(os.getenv("LEGACY_ALLOWED_CIDRS", "")),
+        LEGACY_MAPS_DIR=os.getenv("LEGACY_MAPS_DIR", "").strip() or _old_maps_if_present(),
+        MAPS_EXPORT_DIR=os.getenv("MAPS_EXPORT_DIR", "").strip(),
     )
+
+
+def _old_maps_if_present() -> str:
+    """Giống cách hệ thi tìm kho sơ đồ cũ (D:\\ExaminationSystem\\shared\\maps_store.py): có thư mục thì đọc."""
+    old = r"D:\NetworkInventory\Maps"
+    return old if os.path.isdir(old) else ""
 
 
 def _csv(raw: str) -> tuple[str, ...]:
