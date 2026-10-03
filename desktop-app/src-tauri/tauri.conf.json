@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Phenikaa IT Monitor",
+  "version": "0.1.0",
+  "identifier": "vn.edu.phenikaa.itmonitor",
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "pnpm build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Phenikaa IT Monitor",
+        "width": 1440,
+        "height": 900,
+        "minWidth": 1280,
+        "minHeight": 720,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; connect-src 'self' ipc: http://ipc.localhost http://127.0.0.1:7009 ws://127.0.0.1:7009 http://127.0.0.1:7019 ws://127.0.0.1:7019 https://10.21.24.142:7443 wss://10.21.24.142:7443 https://pc.phenikaa-uni.help:7443 wss://pc.phenikaa-uni.help:7443; img-src 'self' data: blob: http://127.0.0.1:7009 http://127.0.0.1:7019 https://10.21.24.142:7443 https://pc.phenikaa-uni.help:7443; style-src 'self' 'unsafe-inline'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "publisher": "Trung tâm CNTT - Đại học Phenikaa",
+    "shortDescription": "Quản lý phòng máy Phenikaa IT Monitor"
+  }
+}

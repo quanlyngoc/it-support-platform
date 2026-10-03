@@ -1,0 +1,62 @@
+// Khung ứng dụng sau đăng nhập: thanh trên cùng hiện tổ chức + người dùng (đặc tả §10), điều hướng, đăng xuất,
+// kênh realtime và dải đỏ khi mất kết nối (banner B1 của hệ cũ).
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { Navigate, NavLink, Outlet } from "react-router";
+import { api } from "../api-client";
+import type { ListResult, Room } from "../api-client/types";
+import { connectRealtime, disconnectRealtime, useRealtime, type BatchDeviceUpdate } from "../realtime-client";
+import { useSession } from "../session/store";
+
+export function Layout() {
+  const { token, session, baseUrl, logout } = useSession();
+  const { connected, everConnected } = useRealtime();
+  const qc = useQueryClient();
+
+  useEffect(() => {
+    if (!token) return;
+    const s = connectRealtime(baseUrl, token, () => void qc.invalidateQueries());
+    s.on("batch_device_update", (p: BatchDeviceUpdate) => {
+      // GHI ĐÈ số tuyệt đối theo room_stats — cấm cộng/trừ 1 (bài học 10.10 hệ cũ)
+      qc.setQueryData<ListResult<Room>>(["rooms"], (old) =>
+        old && {
+          ...old,
+          items: old.items.map((r) => (r.id in p.room_stats ? { ...r, online: p.room_stats[r.id] } : r)),
+        });
+    });
+    return () => disconnectRealtime();
+  }, [token, baseUrl, qc]);
+
+  if (!token || !session) return <Navigate to="/login" replace />;
+
+  async function signOut() {
+    try {
+      await api().POST("/api/auth/logout");
+    } finally {
+      disconnectRealtime();
+      logout();
+    }
+  }
+
+  return (
+    <div className="app">
+      <header className="topbar">
+        <span className="brand">Phenikaa IT Monitor</span>
+        <nav>
+          <NavLink to="/" end>Tổng quan</NavLink>
+        </nav>
+        <span className="who">
+          <b>{session.tenant_code}</b> · {session.username}
+          {session.is_super && <span className="badge">Super Admin</span>}
+        </span>
+        <button className="ghost" onClick={signOut}>Đăng xuất</button>
+      </header>
+      {everConnected && !connected && (
+        <div className="lost" role="status">MẤT KẾT NỐI MÁY CHỦ. Đang kết nối lại…</div>
+      )}
+      <div className="content">
+        <Outlet />
+      </div>
+    </div>
+  );
+}

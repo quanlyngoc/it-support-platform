@@ -1,0 +1,91 @@
+:root {
+  color-scheme: light;
+  --bg: #f3f6f5;
+  --surface: #ffffff;
+  --surface-2: #e9efed;
+  --ink: #13201e;
+  --muted: #5b6966;
+  --line: #d2dcd9;
+  --accent: #0b6e5f;
+  --accent-ink: #ffffff;
+  --ok: #1d7438;
+  --err: #b42318;
+  --err-soft: #fce3e0;
+  --font: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #0d1413;
+    --surface: #141f1d;
+    --surface-2: #1a2826;
+    --ink: #e2ebe8;
+    --muted: #93a4a0;
+    --line: #2a3a37;
+    --accent: #4cc3aa;
+    --accent-ink: #062420;
+    --ok: #6fcf8e;
+    --err: #f27a6e;
+    --err-soft: #3c1916;
+  }
+}
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 14px/1.5 var(--font); }
+a { color: var(--accent); }
+h1 { font-size: 22px; margin: 0 0 12px; }
+h2 { font-size: 16px; margin: 24px 0 10px; }
+.muted { color: var(--muted); font-weight: 400; }
+.error { color: var(--err); background: var(--err-soft); padding: 8px 10px; border-radius: 6px; }
+button { font: 600 14px var(--font); padding: 9px 16px; border-radius: 6px; border: 0; cursor: pointer;
+         background: var(--accent); color: var(--accent-ink); }
+button:disabled { opacity: .6; cursor: default; }
+button.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); padding: 5px 12px; }
+input { font: 14px var(--font); padding: 8px 10px; border-radius: 6px; border: 1px solid var(--line);
+        background: var(--surface); color: var(--ink); width: 100%; }
+.badge { display: inline-block; margin-left: 6px; padding: 0 7px; border-radius: 99px; font-size: 11px;
+         background: var(--surface-2); color: var(--muted); }
+
+/* Đăng nhập */
+.login { min-height: 100%; display: grid; place-items: center; padding: 24px; }
+.login-card { width: min(380px, 100%); background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+              padding: 28px; display: grid; gap: 12px; }
+.login-card label { display: grid; gap: 4px; font-weight: 600; }
+.login-card .server { font-size: 12px; color: var(--muted); }
+.login-card .server input { margin-top: 6px; }
+
+/* Khung ứng dụng */
+.app { display: grid; grid-template-rows: auto 1fr; height: 100%; }
+.topbar { display: flex; align-items: center; gap: 18px; padding: 10px 20px; background: var(--surface);
+          border-bottom: 1px solid var(--line); }
+.topbar .brand { font-weight: 700; color: var(--accent); }
+.topbar nav { display: flex; gap: 12px; flex: 1; }
+.topbar nav a { text-decoration: none; color: var(--muted); padding: 4px 2px; }
+.topbar nav a.active { color: var(--ink); border-bottom: 2px solid var(--accent); }
+.content { overflow: auto; padding: 20px 24px 40px; }
+
+/* Tổng quan */
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.tile b { display: block; font-size: 28px; font-variant-numeric: tabular-nums; }
+.tile span { color: var(--muted); font-size: 12px; }
+.tile.ok b { color: var(--ok); }
+.rooms { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.room { display: grid; gap: 6px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--line);
+        border-radius: 10px; text-decoration: none; color: var(--ink); }
+.room:hover { border-color: var(--accent); }
+.room-name { font-weight: 600; }
+.room-count { color: var(--muted); font-variant-numeric: tabular-nums; }
+.room-count b { color: var(--ok); }
+.bar { height: 6px; background: var(--surface-2); border-radius: 99px; overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--ok); }
+
+/* Bảng máy */
+table.grid { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--line);
+             border-radius: 10px; overflow: hidden; }
+table.grid th, table.grid td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+table.grid th { background: var(--surface-2); font-size: 12px; color: var(--muted); }
+table.grid tr.off td { color: var(--muted); }
+
+/* Dải đỏ mất kết nối (banner B1 hệ cũ) */
+.lost { background: var(--err); color: #fff; font-weight: 600; text-align: center; padding: 6px 12px; }

@@ -171,6 +171,9 @@ cài bằng tác vụ Task Scheduler tách rời, báo tiến độ qua `/ps_bul
 8. Cổng chia đợt cộng dồn kiểu HOẶC (`all` / máy / phòng / %); hub cũ: có danh sách phòng thì bỏ qua %.
 
 Chưa làm (ghi để không quên): GỬI email/Telegram khi có sự cố phần cứng (hệ cũ `send_alert_email_thread`; Core mới
-tạo sự cố + phát `incident_new` tới room `t:<tid>:incidents` — kênh thông báo làm ở GĐ8 tích hợp); Desktop tham gia room
-`t:<tid>:{ps|pty|watch|incidents}` qua socket có xác thực (GĐ4); API cấp phiên giao/thu bài + token truyền tệp cho Desktop
-(GĐ7); `/internal/*` + `/hubapi/*` cho hệ thi (GĐ9).
+tạo sự cố + phát `incident_new` tới room `t:<tid>:incidents` — kênh thông báo làm ở GĐ8 tích hợp); API cấp phiên
+giao/thu bài + token truyền tệp cho Desktop (GĐ7); `/internal/*` + `/hubapi/*` cho hệ thi (GĐ9).
+
+Đã làm (03/10/2026): Desktop vào room `t:<tid>:{room:<id>|devices|incidents|ps:<tok>|pty|watch}` qua namespace `/desktop`
+có xác thực token (`app/realtime/desktop.py`). Mọi sự kiện adapter phát cho Desktop đều ở `/desktop`, KHÔNG ở `/` của
+agent (hub cũ dùng chung một namespace cho cả trình duyệt lẫn agent).

@@ -7,3 +7,6 @@ from flask_socketio import SocketIO
 Payload.max_decode_packets = 500
 
 socketio = SocketIO()
+
+# Namespace của Desktop — TÁCH khỏi "/" của agent v2 (app/realtime/desktop.py). Mọi room `t:<tenant>:…` nằm ở đây.
+DESKTOP_NS = "/desktop"

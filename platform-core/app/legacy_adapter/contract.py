@@ -20,8 +20,9 @@ from flask_socketio import SocketIOTestClient
 from app.legacy_adapter.adapter import LegacyAdapter
 from app.legacy_adapter.state import ACK_MAX_TRIES, ACK_TIMEOUT
 from app.legacy_adapter.update_gate import INSTALLER
-from app.realtime.hub import socketio
-from app.tenants.repo import SettingRepo
+from app.realtime.hub import DESKTOP_NS, socketio
+from app.tenants import service as tsvc
+from app.tenants.repo import SettingRepo, UserRepo
 
 FX_HOST, FX_MAC = "A6-301-01", "aa:bb:cc:00:30:01"
 OTHER_HOST, OTHER_MAC = "A6-301-02", "aa:bb:cc:00:30:02"
@@ -42,9 +43,16 @@ def _clients(app: Flask) -> dict[str, SocketIOTestClient]:
     return app.extensions.setdefault("legacy_contract_clients", {})
 
 
+_NS: dict[int, str] = {}  # id(test client) → namespace ("/" agent · "/desktop" trình duyệt)
+
+
+def ns_of(client: SocketIOTestClient) -> str:
+    return _NS.get(id(client), "/")
+
+
 def sid_of(client: SocketIOTestClient) -> str:
     srv: Any = getattr(socketio, "server")  # noqa: B009 — thuộc tính chỉ có sau init_app
-    return srv.manager.sid_from_eio_sid(getattr(client, "eio_sid"), "/")  # noqa: B009
+    return srv.manager.sid_from_eio_sid(getattr(client, "eio_sid"), ns_of(client))  # noqa: B009
 
 
 def agent(app: Flask, host: str = FX_HOST, mac: str = FX_MAC) -> SocketIOTestClient:
@@ -56,12 +64,32 @@ def agent(app: Flask, host: str = FX_HOST, mac: str = FX_MAC) -> SocketIOTestCli
     return c
 
 
-def browser(app: Flask) -> SocketIOTestClient:
-    return socketio.test_client(app)
+def desktop_token(app: Flask) -> str:
+    """Token của một Super Admin trong tổ chức gắn agent v2 (tạo nếu chưa có) — trình duyệt giả cần đăng nhập."""
+    cache = app.extensions.setdefault("legacy_contract_token", {})
+    if "tok" not in cache:
+        ad = _ad(app)
+        tid = ad.tenant_id
+        assert tid is not None, "cần tổ chức gắn agent v2"
+        if UserRepo(ad.db, tid).find_one({"username_lc": "contract_admin"}) is None:
+            tsvc.create_user(ad.db, tid, "contract_admin", password="Contract@123",
+                             policy_ids=[tsvc.super_admin_policy_id(ad.db, tid)])
+        r = app.test_client().post("/api/auth/login", json={"tenant_code": ad.s.LEGACY_TENANT_CODE,
+                                                             "username": "contract_admin", "password": "Contract@123"})
+        cache["tok"] = r.get_json()["token"]
+    return cache["tok"]
+
+
+def browser(app: Flask, token: str | None = None) -> SocketIOTestClient:
+    """Desktop giả: nối namespace /desktop bằng token đăng nhập (mặc định Super Admin)."""
+    c = socketio.test_client(app, namespace=DESKTOP_NS, auth={"token": token or desktop_token(app)})
+    _NS[id(c)] = DESKTOP_NS
+    return c
 
 
 def got(client: SocketIOTestClient, event: str) -> list:
-    return [e["args"][0] if e["args"] else None for e in client.get_received() if e["name"] == event]
+    ns = ns_of(client)
+    return [e["args"][0] if e["args"] else None for e in client.get_received(ns) if e["name"] == event]
 
 
 def write_installer(ad: LegacyAdapter, version: str, body: bytes = b"MZ" + b"\x00" * 30 + b"bo cai thu") -> None:
@@ -152,7 +180,8 @@ def _in_watch(event_out: str, kind: str):
     def check(app, fx):
         ad = _ad(app)
         watcher, stranger = browser(app), browser(app)
-        getattr(socketio, "server").enter_room(sid_of(watcher), ad.room_dev(kind, FX_MAC), namespace="/")  # noqa: B009
+        getattr(socketio, "server").enter_room(sid_of(watcher), ad.room_dev(kind, FX_MAC),  # noqa: B009
+                                               namespace=DESKTOP_NS)
         ag = agent(app)
         ag.emit(fx["event"], fx["payload"])
         assert got(watcher, event_out) == [fx["payload"]]

@@ -30,3 +30,27 @@ jobs:
       - run: uv run pytest -q -o addopts="" ../platform-deployment/qa
       - run: uv run python ../platform-deployment/qa/check_routes.py
       - run: uv run python ../platform-deployment/qa/check_eol.py
+
+  # Desktop (Sổ tay GĐ4): kiểu TypeScript phải KHỚP API của Core (sinh lại rồi so), kiểm kiểu, build frontend.
+  # Phần Rust/bộ cài NSIS build trên runner Windows tự host (Sổ tay 4.7) — không chạy ở đây.
+  desktop:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: desktop-app
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: desktop-app/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: uv sync --locked --directory ../platform-core
+      - run: pnpm gen:api && git diff --exit-code -- src/api-client
+      - run: pnpm typecheck
+      - run: pnpm build

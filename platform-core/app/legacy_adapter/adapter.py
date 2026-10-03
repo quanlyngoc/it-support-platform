@@ -24,6 +24,7 @@ from app.legacy_adapter.state import LegacyState
 from app.legacy_adapter.store import Store
 from app.legacy_adapter.update_gate import SETTING_KEYS, UpdateGate
 from app.legacy_adapter.writer import Writer, run_forever
+from app.realtime.hub import DESKTOP_NS
 from app.security.ipcheck import ip_allowed
 from app.tenants.repo import SettingRepo
 
@@ -186,7 +187,8 @@ class LegacyAdapter:
                                                    "hd": bool(hd)}, host)
 
     def emit(self, event: str, data: Any, room: str) -> None:
-        self.sio.emit(event, data, to=room)
+        """Phát cho DESKTOP (room `t:<tenant>:…` hoặc sid) — luôn ở namespace /desktop, không bao giờ "/"."""
+        self.sio.emit(event, data, to=room, namespace=DESKTOP_NS)
 
     # ------------------------------------------------------------------ vòng nền
     def writer(self) -> Writer | None:

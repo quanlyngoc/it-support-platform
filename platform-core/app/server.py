@@ -32,25 +32,28 @@ def create_app(db=None, settings: Settings | None = None, async_mode: str | None
         db = get_db()
     app.extensions["itm_db"] = db
 
+    from app.api import cors
     from app.api.health import bp as health_bp
     from app.audit import hooks as audit_hooks
     from app.auth.routes import bp as auth_bp
     from app.auth.routes import load_context
+    from app.devices.routes import bp as devices_bp
     from app.legacy_adapter import init_app as legacy_init
 
     app.before_request(load_context)
     audit_hooks.register(app)
+    cors.register(app, s.ALLOWED_ORIGINS)
     app.register_blueprint(health_bp)
     app.register_blueprint(auth_bp)
     legacy_init(app, db, s, socketio)
-    from app.devices.routes import bp as devices_bp
-
     app.register_blueprint(devices_bp)
+    from app.realtime import desktop  # noqa: F401  — đăng ký namespace /desktop lúc import
 
     mode = async_mode or s.ASYNC_MODE
     if mode not in ("gevent", "threading"):
         raise ValueError(f"ASYNC_MODE không hỗ trợ: {mode}")
-    socketio.init_app(app, async_mode=mode, cors_allowed_origins=s.ALLOWED_ORIGINS)
+    wildcard, origins = cors.parse(s.ALLOWED_ORIGINS)
+    socketio.init_app(app, async_mode=mode, cors_allowed_origins="*" if wildcard else sorted(origins))
     return app
 
 

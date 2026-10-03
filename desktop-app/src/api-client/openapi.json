@@ -1,0 +1,986 @@
+{
+ "components": {
+  "schemas": {
+   "CommandIn": {
+    "properties": {
+     "command": {
+      "anyOf": [
+       {
+        "enum": [
+         "shutdown",
+         "restart",
+         "logout"
+        ],
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Command"
+     },
+     "command_obj": {
+      "anyOf": [
+       {
+        "additionalProperties": true,
+        "type": "object"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "vd. {\"action\": \"internet_control\", ...}",
+      "title": "Command Obj"
+     },
+     "hostname": {
+      "maxLength": 80,
+      "minLength": 1,
+      "title": "Hostname",
+      "type": "string"
+     }
+    },
+    "required": [
+     "hostname"
+    ],
+    "title": "CommandIn",
+    "type": "object"
+   },
+   "GateIn": {
+    "properties": {
+     "all": {
+      "default": false,
+      "title": "All",
+      "type": "boolean"
+     },
+     "hosts": {
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 2000,
+      "title": "Hosts",
+      "type": "array"
+     },
+     "rollout_percent": {
+      "default": 0,
+      "maximum": 100,
+      "minimum": 0,
+      "title": "Rollout Percent",
+      "type": "integer"
+     },
+     "rollout_rooms": {
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 200,
+      "title": "Rollout Rooms",
+      "type": "array"
+     }
+    },
+    "title": "GateIn",
+    "type": "object"
+   },
+   "HTTPError": {
+    "properties": {
+     "detail": {
+      "type": "object"
+     },
+     "message": {
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "LoginIn": {
+    "properties": {
+     "password": {
+      "maxLength": 512,
+      "minLength": 1,
+      "title": "Password",
+      "type": "string"
+     },
+     "tenant_code": {
+      "description": "Mã tổ chức, vd. PHENIKAA",
+      "maxLength": 32,
+      "minLength": 2,
+      "title": "Tenant Code",
+      "type": "string"
+     },
+     "totp": {
+      "anyOf": [
+       {
+        "maxLength": 10,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Totp"
+     },
+     "username": {
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "Username",
+      "type": "string"
+     }
+    },
+    "required": [
+     "tenant_code",
+     "username",
+     "password"
+    ],
+    "title": "LoginIn",
+    "type": "object"
+   },
+   "MoveBulkIn": {
+    "properties": {
+     "device_ids": {
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 500,
+      "minItems": 1,
+      "title": "Device Ids",
+      "type": "array"
+     },
+     "room_name": {
+      "maxLength": 100,
+      "minLength": 1,
+      "title": "Room Name",
+      "type": "string"
+     }
+    },
+    "required": [
+     "device_ids",
+     "room_name"
+    ],
+    "title": "MoveBulkIn",
+    "type": "object"
+   },
+   "MoveIn": {
+    "properties": {
+     "room_name": {
+      "maxLength": 100,
+      "minLength": 1,
+      "title": "Room Name",
+      "type": "string"
+     },
+     "seat": {
+      "default": "",
+      "description": "Số vị trí trong phòng (chỉ khi chuyển 1 máy)",
+      "maxLength": 4,
+      "title": "Seat",
+      "type": "string"
+     }
+    },
+    "required": [
+     "room_name"
+    ],
+    "title": "MoveIn",
+    "type": "object"
+   },
+   "PowerShellIn": {
+    "properties": {
+     "hostnames": {
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 2000,
+      "minItems": 1,
+      "title": "Hostnames",
+      "type": "array"
+     },
+     "password": {
+      "default": "",
+      "maxLength": 256,
+      "title": "Password",
+      "type": "string"
+     },
+     "script": {
+      "maxLength": 100000,
+      "minLength": 1,
+      "title": "Script",
+      "type": "string"
+     },
+     "timeout": {
+      "default": 90,
+      "maximum": 3600,
+      "minimum": 5,
+      "title": "Timeout",
+      "type": "integer"
+     },
+     "user": {
+      "default": "",
+      "description": "Để TRỐNG để chạy quyền SYSTEM (bài học 10.22)",
+      "maxLength": 128,
+      "title": "User",
+      "type": "string"
+     }
+    },
+    "required": [
+     "hostnames",
+     "script"
+    ],
+    "title": "PowerShellIn",
+    "type": "object"
+   },
+   "ValidationError": {
+    "properties": {
+     "detail": {
+      "properties": {
+       "<location>": {
+        "properties": {
+         "<field_name>": {
+          "items": {
+           "type": "string"
+          },
+          "type": "array"
+         }
+        },
+        "type": "object"
+       }
+      },
+      "type": "object"
+     },
+     "message": {
+      "type": "string"
+     }
+    },
+    "type": "object"
+   }
+  }
+ },
+ "info": {
+  "title": "Platform-Core API",
+  "version": "3.0.0-dev"
+ },
+ "openapi": "3.1.0",
+ "paths": {
+  "/api/auth/login": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/LoginIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Đăng nhập bằng mã tổ chức + tài khoản + mật khẩu (+ TOTP)",
+    "tags": [
+     "Đăng nhập"
+    ]
+   }
+  },
+  "/api/auth/logout": {
+   "post": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Đăng xuất phiên hiện tại",
+    "tags": [
+     "Đăng nhập"
+    ]
+   }
+  },
+  "/api/auth/me": {
+   "get": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Thông tin phiên hiện tại",
+    "tags": [
+     "Đăng nhập"
+    ]
+   }
+  },
+  "/api/devices": {
+   "get": {
+    "parameters": [
+     {
+      "in": "query",
+      "name": "room_id",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "title": "Room Id"
+      }
+     },
+     {
+      "in": "query",
+      "name": "q",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "maxLength": 64,
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "description": "Tìm theo tên máy / MAC / IP / serial",
+       "title": "Q"
+      }
+     },
+     {
+      "in": "query",
+      "name": "online",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "title": "Online"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Danh sách máy (lọc theo phòng / từ khoá / online)",
+    "tags": [
+     "Phòng & thiết bị"
+    ]
+   }
+  },
+  "/api/devices/events": {
+   "get": {
+    "parameters": [
+     {
+      "in": "query",
+      "name": "q",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "maxLength": 64,
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "title": "Q"
+      }
+     },
+     {
+      "in": "query",
+      "name": "event",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "maxLength": 32,
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "description": "trao_phan_cung | doi_serial | doi_mac",
+       "title": "Event"
+      }
+     },
+     {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+       "default": 300,
+       "maximum": 2000,
+       "minimum": 1,
+       "title": "Limit",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Nhật ký thay đổi máy (tráo phần cứng / đổi serial / đổi MAC) + kho lưu trữ — chỉ đọc",
+    "tags": [
+     "Phòng & thiết bị"
+    ]
+   }
+  },
+  "/api/devices/move-bulk": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/MoveBulkIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Chuyển nhiều máy sang một phòng",
+    "tags": [
+     "Phòng & thiết bị"
+    ]
+   }
+  },
+  "/api/devices/{device_id}": {
+   "delete": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "device_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Xoá máy khỏi danh sách (lưu trữ vào computers_archive trước)",
+    "tags": [
+     "Phòng & thiết bị"
+    ]
+   },
+   "get": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "device_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Chi tiết một máy",
+    "tags": [
+     "Phòng & thiết bị"
+    ]
+   }
+  },
+  "/api/devices/{device_id}/move": {
+   "post": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "device_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/MoveIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Chuyển 1 máy sang phòng khác (Move PC), tuỳ chọn số vị trí",
+    "tags": [
+     "Phòng & thiết bị"
+    ]
+   }
+  },
+  "/api/health": {
+   "get": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Core đang chạy (thêm ?db=1 để kiểm cả kết nối CSDL)",
+    "tags": [
+     "Hệ thống"
+    ]
+   }
+  },
+  "/api/legacy/command": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CommandIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Gửi 1 lệnh tới 1 máy (không broadcast; máy mất kênh lệnh → 409)",
+    "tags": [
+     "Agent v2 (bộ tương thích)"
+    ]
+   }
+  },
+  "/api/legacy/online": {
+   "get": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Máy agent v2 đang online + kênh lệnh của từng máy (socket / http / none)",
+    "tags": [
+     "Agent v2 (bộ tương thích)"
+    ]
+   }
+  },
+  "/api/legacy/powershell": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PowerShellIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Chạy PowerShell trên nhiều máy; kết quả về theo token (poll /results/<token> hoặc socket)",
+    "tags": [
+     "Agent v2 (bộ tương thích)"
+    ]
+   }
+  },
+  "/api/legacy/results/{token}": {
+   "get": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "token",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Kết quả phiên PowerShell / giao bài / thu bài theo token (lưu MongoDB 2 ngày)",
+    "tags": [
+     "Agent v2 (bộ tương thích)"
+    ]
+   }
+  },
+  "/api/legacy/update_gate": {
+   "get": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Cổng chia đợt cập nhật agent v2 + bộ cài đang phát",
+    "tags": [
+     "Agent v2 (bộ tương thích)"
+    ]
+   },
+   "put": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/GateIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Đặt cổng chia đợt (mặc định TẮT hết). Luôn canary vài máy trước (luật §0.5)",
+    "tags": [
+     "Agent v2 (bộ tương thích)"
+    ]
+   }
+  },
+  "/api/reports/config-export": {
+   "get": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Xuất cấu hình máy ra Excel 3 sheet (chỉ phòng chính thức) — như nút Xuất cấu hình của hệ cũ",
+    "tags": [
+     "Phòng & thiết bị"
+    ]
+   }
+  },
+  "/api/rooms": {
+   "get": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Danh sách phòng + số máy + số online (tuyệt đối)",
+    "tags": [
+     "Phòng & thiết bị"
+    ]
+   }
+  },
+  "/api/rooms/move-targets": {
+   "get": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Phòng đích cho Chuyển phòng (có Phòng chờ)",
+    "tags": [
+     "Phòng & thiết bị"
+    ]
+   }
+  },
+  "/api/rooms/{room_id}": {
+   "get": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "room_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Chi tiết phòng + danh sách máy",
+    "tags": [
+     "Phòng & thiết bị"
+    ]
+   }
+  }
+ },
+ "tags": [
+  {
+   "name": "Hệ thống"
+  },
+  {
+   "name": "Đăng nhập"
+  },
+  {
+   "name": "Agent v2 (bộ tương thích)"
+  },
+  {
+   "name": "Phòng & thiết bị"
+  }
+ ]
+}

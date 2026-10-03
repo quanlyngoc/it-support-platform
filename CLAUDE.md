@@ -175,8 +175,17 @@ sự kiện riêng `vnc_thumb_req`, `fs_request`. (`kill_and_update` KHÔNG còn
 - **React + Vite, ứng dụng một trang** (tạo từ `pnpm create tauri-app`, mẫu React + TypeScript). Build ra `dist/`;
   dev server cổng `1420` (`strictPort`); `tauri.conf.json`: `devUrl` = `http://localhost:1420`, `frontendDist` = `../dist`.
 - Router dùng `createHashRouter` (đường dẫn `#/…`) để tải lại cửa sổ không lỗi. Mọi logic nghiệp vụ ở Core.
-- Kiểu dữ liệu API sinh tự động từ OpenAPI của Core (`openapi-typescript` + `openapi-fetch`).
-- Realtime: `socket.io-client` namespace `/desktop`; mất kết nối → banner đỏ + tự nối lại + đồng bộ lại số tuyệt đối.
+- Kiểu dữ liệu API sinh tự động từ OpenAPI của Core (`openapi-typescript` + `openapi-fetch`): `pnpm gen:api` chạy
+  `app.openapi_dump` (dựng app trên mongomock, KHÔNG cần server/CSDL) → `src/api-client/openapi.json` + `schema.d.ts`.
+  **Đổi route/schema ở Core là phải chạy lại** (CI sinh lại rồi `git diff --exit-code`). Kiểu RESPONSE chưa sinh được
+  (Core chưa khai báo `@output`) → tạm viết tay ở `src/api-client/types.ts`.
+- Phiên đăng nhập: zustand + plugin `store` của Tauri (chạy trong trình duyệt thì `sessionStorage`) — nạp phiên XONG mới
+  render, nên F5 giữ nguyên trang + phiên. Gọi Core bằng header Bearer → Core phải bật CORS (`app/api/cors.py`).
+- Realtime: `socket.io-client` namespace `/desktop` (chỉ websocket, `auth:{token}`); `request(event, data)` chờ ack
+  `{ok, error?}` tối đa 8 s. Mất kết nối → dải đỏ + tự nối lại + `invalidateQueries()` lấy lại số tuyệt đối.
+  Core kiểm lại token ở MỖI sự kiện `/desktop` → đăng xuất / bị đá phiên / khoá là socket bị ngắt ngay.
+- **Build Rust rất nặng, máy chủ đang phục vụ hệ cũ:** `cargo build`/`pnpm tauri build` chạy BelowNormal + `CARGO_BUILD_JOBS=2`
+  (lần đầu ≈ 7,5 phút). PATH cần `C:\Program Files\nodejs` + `%APPDATA%\npm` (pnpm cài mức người dùng).
 - **Số liệu online luôn GHI ĐÈ số tuyệt đối** từ server (`room_stats`, `total_online`), cấm cộng dồn.
 - Payload máy offline không có CPU/RAM/Disk → mọi chỗ vẽ chỉ số bọc `if (is_online)`.
 - Thông báo chat: Tauri notification plugin → thông báo hệ điều hành thật (nháy taskbar).
@@ -250,8 +259,9 @@ uv run pytest -q -m atlas         # CSDL thật: database tạm itm_test_<ngẫu
 uv run pytest -q -o addopts="" ..\platform-deployment\qa          # test hook chỉ-đọc + test công cụ QA
 uv run python ..\platform-deployment\qa\check_routes.py           # trùng route/endpoint/socket
 uv run python ..\platform-deployment\qa\check_eol.py              # line ending + BOM toàn repo
-pnpm -C desktop-app typecheck; pnpm -C desktop-app lint; pnpm -C desktop-app test
-pnpm -C desktop-app tauri build                    # chỉ khi phát hành Desktop
+pnpm -C ..\desktop-app gen:api    # đổi API Core → sinh lại kiểu TS (CI so git diff, lệch là đỏ)
+pnpm -C ..\desktop-app typecheck; pnpm -C ..\desktop-app build
+pnpm -C ..\desktop-app tauri build                 # chỉ khi phát hành Desktop — Rust nặng, chạy ưu tiên thấp (§6)
 ```
 
 Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay lại online đúng version) → 1 phòng → nhiều phòng → All Update.
@@ -310,10 +320,13 @@ Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay l�
 | 02/10/2026 | 3.3 legacy_adapter | Xong | 45/45 test hợp đồng xanh; 133 test; thử tải 900 agent/30 phút: 0 lỗi, CPU Core TB 22,5% một lõi, RAM không rò, p99 14 ms. Dịch vụ `PlatformCore` cần `dich_vu_core.ps1 -Lenh CapNhat` để chạy mã này |
 | 03/10/2026 | 5.1 + 5.5 API phòng/thiết bị/nhật ký máy/xuất cấu hình (Core) | Xong (chờ `CapNhat`) | `app/devices`, `app/rooms`, `app/reports/config_export.py`; quyền `device.manage`; realtime `batch_device_update` theo phòng. 5.2–5.4 là Desktop (GĐ4) |
 | 03/10/2026 | 0.6 + 0.7 sao lưu + cảnh báo online | Xong (đã cài, đang chạy) | `platform-deployment/ops/cai_dat_ops.ps1 -Lenh CaiDat` (Admin); script chỉ đọc hệ cũ, có test, đã chạy thử trên dữ liệu thật |
+| 03/10/2026 | 4.1–4.3 + 4.5 Desktop: công cụ, khung `desktop-app`, api-client/realtime-client/phiên | Xong | Node 24.15, Rust 1.99, VS 2022 BT, pnpm 12.8.1; typecheck/build + `cargo build` đạt; Core thêm CORS + namespace `/desktop` (cần `CapNhat`); job `desktop` trong CI |
+| 03/10/2026 | 4.6 Đăng nhập + Dashboard + trang phòng (bản đầu) | Đang làm | Chạy thử đầu-cuối đạt (Chrome headless + Core thật trên DB tạm). Còn: phiếu sự cố, cảnh báo phần cứng, đồng hồ, biểu đồ |
+| — | 4.4 plugin updater/notification/process + khoá ký · 4.7 NSIS + tự cập nhật | Kế tiếp | 4.7 cần cổng HTTPS :7443 (Caddy) cho máy quản trị khác |
 | — | 3.4 Cập nhật agent từ Core · 3.5–3.9 Caddy canary | Kế tiếp (sau 0.6 + 0.7) | 3.4 phần mã đã có trong `update_gate.py`; chỉ chép bộ cài khi có bản > 2.7.5.3; 3.2 không còn bắt buộc |
 
 Chi tiết bàn giao từng bước: `docs/TIEN_DO.md`.
 
 Việc cần người vận hành (Claude không có quyền Administrator): GĐ1 (MongoDB replica set, VM, tường lửa, sao lưu),
-đẩy mã lên GitHub (`git push`), cài Node.js/Rust/VS Build Tools cho desktop-app (GĐ4), `dich_vu_core.ps1 -Lenh CapNhat`
+đẩy mã lên GitHub (`git push`), `dich_vu_core.ps1 -Lenh CapNhat`
 khi cần đưa mã mới lên dịch vụ `PlatformCore`, sửa Caddyfile.

@@ -149,3 +149,36 @@ def test_mat_khau_khong_bao_gio_tra_ve(client, two_tenants):
     _, j = login(client, "AAA", "admin", "Admin@123")
     text = str(j)
     assert "argon2" not in text and "password" not in text
+
+
+def test_cors_cho_desktop(client, db):
+    r = client.options("/api/auth/login", headers={"Origin": "http://tauri.localhost",
+                                                   "Access-Control-Request-Method": "POST"})
+    assert r.status_code == 204 and r.headers["Access-Control-Allow-Origin"] == "http://tauri.localhost"
+    assert "Authorization" in r.headers["Access-Control-Allow-Headers"]
+    r = client.get("/api/health", headers={"Origin": "http://localhost:1420"})
+    assert r.headers["Access-Control-Allow-Origin"] == "http://localhost:1420"
+    assert "Access-Control-Allow-Origin" not in client.get("/api/health").headers  # không có Origin → không gắn
+
+
+def test_cors_chi_origin_duoc_phep(db, tmp_path):
+    import dataclasses
+
+    from app.server import create_app
+    from tests.conftest import TEST_SETTINGS
+
+    s = dataclasses.replace(TEST_SETTINGS, DATA_DIR=str(tmp_path), ALLOWED_ORIGINS="http://tauri.localhost")
+    c = create_app(db=db, settings=s, async_mode="threading").test_client()
+    assert c.get("/api/health", headers={"Origin": "http://tauri.localhost"}).headers.get(
+        "Access-Control-Allow-Origin") == "http://tauri.localhost"
+    assert "Access-Control-Allow-Origin" not in c.get("/api/health", headers={"Origin": "http://evil.example"}).headers
+    assert "Access-Control-Allow-Origin" not in c.post("/update", json={}, headers={"Origin": "http://tauri.localhost"}
+                                                       ).headers  # route agent v2 không dính CORS
+
+
+def test_openapi_dump_co_api_desktop():
+    from app.openapi_dump import spec
+
+    paths = spec()["paths"]
+    assert {"/api/auth/login", "/api/rooms", "/api/devices", "/api/devices/{device_id}/move"} <= set(paths)
+    assert "/update" not in paths  # giao thức agent v2 không lộ trong tài liệu API

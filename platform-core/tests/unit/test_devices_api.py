@@ -154,8 +154,9 @@ def test_realtime_batch_device_update_theo_phong(world):
     rid = phong["Phòng 301 - A6"]["id"]
     xem_phong, xem_tong, nguoi_ngoai = k.browser(world["app"]), k.browser(world["app"]), k.browser(world["app"])
     srv = getattr(socketio, "server")  # noqa: B009
-    srv.enter_room(k.sid_of(xem_phong), f"t:{tid}:room:{rid}", namespace="/")
-    srv.enter_room(k.sid_of(xem_tong), f"t:{tid}:devices", namespace="/")
+    srv.leave_room(k.sid_of(nguoi_ngoai), f"t:{tid}:devices", namespace="/desktop")  # Super Admin tự vào phòng tổng
+    srv.leave_room(k.sid_of(xem_phong), f"t:{tid}:devices", namespace="/desktop")
+    srv.enter_room(k.sid_of(xem_phong), f"t:{tid}:room:{rid}", namespace="/desktop")
     _hb(world, "A6-301-01", "aa:bb:cc:00:30:01")
     _hb(world, "A6-301-02", "aa:bb:cc:00:30:02")  # máy offline vừa online lại
     ad.writer_tick()
