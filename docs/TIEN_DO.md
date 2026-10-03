@@ -6,7 +6,7 @@
 > Kế hoạch đầy đủ: `docs/plan/SoTay_ThucHien_ITMonitor_SaaS.html` (số bước bên dưới theo Sổ tay;
 > tài liệu đó còn ghi `D:\Platform` — hiểu là `D:\ITSupportPlatform`).
 
-Cập nhật lần cuối: 03/10/2026 trưa (GĐ4 Desktop: 4.1–4.6 xong, 4.7 phần mã xong — chờ người vận hành mở cổng :7443 để thử tự cập nhật trên 2 máy quản trị)
+Cập nhật lần cuối: 03/10/2026 chiều (GĐ4 4.1–4.6 xong, 4.7 chờ cổng :7443; GĐ5 5.2 Desktop xong; kế: 5.3 sơ đồ phòng)
 
 ## Cách mở phiên mới để làm tiếp
 
@@ -69,6 +69,8 @@ Cập nhật lần cuối: 03/10/2026 trưa (GĐ4 Desktop: 4.1–4.6 xong, 4.7 p
 | 4.4 | Plugin `updater` (`requireSignedVersion: true`, `pubkey`, endpoint `https://10.21.24.142:7443/desktop/latest.json`, NSIS `passive`) + `notification` + `process` (quyền trong `capabilities/`). Khoá ký sinh bằng `tauri signer generate` ở `%USERPROFILE%\.tauri\itmonitor.key` + mật khẩu ngẫu nhiên trong `itmonitor.key.password.txt` (không in ra, ngoài repo — `HOAN_BAO_MAT`) | `pnpm tauri build` (scratchpad `tauri_build_thap.ps1`, BelowNormal 2 job, 550 s): `Phenikaa IT Monitor_0.1.0_x64-setup.exe` 2,35 MB + `.sig`; trusted comment ghi `version:0.1.0`. Updater dùng reqwest 0.13 + `rustls-platform-verifier` → tin kho chứng chỉ Windows (giống WebView2) |
 | 4.6 | Core: `GET /api/incidents` (`status` = OPEN / PENDING / PROCESSING / DONE, `q`, `limit`) + `GET /api/incidents/summary` (số tuyệt đối: đang mở / chờ / đang xử lý / cảnh báo phần cứng đang mở), lọc phạm vi phòng theo `room_name` của các phòng trong policy. Desktop: thẻ "Phiếu sự cố đang mở" + "Cảnh báo phần cứng", đồng hồ, biểu đồ Chart.js online/offline theo phòng, bảng 8 sự cố đang mở mới nhất; `incident_new` → tải lại số + thông báo HĐH khi cửa sổ không được xem; trang **Giới thiệu** (`#/about`) phiên bản ứng dụng + Core + realtime + nút kiểm tra cập nhật; dải "Có bản mới — Cập nhật và mở lại" | 4 test mới (168 xanh). Chạy thử đầu-cuối: thẻ 1 phiếu / 1 cảnh báo, biểu đồ 1333×198, bảng sự cố đúng, Giới thiệu: Core 3.0.0-dev, "Đang kết nối", 19 quyền. Dashboard khớp số máy canary: chờ 3.5–3.8 |
 | 4.7 (phần mã) | Core `GET /desktop/latest.json` (204 khi chưa có bản nào → updater coi là "không có bản mới") + `/desktop/<tên>.exe` + `.sig` (chỉ đúng mẫu tên, không cần đăng nhập — an toàn nhờ chữ ký), kho `<DATA_DIR>/desktop/`. `platform-deployment/desktop/phat_hanh_desktop.py`: kiểm phiên bản trong chữ ký, chép bộ cài + `.sig` (ghi tạm → đổi tên), ghi `latest.json` CUỐI, giữ bản vừa phát hành + 2 bản lớn nhất; `--notes-file` cho ghi chú có dấu. Khối Caddy `platform-deployment/caddy/khoi_7443.caddy` | 2 test Core + 4 test QA (27 xanh). Chạy thật: phát hành bộ cài 0.1.0 vào kho tạm → Core 7019 trả `latest.json` (no-store) + bộ cài tải về trùng SHA-256. `caddy adapt` bản sao Caddyfile + khối mới → 3 server `:5443/:5444/:7443`. Bắt được lỗi: dọn bản cũ từng xoá đúng bộ cài `latest.json` đang trỏ khi phát hành bản hạ cấp |
+| — | Người vận hành `CapNhat` (03/10/2026 10:20) | `KiemTra`: bản `77f0c1e` = main, ping CSDL 55 ms; trên dịch vụ: `/desktop/latest.json` 204, `/api/incidents/summary` + `/api/rooms` 401 khi chưa đăng nhập, CORS trả đúng origin `http://tauri.localhost`. 3 traceback trong `core-err.log` là của 02/10 (11:20Z, 11:21Z, 17:32Z — trước khi có bản chặn `d2aaaa8`); lần dừng 10:20 hôm nay không sinh traceback |
+| 5.2 | Desktop: trang **Phòng máy** (`#/rooms`, tìm theo tên); **chi tiết phòng**: máy sắp theo số ghế (GV cuối, nhãn GV như `_isGV` cũ), trạng thái + kênh lệnh, CPU/RAM/ổ đĩa theo giây (thanh đo ngưỡng cũ > 50 vàng / > 90 đỏ, tách `disk_usage` như `scripts.html`), IP·MAC, Model·Service tag, agent, số sự cố đang mở; lọc "chỉ online" + tìm; chọn nhiều máy → **Chuyển phòng** hàng loạt; Chuyển / Xoá từng máy với **hộp xác nhận** (máy đang online → cảnh báo sẽ tự thêm lại). **Chi tiết máy** (`#/devices/:id`): số đo realtime, cấu hình đầy đủ (CMOS hết pin tô đỏ), sự cố của máy, nhật ký thay đổi máy (quyền `machine_events.view`). Nút theo quyền `device.manage`. Core: `/api/incidents` thêm lọc `hostname` (đúng tên) + `room_id` | 168 test Core xanh. Chạy thử đầu-cuối (scratchpad `e2e_rooms.py`, 7 máy giả có `disk_usage`): thứ tự 01,02,03,GV; ổ C 61% vàng / D 91% đỏ; CPU đổi theo giây (88% → 94%); chi tiết máy đủ cấu hình + sự cố; Chuyển 1 máy kèm vị trí 9 → nhãn "chuyển tay · 9"; chọn 2 máy → chuyển cùng lúc (không có ô vị trí) → máy về đúng phòng theo tên tự gỡ nhãn; Xoá máy online → có cảnh báo, bản ghi vào `computers_archive` |
 | 3.1 | Hợp đồng agent v2: `platform-core/tests/contract_v2/HOP_DONG.md` (luật sống còn A1–A11, thông số, 18 route HTTP, 15 sự kiện socket, 15 action lệnh) + 45 fixture + `test_contract_v2.py` | 3 test kiểm fixture xanh; 45 test hợp đồng `xfail strict` chờ 3.3 |
 
 ## Đang làm
@@ -88,8 +90,11 @@ Cập nhật lần cuối: 03/10/2026 trưa (GĐ4 Desktop: 4.1–4.6 xong, 4.7 p
    `desktop-app\src-tauri\target\release\bundle\nsis\`), đăng nhập qua `https://10.21.24.142:7443` → tăng `version` lên 0.1.1
    (`tauri.conf.json` + `package.json` + `Cargo.toml`), build lại, `phat_hanh_desktop.py --data-dir D:\ITSupportPlatformData`
    → ứng dụng 0.1.0 báo bản mới → cập nhật → mở lại ở 0.1.1. Sửa 1 ký tự trong `signature` của `latest.json` → ứng dụng
-   PHẢI từ chối. Cần `CapNhat` trước (Core dịch vụ chưa có `/desktop/*`).
-6. **GĐ5 Desktop** (5.2–5.4: sơ đồ phòng, chi tiết máy, Chuyển phòng/Xoá máy, View desktop) — API Core đã có từ 5.1/5.5.
+   PHẢI từ chối. (Dịch vụ đã `CapNhat` lên `77f0c1e` lúc 10:20 03/10 — `/desktop/latest.json` trả 204.)
+6. **5.3 Sơ đồ phòng + tệp sơ đồ cho hệ thi** (HỆ THI PHỤ THUỘC): đọc kỹ định dạng `D:\NetworkInventory\Maps\*.json` +
+   `/api/get_map` / lưu sơ đồ của hệ cũ + chỗ ThiPM đọc `MONITOR_MAPS_DIR` (D:\ExaminationSystem) TRƯỚC khi viết. Core lưu
+   `rooms.map` + xuất tệp JSON đúng định dạng cũ; Desktop: zoom, kéo, đổi cỡ, nhóm có tên, undo/redo, nhập/xuất Excel.
+7. **5.4 View desktop + VNC** (lưới card theo `{fx,fy}`, khung HD, noVNC cửa sổ con, `rooms.live_layout`).
    Core: thêm schema `@output` để kiểu response cũng sinh tự động (hiện viết tay ở `desktop-app/src/api-client/types.ts`).
 
 ## Việc cần người vận hành (Claude không có quyền Administrator)
@@ -103,8 +108,8 @@ Cập nhật lần cuối: 03/10/2026 trưa (GĐ4 Desktop: 4.1–4.6 xong, 4.7 p
 - [x] Bước 0.6, 0.7: đã cài 03/10/2026 (`ops\cai_dat_ops.ps1 -Lenh KiemTra` để xem).
 - [ ] 3.5–3.9: canary bằng Caddy — chỉ làm sau khi 0.6 + 0.7 chạy và có người trực (3.2 không còn bắt buộc).
 - [x] Cài Node.js 24 LTS, Rust, VS Build Tools trên máy phát triển desktop-app (GĐ4) — Claude kiểm đủ 03/10/2026.
-- [ ] `dich_vu_core.ps1 -Lenh CapNhat` để dịch vụ chạy mã mới (cảnh báo phần cứng, dọn tệp, API phòng/thiết bị/sự cố, CORS +
-      namespace `/desktop`, kho phát hành `/desktop/*`). Không gấp — chưa máy nào gửi về Core.
+- [x] `dich_vu_core.ps1 -Lenh CapNhat` lên `77f0c1e` (03/10/2026 10:20). Mã 5.2 (lọc sự cố theo máy/phòng) cần `CapNhat`
+      lần kế — không gấp, chưa máy nào gửi về Core.
 - [ ] 4.7 — mở cổng Desktop (PowerShell **Run as Administrator** trên máy chủ, làm theo phần đầu tệp
       `platform-deployment\caddy\khoi_7443.caddy`): chép khối vào CUỐI `D:\Caddy\Caddyfile` → `caddy validate` → `caddy reload`
       (nạp nóng, không đụng `:5443/:5444`) → mở tường lửa TCP 7443. Trên **2 máy quản trị** thử: `Import-Certificate` tệp

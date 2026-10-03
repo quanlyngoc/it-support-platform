@@ -733,6 +733,44 @@
      },
      {
       "in": "query",
+      "name": "hostname",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "maxLength": 64,
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "description": "Đúng tên máy (không phân biệt hoa thường)",
+       "title": "Hostname"
+      }
+     },
+     {
+      "in": "query",
+      "name": "room_id",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "maxLength": 24,
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "description": "Sự cố của các máy trong một phòng",
+       "title": "Room Id"
+      }
+     },
+     {
+      "in": "query",
       "name": "limit",
       "required": false,
       "schema": {

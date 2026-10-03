@@ -63,6 +63,7 @@ export function Layout() {
         <span className="brand">Phenikaa IT Monitor</span>
         <nav>
           <NavLink to="/" end>Tổng quan</NavLink>
+          <NavLink to="/rooms">Phòng máy</NavLink>
           <NavLink to="/about">Giới thiệu</NavLink>
         </nav>
         <span className="who">

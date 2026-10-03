@@ -42,6 +42,13 @@ def test_dem_va_loc_su_co(world, db):
     assert c.get("/api/incidents?q=a6-405", headers=auth(t)).get_json()["total"] == 1
     assert c.get("/api/incidents?q=.*", headers=auth(t)).get_json()["total"] == 0  # từ khoá không phải regex
     assert c.get("/api/incidents?status=LUNG_TUNG", headers=auth(t)).status_code == 422
+    # đúng tên máy (không phân biệt hoa thường), mọi trạng thái
+    assert c.get("/api/incidents?hostname=a6-301-02", headers=auth(t)).get_json()["total"] == 2
+    assert c.get("/api/incidents?hostname=A6-301", headers=auth(t)).get_json()["total"] == 0  # không khớp một phần
+    rid = str(repo_for(db, world["tid"], "rooms").insert_one({"name": "Phòng 405 - A6"}).inserted_id)
+    j = c.get(f"/api/incidents?status=OPEN&room_id={rid}", headers=auth(t)).get_json()
+    assert [i["hostname"] for i in j["items"]] == ["A6-405-01"]
+    assert c.get("/api/incidents?room_id=khong-phai-id", headers=auth(t)).get_json()["total"] == 0
     # tổ chức BBB chỉ thấy sự cố của mình
     tb = tok(world, tenant="BBB")
     assert c.get("/api/incidents/summary", headers=auth(tb)).get_json()["open"] == 1
@@ -59,5 +66,8 @@ def test_pham_vi_phong_va_dang_nhap(world, db):
         "open": 2, "pending": 2, "processing": 0, "hardware_open": 1}
     assert {i["hostname"] for i in c.get("/api/incidents", headers=auth(t)).get_json()["items"]} == {
         "A6-301-01", "A6-301-02"}
+    id405 = str(repo_for(db, world["tid"], "rooms").insert_one({"name": "Phòng 405 - A6"}).inserted_id)
+    assert c.get(f"/api/incidents?room_id={id405}", headers=auth(t)).get_json()["total"] == 0  # ngoài phạm vi
+    assert c.get(f"/api/incidents?room_id={rid}", headers=auth(t)).get_json()["total"] == 3
     assert c.get("/api/incidents").status_code == 401
     assert c.get("/api/incidents/summary").status_code == 401

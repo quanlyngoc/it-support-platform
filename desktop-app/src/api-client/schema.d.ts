@@ -459,6 +459,8 @@ export interface paths {
                 query?: {
                     status?: ("OPEN" | "PENDING" | "PROCESSING" | "DONE") | null;
                     q?: string | null;
+                    hostname?: string | null;
+                    room_id?: string | null;
                     limit?: number;
                 };
                 header?: never;

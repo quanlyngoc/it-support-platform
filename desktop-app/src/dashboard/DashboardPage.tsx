@@ -3,10 +3,10 @@
 // Mọi con số là số TUYỆT ĐỐI lấy từ Core — chỉ ghi đè (realtime `room_stats` hoặc tải lại), cấm cộng/trừ (bài học 10.10).
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router";
 import { getJson } from "../api-client";
 import type { Incident, IncidentSummary, ListResult, Room } from "../api-client/types";
 import { useRealtime } from "../realtime-client";
+import { RoomGrid } from "../rooms/RoomGrid";
 import { OnlineChart } from "./OnlineChart";
 
 export function DashboardPage() {
@@ -83,20 +83,6 @@ function Clock() {
       {" · "}
       <b>{now.toLocaleTimeString("vi-VN", { hour12: false })}</b>
     </span>
-  );
-}
-
-function RoomGrid({ rooms }: { rooms: Room[] }) {
-  return (
-    <div className="rooms">
-      {rooms.map((r) => (
-        <Link key={r.id} to={`/rooms/${r.id}`} className="room">
-          <span className="room-name">{r.name}</span>
-          <span className="room-count"><b>{r.online}</b> / {r.total} online</span>
-          <span className="bar"><i style={{ width: `${r.total ? (r.online / r.total) * 100 : 0}%` }} /></span>
-        </Link>
-      ))}
-    </div>
   );
 }
 

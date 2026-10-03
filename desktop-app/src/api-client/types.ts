@@ -36,14 +36,22 @@ export type Device = {
   move_seat?: string;
   mac?: string;
   ip?: string;
+  seen_ip?: string; // IP máy chủ thấy (sau NAT/proxy) — có thể khác IP agent tự báo
   model?: string;
   serial?: string;
   cpu?: string;
   ram?: string;
   disk?: string;
   client_version?: string;
+  mainboard?: string;
+  network?: string;
   cmos_battery?: string;
+  cpu_temp?: string;
+  cpu_fan?: string;
+  source?: string;
   last_heartbeat_at?: string;
+  offline_at?: string;
+  created_at?: string;
   is_online: boolean;
   channel: "socket" | "http" | "none";
   // chỉ có khi máy ONLINE (bài học 10.11 hệ cũ: máy offline không kèm số đo)
@@ -72,3 +80,16 @@ export type Incident = {
 export type IncidentSummary = { open: number; pending: number; processing: number; hardware_open: number };
 
 export type Health = { ok: boolean; service: string; version: string };
+
+export type MoveResult = { moved: string[]; skipped: string[]; room_id: string; room_name: string };
+
+export type MachineEvent = {
+  event: string; // trao_phan_cung | doi_serial | doi_mac
+  hostname?: string;
+  other_host?: string;
+  matched_by?: string;
+  old_value?: string;
+  new_value?: string;
+  note?: string;
+  created_at?: string;
+};

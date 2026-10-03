@@ -113,3 +113,70 @@ table.grid tr.off td { color: var(--muted); }
 .about .err { color: var(--err); }
 .about-update { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .about-update p { flex-basis: 100%; margin: 4px 0 0; }
+
+/* Thanh công cụ, tìm kiếm, thông báo */
+.toolbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.search { width: 280px; }
+.check { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); white-space: nowrap; }
+.check input { width: auto; }
+.notice { background: var(--surface-2); border-left: 3px solid var(--ok); padding: 8px 12px; border-radius: 6px; }
+.small { font-size: 12px; }
+button.small { padding: 3px 10px; font-size: 12px; }
+button.danger { background: var(--err); color: #fff; }
+.danger-text { color: var(--err) !important; }
+.badge.gv { background: var(--accent); color: var(--accent-ink); }
+.badge.warn { background: var(--warn); color: #fff; }
+
+/* Bảng máy */
+table.grid tr.sel td { background: var(--surface-2); }
+table.devices td { vertical-align: middle; }
+table.devices .c-sel { width: 32px; }
+table.devices .c-sel input { width: auto; }
+table.devices td.two span { display: block; white-space: nowrap; }
+table.devices td.two span.muted { font-size: 12px; }
+table.devices .disks { min-width: 120px; }
+table.devices .disks .meter + .meter { margin-top: 3px; }
+.row-actions { white-space: nowrap; text-align: right; }
+.row-actions button + button { margin-left: 4px; }
+a.host { font-weight: 600; text-decoration: none; }
+a.host:hover { text-decoration: underline; }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.dot.on { background: var(--ok); }
+.dot.off { background: var(--line); }
+.bulkbar { display: flex; align-items: center; gap: 12px; margin: 0 0 10px; padding: 8px 12px; border-radius: 8px;
+           background: var(--surface); border: 1px solid var(--accent); }
+.bulkbar button { padding: 5px 12px; }
+
+/* Thanh đo phần trăm (CPU/RAM/ổ đĩa) — ngưỡng màu như hệ cũ: > 90 đỏ, > 50 vàng */
+.meter { position: relative; display: block; min-width: 84px; height: 18px; background: var(--surface-2);
+         border-radius: 4px; overflow: hidden; }
+.meter i { position: absolute; inset: 0 auto 0 0; background: var(--ok); opacity: .35; }
+.meter.warn i { background: var(--warn); }
+.meter.err i { background: var(--err); opacity: .45; }
+.meter b { position: relative; display: block; padding: 0 6px; font: 600 11px/18px var(--font);
+           font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* Chi tiết máy */
+.live { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px 18px;
+        background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+.live > div { display: grid; gap: 4px; }
+.live > div > span { color: var(--muted); font-size: 12px; }
+.kv { display: grid; grid-template-columns: max-content 1fr; gap: 6px 22px; margin: 0; background: var(--surface);
+      border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; overflow-wrap: anywhere; }
+.kv dd.err { color: var(--err); font-weight: 600; }
+
+/* Hộp thoại */
+.modal-back { position: fixed; inset: 0; background: rgb(0 0 0 / .35); display: grid; place-items: center;
+              padding: 16px; z-index: 50; }
+.modal { width: min(460px, 100%); background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+         padding: 20px 22px; box-shadow: 0 12px 40px rgb(0 0 0 / .25); }
+.modal h2 { margin-top: 0; }
+.modal .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px; }
+.form { display: grid; gap: 12px; }
+.form label { display: grid; gap: 4px; font-weight: 600; }
+select { font: 14px var(--font); padding: 8px 10px; border-radius: 6px; border: 1px solid var(--line);
+         background: var(--surface); color: var(--ink); width: 100%; }
+.warn-box { background: var(--err-soft); color: var(--ink); border-left: 3px solid var(--warn); padding: 8px 12px;
+            border-radius: 6px; }

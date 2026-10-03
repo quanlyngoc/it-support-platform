@@ -23,6 +23,8 @@ class IncidentQuery(BaseModel):
     status: Literal["OPEN", "PENDING", "PROCESSING", "DONE"] | None = Field(
         default=None, description="OPEN = đang chờ + đang xử lý")
     q: str | None = Field(default=None, max_length=64, description="Tìm theo tên máy / tiêu đề / phòng")
+    hostname: str | None = Field(default=None, max_length=64, description="Đúng tên máy (không phân biệt hoa thường)")
+    room_id: str | None = Field(default=None, max_length=24, description="Sự cố của các máy trong một phòng")
     limit: int = Field(default=200, ge=1, le=1000)
 
 
@@ -31,7 +33,9 @@ class IncidentQuery(BaseModel):
 @bp.input(IncidentQuery, location="query")
 @bp.doc(summary="Danh sách sự cố (mới nhất trước)")
 def incidents(query_data: IncidentQuery):
-    items = svc.list_incidents(_db(), current(), status=query_data.status, q=query_data.q, limit=query_data.limit)
+    qd = query_data
+    items = svc.list_incidents(_db(), current(), status=qd.status, q=qd.q, hostname=qd.hostname, room_id=qd.room_id,
+                               limit=qd.limit)
     return {"items": items, "total": len(items)}
 
 

@@ -10,6 +10,7 @@ from datetime import datetime
 from re import escape
 from typing import Any
 
+from bson import ObjectId
 from pymongo.database import Database
 
 from app.tenants.context import Ctx
@@ -42,8 +43,21 @@ def public(doc: dict) -> dict:
 
 
 def list_incidents(db: Database, ctx: Ctx, *, status: str | None = None, q: str | None = None,
-                   limit: int = 200) -> list[dict]:
+                   hostname: str | None = None, room_id: str | None = None, limit: int = 200) -> list[dict]:
     query: dict = dict(_scope(db, ctx))
+    if room_id:
+        try:
+            rid = ObjectId(room_id)
+        except Exception:
+            return []
+        if not ctx.is_super and ctx.room_ids and rid not in ctx.room_ids:
+            return []
+        r = repo_for(db, ctx.tenant_id, "rooms").find_one({"_id": rid}, {"name": 1})
+        if r is None:
+            return []
+        query["room_name"] = r["name"]  # sự cố lưu tên phòng lúc tạo (Chuyển phòng cập nhật lại tên — devices.move)
+    if hostname:
+        query["hostname"] = {"$regex": f"^{escape(hostname.strip())}$", "$options": "i"}
     if status == "OPEN":
         query["status"] = {"$in": list(DANG_MO)}
     elif status:

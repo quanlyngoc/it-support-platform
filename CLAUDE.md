@@ -337,6 +337,7 @@ Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay l�
 | 03/10/2026 | 4.1–4.3 + 4.5 Desktop: công cụ, khung `desktop-app`, api-client/realtime-client/phiên | Xong | Node 24.15, Rust 1.99, VS 2022 BT, pnpm 12.8.1; typecheck/build + `cargo build` đạt; Core thêm CORS + namespace `/desktop` (cần `CapNhat`); job `desktop` trong CI |
 | 03/10/2026 | 4.4 plugin updater/notification/process + khoá ký | Xong | `pnpm tauri build` sinh bộ cài NSIS 2,35 MB + `.sig` (chữ ký ghi `version:0.1.0`), 550 s BelowNormal |
 | 03/10/2026 | 4.6 Đăng nhập + Dashboard + trang phòng + Giới thiệu | Xong (chờ máy canary để đối chiếu số thật) | Core thêm `GET /api/incidents` + `/api/incidents/summary`; Dashboard: phiếu sự cố, cảnh báo phần cứng, đồng hồ, biểu đồ Chart.js, sự cố đang mở; `incident_new` → thông báo HĐH. Chạy thử đầu-cuối đạt |
+| 03/10/2026 | 5.2 Màn Phòng, chi tiết phòng, thiết bị (Desktop) | Xong | `#/rooms`, `#/rooms/:id` (CPU/RAM/ổ đĩa theo giây, GV, sự cố, chọn nhiều máy), `#/devices/:id`; Chuyển phòng 1/nhiều máy + Xoá máy có hộp xác nhận. Chạy thử đầu-cuối đạt |
 | — | 4.7 NSIS + tự cập nhật | Phần mã xong; chờ người vận hành | Core `/desktop/*` + script phát hành (đã chạy thật: tải bộ cài trùng SHA-256). Cần: khối Caddy `:7443` + tường lửa + tin chứng chỉ trên 2 máy quản trị, rồi thử 0.1.0 → 0.1.1 |
 | — | 3.4 Cập nhật agent từ Core · 3.5–3.9 Caddy canary | Kế tiếp (sau 0.6 + 0.7) | 3.4 phần mã đã có trong `update_gate.py`; chỉ chép bộ cài khi có bản > 2.7.5.3; 3.2 không còn bắt buộc |
 
