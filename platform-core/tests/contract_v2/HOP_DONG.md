@@ -177,3 +177,9 @@ giao/thu bài + token truyền tệp cho Desktop (GĐ7); `/internal/*` + `/hubap
 Đã làm (03/10/2026): Desktop vào room `t:<tid>:{room:<id>|devices|incidents|ps:<tok>|pty|watch}` qua namespace `/desktop`
 có xác thực token (`app/realtime/desktop.py`). Mọi sự kiện adapter phát cho Desktop đều ở `/desktop`, KHÔNG ở `/` của
 agent (hub cũ dùng chung một namespace cho cả trình duyệt lẫn agent).
+
+Đã làm (04/10/2026) — route web của hệ cũ ↔ Core (KHÔNG phải route agent; agent vẫn nhận đúng `vnc_start`/`vnc_stop` như cũ):
+`POST /vnc/open` → `POST /api/devices/<id>/vnc/open` · `POST /vnc/close` → `POST /api/devices/<id>/vnc/close` (cùng
+`command_obj`, cùng `relay_url` `wss://10.21.24.142:5443/vncws`, cùng tham số URL noVNC) · `GET/POST /api/live_layout` →
+`GET /api/rooms/<id>` (`live_layout`) + `PUT /api/rooms/<id>/live-layout` · `/api/save_map`, `/api/get_map`, `/api/delete_map`
+→ `PUT/GET/DELETE /api/rooms/<id>/map` (+ tệp định dạng cũ cho hệ thi).

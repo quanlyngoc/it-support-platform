@@ -39,6 +39,15 @@ class Settings:
     LEGACY_MAPS_DIR: str = ""
     # Nơi Core xuất tệp sơ đồ ĐÚNG định dạng cũ cho hệ thi (MONITOR_MAPS_DIR); rỗng = <DATA_DIR>/<MÃ TỔ CHỨC>/Maps
     MAPS_EXPORT_DIR: str = ""
+    # Xem / điều khiển màn hình (Sổ tay 5.4) — relay ghép cặp D:\RemoteControl (PhenikaaVncRelay, cổng 6080) giữ nguyên.
+    # Địa chỉ AGENT gọi ra relay: phải là IP LAN máy chủ (máy trạm không ra được tên miền công khai).
+    VNC_RELAY_PUBLIC: str = "wss://10.21.24.142:5443/vncws"
+    # ⛔ BẤT BIẾN (bài học 10.22 hệ cũ): PHẢI giải mã ra đúng blob `passwd=` trong ultravnc.ini của bộ cài agent —
+    # cùng giá trị với app.py VNC_PASSWORD / client.py VNC_PLAIN / Fix_VncPassword.ps1.
+    # HOAN_BAO_MAT: chuyển vào kho bí mật.
+    VNC_PASSWORD: str = "6xw2Yykq"
+    # Gốc web phục vụ /novnc/* + /vncws cho người xem; rỗng = chính địa chỉ Core mà Desktop đang dùng (khối Caddy :7443)
+    VNC_VIEWER_BASE: str = ""
 
 
 def _load_env() -> None:
@@ -70,6 +79,9 @@ def get_settings() -> Settings:
         LEGACY_ALLOWED_CIDRS=_csv(os.getenv("LEGACY_ALLOWED_CIDRS", "")),
         LEGACY_MAPS_DIR=os.getenv("LEGACY_MAPS_DIR", "").strip() or _old_maps_if_present(),
         MAPS_EXPORT_DIR=os.getenv("MAPS_EXPORT_DIR", "").strip(),
+        VNC_RELAY_PUBLIC=os.getenv("VNC_RELAY_PUBLIC", "").strip() or "wss://10.21.24.142:5443/vncws",
+        VNC_PASSWORD=os.getenv("VNC_PASSWORD", "") or "6xw2Yykq",
+        VNC_VIEWER_BASE=os.getenv("VNC_VIEWER_BASE", "").strip().rstrip("/"),
     )
 
 

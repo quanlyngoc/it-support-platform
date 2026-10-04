@@ -13,6 +13,9 @@ import { diskLabel, isGV, parseDisks, seatNo } from "../shared/metrics";
 import { useCan } from "../shared/perm";
 import { Meter } from "../shared/ui";
 import { RoomMap } from "./map/RoomMap";
+import { normalize, type MapResponse } from "./map/model";
+import { LiveGrid } from "./live/LiveGrid";
+import { openVnc } from "../devices/vnc";
 
 export function RoomPage() {
   const { id = "" } = useParams();
@@ -37,14 +40,23 @@ export function RoomPage() {
   const [deleting, setDeleting] = useState<Device | null>(null);
   const [notice, setNotice] = useState("");
   const navigate = useNavigate();
-  const [view, setView] = useState<"list" | "map">(() => {
+  const canVnc = useCan("remote.vnc");
+  const canMapEdit = useCan("room_map.edit");
+  const [view, setView] = useState<"list" | "map" | "live">(() => {
     try {
-      return sessionStorage.getItem("rd_view") === "map" ? "map" : "list";
+      const v = sessionStorage.getItem("rd_view");
+      return v === "map" || v === "live" ? v : "list";
     } catch {
       return "list";
     }
   });
-  const pickView = (v: "list" | "map") => {
+  const shownView = view === "live" && !canVnc ? "list" : view;
+  const mapQ = useQuery({
+    queryKey: ["room-map", id],
+    queryFn: () => getJson<MapResponse>(`/api/rooms/${encodeURIComponent(id)}/map`),
+    enabled: shownView === "live",
+  });
+  const pickView = (v: "list" | "map" | "live") => {
     setView(v);
     try {
       sessionStorage.setItem("rd_view", v);
@@ -129,12 +141,16 @@ export function RoomPage() {
         <h1>{r.name} <small className="muted">{r.online} / {r.total} online</small></h1>
         <div className="toolbar">
           <div className="seg" role="tablist" aria-label="Kiểu xem">
-            <button role="tab" aria-selected={view === "list"} className={view === "list" ? "on" : ""}
+            <button role="tab" aria-selected={shownView === "list"} className={shownView === "list" ? "on" : ""}
                     onClick={() => pickView("list")}>Danh sách</button>
-            <button role="tab" aria-selected={view === "map"} className={view === "map" ? "on" : ""}
+            <button role="tab" aria-selected={shownView === "map"} className={shownView === "map" ? "on" : ""}
                     onClick={() => pickView("map")}>Sơ đồ</button>
+            {canVnc && (
+              <button role="tab" aria-selected={shownView === "live"} className={shownView === "live" ? "on" : ""}
+                      onClick={() => pickView("live")}>Màn hình</button>
+            )}
           </div>
-          {view === "list" && (
+          {shownView === "list" && (
             <>
               <label className="check"><input type="checkbox" checked={onlyOnline}
                                               onChange={(e) => setOnlyOnline(e.target.checked)} /> Chỉ máy online</label>
@@ -152,7 +168,10 @@ export function RoomPage() {
           <button className="ghost" onClick={() => setSel(new Set())}>Bỏ chọn</button>
         </div>
       )}
-      {view === "map" ? (
+      {shownView === "live" ? (
+        <LiveGrid room={r} map={mapQ.data?.map ? normalize(mapQ.data.map) : null} canEdit={canMapEdit}
+                  onOpenDevice={(did) => navigate(`/devices/${did}`)} />
+      ) : shownView === "map" ? (
         <RoomMap roomId={id} roomName={r.name} devices={r.devices} devSel={sel} onToggleDevice={toggle}
                  onOpenDevice={(did) => navigate(`/devices/${did}`)} />
       ) : (
@@ -167,14 +186,15 @@ export function RoomPage() {
               </th>
             )}
             <th>Máy</th><th>Trạng thái</th><th>CPU</th><th>RAM</th><th>Ổ đĩa</th><th>IP · MAC</th>
-            <th>Model · Service tag</th><th>Agent</th><th>Sự cố</th>{canManage && <th />}
+            <th>Model · Service tag</th><th>Agent</th><th>Sự cố</th>{(canManage || canVnc) && <th />}
           </tr>
         </thead>
         <tbody>
           {devices.map((d) => (
-            <Row key={d.id} d={d} canManage={canManage} selected={sel.has(d.id)} onToggle={() => toggle(d.id)}
-                 incidents={incByHost.get(d.hostname.toUpperCase()) ?? []}
-                 onMove={() => setMoving([d])} onDelete={() => setDeleting(d)} />
+            <Row key={d.id} d={d} canManage={canManage} canVnc={canVnc} selected={sel.has(d.id)}
+                 onToggle={() => toggle(d.id)} incidents={incByHost.get(d.hostname.toUpperCase()) ?? []}
+                 onMove={() => setMoving([d])} onDelete={() => setDeleting(d)}
+                 onVnc={() => openVnc(d).catch((e: Error) => setNotice(e.message))} />
           ))}
         </tbody>
       </table>
@@ -187,9 +207,9 @@ export function RoomPage() {
   );
 }
 
-function Row({ d, canManage, selected, onToggle, incidents, onMove, onDelete }: {
-  d: Device; canManage: boolean; selected: boolean; onToggle: () => void; incidents: Incident[];
-  onMove: () => void; onDelete: () => void;
+function Row({ d, canManage, canVnc, selected, onToggle, incidents, onMove, onDelete, onVnc }: {
+  d: Device; canManage: boolean; canVnc: boolean; selected: boolean; onToggle: () => void; incidents: Incident[];
+  onMove: () => void; onDelete: () => void; onVnc: () => void;
 }) {
   const disks = d.is_online ? parseDisks(d.disk_usage) : [];
   return (
@@ -225,10 +245,13 @@ function Row({ d, canManage, selected, onToggle, incidents, onMove, onDelete }: 
           <span className="badge warn" title={incidents.map((i) => i.title).join("\n")}>{incidents.length}</span>
         )}
       </td>
-      {canManage && (
+      {(canManage || canVnc) && (
         <td className="row-actions">
-          <button className="ghost small" onClick={onMove}>Chuyển</button>
-          <button className="ghost small danger-text" onClick={onDelete}>Xoá</button>
+          {canVnc && d.is_online && (
+            <button className="ghost small" onClick={onVnc} title="Xem / điều khiển màn hình">Màn hình</button>
+          )}
+          {canManage && <button className="ghost small" onClick={onMove}>Chuyển</button>}
+          {canManage && <button className="ghost small danger-text" onClick={onDelete}>Xoá</button>}
         </td>
       )}
     </tr>

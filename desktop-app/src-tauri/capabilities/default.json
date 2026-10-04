@@ -10,6 +10,8 @@
     "opener:default",
     "store:default",
     "notification:default",
-    "process:default"
+    "process:default",
+    "core:webview:allow-create-webview-window",
+    "core:window:allow-set-focus"
   ]
 }

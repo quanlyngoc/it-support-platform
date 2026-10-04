@@ -1,6 +1,18 @@
 {
  "components": {
   "schemas": {
+   "CloseIn": {
+    "properties": {
+     "token": {
+      "default": "",
+      "maxLength": 128,
+      "title": "Token",
+      "type": "string"
+     }
+    },
+    "title": "CloseIn",
+    "type": "object"
+   },
    "CommandIn": {
     "properties": {
      "command": {
@@ -90,6 +102,18 @@
       "type": "string"
      }
     },
+    "type": "object"
+   },
+   "LiveLayoutIn": {
+    "properties": {
+     "layout": {
+      "additionalProperties": true,
+      "description": "{TÊN MÁY: {fx, fy}} — đơn vị ô lưới, 0-based",
+      "title": "Layout",
+      "type": "object"
+     }
+    },
+    "title": "LiveLayoutIn",
     "type": "object"
    },
    "LoginIn": {
@@ -942,6 +966,101 @@
     ]
    }
   },
+  "/api/devices/{device_id}/vnc/close": {
+   "post": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "device_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CloseIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Đóng phiên: bảo agent dừng tunnel (không nối lại nữa)",
+    "tags": [
+     "Xem / điều khiển màn hình"
+    ]
+   }
+  },
+  "/api/devices/{device_id}/vnc/open": {
+   "post": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "device_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Mở phiên xem/điều khiển: cấp token, bảo agent mở tunnel tới relay, trả URL noVNC",
+    "tags": [
+     "Xem / điều khiển màn hình"
+    ]
+   }
+  },
   "/api/health": {
    "get": {
     "parameters": [],
@@ -1386,6 +1505,63 @@
     ]
    }
   },
+  "/api/rooms/{room_id}/live-layout": {
+   "put": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "room_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/LiveLayoutIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Lưu bố trí lưới View desktop của phòng (mọi người xem cùng một bố trí)",
+    "tags": [
+     "Sơ đồ phòng"
+    ]
+   }
+  },
   "/api/rooms/{room_id}/map": {
    "delete": {
     "parameters": [
@@ -1668,6 +1844,9 @@
   },
   {
    "name": "Sơ đồ phòng"
+  },
+  {
+   "name": "Xem / điều khiển màn hình"
   },
   {
    "name": "Cập nhật Desktop"

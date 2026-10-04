@@ -209,6 +209,13 @@ sự kiện riêng `vnc_thumb_req`, `fs_request`. (`kill_and_update` KHÔNG còn
   bằng `/ scale - leftPad`. Hít lưới dùng đúng mốc `colToX/rowToY` của hệ cũ (để xuất Excel suy ngược được cột/hàng). Khớp số
   ghế ↔ tên máy bằng `findHost` = `mapFindHost` của hệ thi (đổi một bên là hai bên lệch nhau). Tỉ lệ "vừa khung" tính theo
   nền + viền phòng, KHÔNG theo phần tử (kéo máy ra mép mà tính theo phần tử thì tỉ lệ nhảy giữa lúc kéo).
+- **Xem / điều khiển màn hình** (`src/rooms/live/`, `src/devices/vnc.ts`, Core `app/devices/vnc.py`): relay ghép cặp
+  `PhenikaaVncRelay` + noVNC của hệ cũ GIỮ NGUYÊN; Core chỉ cấp token + gửi `vnc_start {relay_url, token}` BỌC
+  `command_obj` + trả URL noVNC (`path` tuyệt đối `/vncws`, `view_only=0` — bài học 10.22–10.24 hệ cũ, đừng "dọn" mấy tham
+  số đó). Mật khẩu VNC Core = `VNC_PASSWORD` (mặc định `6xw2Yykq`) → nay là **chỗ thứ 5** của bất biến mật khẩu VNC.
+  Mỗi máy một cửa sổ điều khiển (bấm lại = đưa lên trước, KHÔNG mở phiên mới — phiên mới làm cửa sổ cũ rớt). Lưới: ảnh
+  < 800 B bỏ (giữ ảnh cũ), khung HD không phóng ảnh nhỏ. ⚠️ Tên lớp CSS dùng chung một tệp `app.css` — đặt tên riêng
+  (`.live-view`, không `.live`: `.live` là khối số đo ở trang máy; trùng tên từng làm lưới bị nhét vào cột 240px).
 
 ---
 
@@ -348,6 +355,7 @@ Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay l�
 | 03/10/2026 | 4.1–4.3 + 4.5 Desktop: công cụ, khung `desktop-app`, api-client/realtime-client/phiên | Xong | Node 24.15, Rust 1.99, VS 2022 BT, pnpm 12.8.1; typecheck/build + `cargo build` đạt; Core thêm CORS + namespace `/desktop` (cần `CapNhat`); job `desktop` trong CI |
 | 03/10/2026 | 4.4 plugin updater/notification/process + khoá ký | Xong | `pnpm tauri build` sinh bộ cài NSIS 2,35 MB + `.sig` (chữ ký ghi `version:0.1.0`), 550 s BelowNormal |
 | 03/10/2026 | 4.6 Đăng nhập + Dashboard + trang phòng + Giới thiệu | Xong (chờ máy canary để đối chiếu số thật) | Core thêm `GET /api/incidents` + `/api/incidents/summary`; Dashboard: phiếu sự cố, cảnh báo phần cứng, đồng hồ, biểu đồ Chart.js, sự cố đang mở; `incident_new` → thông báo HĐH. Chạy thử đầu-cuối đạt |
+| 04/10/2026 | 5.4 View desktop + VNC | Xong phần mã (thử winvnc thật chờ `:7443`/canary) | Core mở/đóng phiên VNC + bố trí lưới; Desktop kiểu xem "Màn hình" (card theo sơ đồ, HD khi rê, kéo sửa bố trí) + cửa sổ con noVNC. Thử đầu-cuối với agent giả |
 | 04/10/2026 | 5.3 Sơ đồ phòng + tệp sơ đồ cho hệ thi | Xong (chuyển kho sơ đồ của hệ thi làm lúc chuyển hẳn) | Core `rooms.map` + xuất đúng định dạng cũ (chính `sodo.js` vẽ giống hệt 19/19 phòng); Desktop xem trạng thái + trình sửa đầy đủ, Excel, Move PC từ sơ đồ. `maps_cli nhap-cu`/`xuat` |
 | 03/10/2026 | 5.2 Màn Phòng, chi tiết phòng, thiết bị (Desktop) | Xong | `#/rooms`, `#/rooms/:id` (CPU/RAM/ổ đĩa theo giây, GV, sự cố, chọn nhiều máy), `#/devices/:id`; Chuyển phòng 1/nhiều máy + Xoá máy có hộp xác nhận. Chạy thử đầu-cuối đạt |
 | — | 4.7 NSIS + tự cập nhật | Phần mã xong; chờ người vận hành | Core `/desktop/*` + script phát hành (đã chạy thật: tải bộ cài trùng SHA-256). Cần: khối Caddy `:7443` + tường lửa + tin chứng chỉ trên 2 máy quản trị, rồi thử 0.1.0 → 0.1.1 |

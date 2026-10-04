@@ -236,3 +236,32 @@ select { font: 14px var(--font); padding: 8px 10px; border-radius: 6px; border: 
 .map-band { position: absolute; border: 1px dashed var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent);
             pointer-events: none; z-index: 6; }
 .map-origin { position: absolute; left: 0; top: 0; }
+
+/* View desktop (lưới màn hình, kiểu NetSupport) — card 16:9 đặt theo ô lưới {fx, fy} */
+.live-view { display: grid; gap: 8px; } /* KHÔNG dùng .live — đã là khối số đo ở chi tiết máy */
+.live-edit-btns { margin-left: auto; display: inline-flex; gap: 6px; }
+.live-wrap { overflow: auto; max-height: calc(100vh - 230px); padding: 12px; background: var(--surface-2);
+             border: 1px solid var(--line); border-radius: 10px; }
+.live-canvas { position: relative; }
+.lc { position: absolute; display: flex; flex-direction: column; border-radius: 8px; overflow: hidden;
+      background: var(--surface); border: 2px solid var(--ok); cursor: zoom-in; user-select: none; }
+.lc.off { border-color: var(--line); cursor: default; }
+.lc.gv { border-color: var(--warn); }
+.live-canvas.editing .lc { cursor: move; outline: 1px dashed var(--accent); }
+.lc.drag { z-index: 5; box-shadow: 0 10px 30px rgb(0 0 0 / .3); opacity: .92; }
+.lc-shot { position: relative; flex: 1; display: grid; place-items: center; background: #cfd6df; color: #56606b;
+           font-size: 12px; }
+.lc.off .lc-shot { background: var(--surface-2); color: var(--muted); }
+.lc-shot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #000; }
+.lc-name { position: absolute; left: 50%; bottom: 4px; transform: translateX(-50%); background: #fff; color: #13201e;
+           font: 700 12px var(--font); padding: 1px 8px; border-radius: 99px; white-space: nowrap;
+           box-shadow: 0 1px 3px rgb(0 0 0 / .25); }
+.live-hd { position: fixed; inset: 0; background: rgb(0 0 0 / .55); display: grid; place-items: center; z-index: 60;
+           padding: 16px; }
+.live-hd-box { width: min(1500px, 96vw); background: var(--surface); border-radius: 10px; overflow: hidden;
+               box-shadow: 0 20px 60px rgb(0 0 0 / .4); }
+.live-hd-bar { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+.live-hd-bar .grow { flex: 1; }
+.live-hd-bar button { padding: 5px 12px; }
+.live-hd-box img { display: block; width: 100%; max-height: 82vh; object-fit: contain; background: #000; cursor: zoom-in; }
+.live-hd-wait { height: 50vh; display: grid; place-items: center; color: var(--muted); }

@@ -410,6 +410,113 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/devices/{device_id}/vnc/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Đóng phiên: bảo agent dừng tunnel (không nối lại nữa) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    device_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["CloseIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/devices/{device_id}/vnc/open": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mở phiên xem/điều khiển: cấp token, bảo agent mở tunnel tới relay, trả URL noVNC */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    device_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/health": {
         parameters: {
             query?: never;
@@ -938,6 +1045,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/rooms/{room_id}/live-layout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Lưu bố trí lưới View desktop của phòng (mọi người xem cùng một bố trí) */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    room_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["LiveLayoutIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/rooms/{room_id}/map": {
         parameters: {
             query?: never;
@@ -1244,6 +1411,14 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** CloseIn */
+        CloseIn: {
+            /**
+             * Token
+             * @default
+             */
+            token: string;
+        };
         /** CommandIn */
         CommandIn: {
             /**
@@ -1282,6 +1457,16 @@ export interface components {
         HTTPError: {
             detail?: Record<string, never>;
             message?: string;
+        };
+        /** LiveLayoutIn */
+        LiveLayoutIn: {
+            /**
+             * Layout
+             * @description {TÊN MÁY: {fx, fy}} — đơn vị ô lưới, 0-based
+             */
+            layout?: {
+                [key: string]: unknown;
+            };
         };
         /** LoginIn */
         LoginIn: {

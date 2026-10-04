@@ -9,12 +9,13 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 from urllib.parse import quote
 
 from apiflask import APIBlueprint, abort
 from bson import ObjectId
 from flask import current_app, make_response, request
-from pydantic import ValidationError
+from pydantic import BaseModel, Field, ValidationError
 
 from app.rbac.perms import login_required, require_perm
 from app.realtime.hub import DESKTOP_NS, socketio
@@ -158,3 +159,29 @@ def export_excel(room_id: str):
     name = f"So_Do_{maps.safe_name(r['name'])}.xlsx"  # có dấu → header chỉ nhận latin-1 → RFC 5987 filename*
     resp.headers["Content-Disposition"] = f"attachment; filename=So_Do.xlsx; filename*=UTF-8''{quote(name)}"
     return resp
+
+
+class LiveLayoutIn(BaseModel):
+    layout: dict[str, Any] = Field(default_factory=dict, description="{TÊN MÁY: {fx, fy}} — đơn vị ô lưới, 0-based")
+
+
+@bp.put("/rooms/<room_id>/live-layout")
+@require_perm("room_map.edit")
+@bp.input(LiveLayoutIn)
+@bp.doc(summary="Lưu bố trí lưới View desktop của phòng (mọi người xem cùng một bố trí)")
+def put_live_layout(room_id: str, json_data: LiveLayoutIn):
+    """Như `/api/live_layout` hệ cũ: chỉ giữ {host: {fx, fy}} hợp lệ (0 ≤ fx, fy < 1000, làm tròn 3 số, ≤ 500 máy)."""
+    ctx = current()
+    r = _room(ctx, room_id)
+    clean: dict[str, dict[str, float]] = {}
+    for host, pos in list(json_data.layout.items())[:500]:
+        try:
+            fx, fy = round(float(pos.get("fx")), 3), round(float(pos.get("fy")), 3)
+        except (AttributeError, TypeError, ValueError):
+            continue
+        if 0 <= fx < 1000 and 0 <= fy < 1000:
+            clean[str(host).strip().upper()[:64]] = {"fx": fx, "fy": fy}
+    repo_for(_db(), ctx.tenant_id, "rooms").update_by_id(r["_id"], {"$set": {"live_layout": clean}})
+    socketio.emit("room_map_updated", {"room_id": str(r["_id"]), "by": ctx.username, "what": "live_layout"},
+                  to=f"t:{ctx.tenant_id}:room:{r['_id']}", namespace=DESKTOP_NS)
+    return {"ok": True, "count": len(clean)}

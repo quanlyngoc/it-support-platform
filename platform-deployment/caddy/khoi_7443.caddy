@@ -26,7 +26,26 @@ https://10.21.24.142:7443 {
 		}
 	}
 
-	# Toan bo -> Core: /api/* (Desktop), /socket.io/* namespace /desktop (websocket), /desktop/* (ban cap nhat),
+	# --- Xem/dieu khien man hinh (So tay 5.4): Desktop mo noVNC qua CHINH cong nay ---
+	#     /vncws -> relay ghep cap 127.0.0.1:6080 (PhenikaaVncRelay, GIU NGUYEN), cung tham so voi khoi :5443
+	@vncws path /vncws /vncws/*
+	handle @vncws {
+		reverse_proxy 127.0.0.1:6080 {
+			stream_timeout 24h
+			stream_close_delay 5m
+		}
+	}
+	#     /novnc/* -> file tinh noVNC co san (CHI DOC, khong qua Core)
+	@novnc path /novnc/*
+	handle @novnc {
+		root * D:/RemoteControl/novnc
+		uri strip_prefix /novnc
+		file_server
+	}
+
+	# Con lai -> Core: /api/* (Desktop), /socket.io/* namespace /desktop (websocket), /desktop/* (ban cap nhat),
 	# /openapi.json, /docs. Agent v2 KHONG di cong nay (van :5443).
-	reverse_proxy 127.0.0.1:7009
+	handle {
+		reverse_proxy 127.0.0.1:7009
+	}
 }

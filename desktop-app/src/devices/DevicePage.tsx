@@ -11,6 +11,7 @@ import { diskLabel, fmtTime, isGV, parseDisks } from "../shared/metrics";
 import { useCan } from "../shared/perm";
 import { Meter } from "../shared/ui";
 import { DeleteDialog, MoveDialog } from "./DeviceDialogs";
+import { openVnc } from "./vnc";
 
 const SU_KIEN: Record<string, string> = { trao_phan_cung: "Tráo phần cứng", doi_serial: "Đổi serial", doi_mac: "Đổi MAC" };
 const TRANG_THAI: Record<Incident["status"], string> = { PENDING: "Chờ xử lý", PROCESSING: "Đang xử lý", DONE: "Xong" };
@@ -22,6 +23,7 @@ export function DevicePage() {
   const connected = useRealtime((s) => s.connected);
   const canManage = useCan("device.manage");
   const canEvents = useCan("machine_events.view");
+  const canVnc = useCan("remote.vnc");
   const [dialog, setDialog] = useState<"move" | "delete" | null>(null);
   const [notice, setNotice] = useState("");
   const q = useQuery({
@@ -82,10 +84,13 @@ export function DevicePage() {
           {" "}<small className="muted"><span className={`dot ${d.is_online ? "on" : "off"}`} />
             {d.is_online ? (d.channel === "http" ? "Online (mất kênh lệnh)" : "Online") : "Offline"}</small>
         </h1>
-        {canManage && (
+        {(canManage || canVnc) && (
           <div className="toolbar">
-            <button onClick={() => setDialog("move")}>Chuyển phòng…</button>
-            <button className="ghost danger-text" onClick={() => setDialog("delete")}>Xoá máy…</button>
+            {canVnc && d.is_online && (
+              <button onClick={() => openVnc(d).catch((e: Error) => setNotice(e.message))}>Điều khiển màn hình</button>
+            )}
+            {canManage && <button className={canVnc && d.is_online ? "ghost" : ""} onClick={() => setDialog("move")}>Chuyển phòng…</button>}
+            {canManage && <button className="ghost danger-text" onClick={() => setDialog("delete")}>Xoá máy…</button>}
           </div>
         )}
       </div>
