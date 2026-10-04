@@ -64,6 +64,11 @@ class LegacyAdapter:
         # Đăng nhập từ xa (Sổ tay 6.2): MAC (12 hex) → (room riêng của người bấm, hạn) — kết quả /login_result về
         # ĐÚNG người đó. Một tiến trình Core duy nhất nên giữ RAM là đủ; mất (khởi động lại) thì vẫn còn room "watch".
         self._login_wait: dict[str, tuple[str, float]] = {}
+        # Terminal ConPTY (Sổ tay 6.4): CHỈ mở được sau khi CHÍNH người đó vừa xác thực tài khoản Windows thành công
+        # trên ĐÚNG máy đó (hub cũ cho gọi start_pty không cần xác thực → ai có quyền điều khiển cũng mở PowerShell
+        # quyền SYSTEM).
+        self._pty_wait: dict[str, tuple[str, float]] = {}  # mac12 → (user_id, hạn chờ kết quả)
+        self._pty_ok: dict[str, tuple[str, float]] = {}  # mac12 → (user_id, lúc xác thực đúng)
 
     # ------------------------------------------------------------------ tổ chức + thư mục
     @property
@@ -320,6 +325,23 @@ class LegacyAdapter:
     def login_room(self, mac: str) -> str | None:
         w = self._login_wait.get(mac12(mac))
         return w[0] if w and w[1] > self.state.clock() else None
+
+    def expect_pty(self, mac: str, user_id: str, ttl: float = 60) -> None:
+        if mac12(mac):
+            self._pty_wait[mac12(mac)] = (user_id, self.state.clock() + ttl)
+
+    def pty_auth(self, mac: str, ok: bool) -> None:
+        """Kết quả xác thực ConPTY từ agent: đúng + đang có người chờ → người đó được mở terminal (một lần)."""
+        w = self._pty_wait.pop(mac12(mac), None)
+        if ok and w and w[1] > self.state.clock():
+            self._pty_ok[mac12(mac)] = (w[0], self.state.clock())
+
+    def take_pty_ok(self, mac: str, user_id: str, within: float = 120) -> bool:
+        ok = self._pty_ok.get(mac12(mac))
+        if ok and ok[0] == user_id and self.state.clock() - ok[1] <= within:
+            del self._pty_ok[mac12(mac)]  # dùng một lần — mở lại phải xác thực lại
+            return True
+        return False
 
     def tat_sach_since(self, host: str) -> datetime | None:
         ts = self.state.tat_sach.get(norm_host(host))

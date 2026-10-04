@@ -116,6 +116,8 @@ def _auth_result(kind: str, event: str, key: str):
     if store is None:
         return _NO_TENANT
     store.put_event(kind, mac12(mac) or hexid(key) or str(key)[:80], out)
+    if kind == "pty_auth" and mac:
+        ad.pty_auth(mac, out["status"] == "success")
     if mac:
         ad.emit(event, out, ad.room_dev("watch" if kind == "login" else kind.split("_")[0], mac))
         if kind == "login" and (room := ad.login_room(mac)):

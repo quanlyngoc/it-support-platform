@@ -81,6 +81,10 @@ class Store:
                                  "$setOnInsert": {"created_at": datetime.now(UTC)}}, upsert=True)
         return self.results.count({"token": tok, "kind": kind, "role": "result"})
 
+    def update_meta(self, kind: str, token: str, fields: dict) -> None:
+        self.results.update_one({"token": hexid(token), "kind": kind, "role": "session"},
+                                {"$set": {f"meta.{k}": v for k, v in fields.items()}})
+
     def put_event(self, kind: str, key: str, data: dict) -> None:
         """Kết quả 1 lần (đăng nhập từ xa / xác thực terminal) — để Desktop poll khi lỡ sự kiện realtime."""
         self.results.insert_one({"token": key, "kind": kind, "role": "event", **data, "created_at": datetime.now(UTC)})

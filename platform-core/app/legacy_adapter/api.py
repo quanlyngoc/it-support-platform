@@ -28,6 +28,14 @@ def _ad() -> LegacyAdapter:
     return ad
 
 
+def _unrestricted() -> None:
+    """Hai API thô (lệnh theo tên máy, PowerShell hàng loạt) KHÔNG lọc phạm vi phòng → chỉ cho tài khoản không bị giới
+    hạn phòng. Người bị giới hạn dùng API GĐ6 có lọc: /api/power, /api/internet, /api/terminal/bulk…"""
+    ctx = current()
+    if ctx.room_ids and not ctx.is_super:
+        abort(403, "Tài khoản giới hạn phòng: dùng các chức năng Điều khiển của Desktop (đã lọc theo phòng được giao)")
+
+
 @bp.get("/online")
 @login_required
 @bp.doc(summary="Máy agent v2 đang online + kênh lệnh của từng máy (socket / http / none)")
@@ -49,6 +57,7 @@ class CommandIn(BaseModel):
 @bp.input(CommandIn)
 @bp.doc(summary="Gửi 1 lệnh tới 1 máy (không broadcast; máy mất kênh lệnh → 409)")
 def command(json_data: CommandIn):
+    _unrestricted()
     ad = _ad()
     if (json_data.command is None) == (json_data.command_obj is None):
         abort(422, "Cần đúng một trong hai: command hoặc command_obj")
@@ -74,6 +83,7 @@ class PowerShellIn(BaseModel):
 @bp.input(PowerShellIn)
 @bp.doc(summary="Chạy PowerShell trên nhiều máy; kết quả về theo token (poll /results/<token> hoặc socket)")
 def powershell(json_data: PowerShellIn):
+    _unrestricted()
     ad = _ad()
     store = ad.store()
     assert store is not None
