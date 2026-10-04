@@ -640,6 +640,55 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/internet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Ngắt / mở Internet, chặn / bỏ chặn website (lệnh internet_control như hệ cũ) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["InternetIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/legacy/command": {
         parameters: {
             query?: never;
@@ -884,6 +933,153 @@ export interface paths {
             };
         };
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/power": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Tắt / khởi động lại / bật (Wake-on-LAN qua máy cùng subnet) cho danh sách máy hoặc cả phòng */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["PowerIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/remote-login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Đăng nhập Windows từ xa (mã hoá AES-GCM như hệ cũ); kết quả từng máy về sự kiện login_response */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["LoginIn1"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/remote-login/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Đăng xuất Windows từ xa */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["TargetsIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -1458,6 +1654,33 @@ export interface components {
             detail?: Record<string, never>;
             message?: string;
         };
+        /** InternetIn */
+        InternetIn: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "disable" | "enable" | "block_web" | "unblock_web";
+            /** Device Ids */
+            device_ids?: string[];
+            /**
+             * Exclude Gv
+             * @description Cả phòng: chừa máy giảng viên (như hệ cũ)
+             * @default true
+             */
+            exclude_gv: boolean;
+            /**
+             * Room Id
+             * @default null
+             */
+            room_id: string | null;
+            /**
+             * Websites
+             * @description Tên miền cách nhau bằng dấu phẩy / xuống dòng
+             * @default
+             */
+            websites: string;
+        };
         /** LiveLayoutIn */
         LiveLayoutIn: {
             /**
@@ -1484,6 +1707,32 @@ export interface components {
             totp: string | null;
             /** Username */
             username: string;
+        };
+        /** LoginIn */
+        LoginIn1: {
+            /** Device Ids */
+            device_ids?: string[];
+            /**
+             * Exclude Gv
+             * @description Cả phòng: chừa máy giảng viên (như hệ cũ)
+             * @default true
+             */
+            exclude_gv: boolean;
+            /**
+             * Password
+             * @default
+             */
+            password: string;
+            /**
+             * Room Id
+             * @default null
+             */
+            room_id: string | null;
+            /**
+             * User
+             * @description Tài khoản Windows trên máy trạm (vd. SV, THI)
+             */
+            user: string;
         };
         /** MapModel */
         MapModel: {
@@ -1636,6 +1885,27 @@ export interface components {
              */
             seat: string;
         };
+        /** PowerIn */
+        PowerIn: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "shutdown" | "restart" | "wake";
+            /** Device Ids */
+            device_ids?: string[];
+            /**
+             * Exclude Gv
+             * @description Cả phòng: chừa máy giảng viên (như hệ cũ)
+             * @default true
+             */
+            exclude_gv: boolean;
+            /**
+             * Room Id
+             * @default null
+             */
+            room_id: string | null;
+        };
         /** PowerShellIn */
         PowerShellIn: {
             /** Hostnames */
@@ -1658,6 +1928,22 @@ export interface components {
              * @default
              */
             user: string;
+        };
+        /** TargetsIn */
+        TargetsIn: {
+            /** Device Ids */
+            device_ids?: string[];
+            /**
+             * Exclude Gv
+             * @description Cả phòng: chừa máy giảng viên (như hệ cũ)
+             * @default true
+             */
+            exclude_gv: boolean;
+            /**
+             * Room Id
+             * @default null
+             */
+            room_id: string | null;
         };
         ValidationError: {
             detail?: {

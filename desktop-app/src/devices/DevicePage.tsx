@@ -12,6 +12,7 @@ import { useCan } from "../shared/perm";
 import { Meter } from "../shared/ui";
 import { DeleteDialog, MoveDialog } from "./DeviceDialogs";
 import { openVnc } from "./vnc";
+import { ControlDialog, ControlMenu, type ControlKind } from "../control/ControlDialog";
 
 const SU_KIEN: Record<string, string> = { trao_phan_cung: "Tráo phần cứng", doi_serial: "Đổi serial", doi_mac: "Đổi MAC" };
 const TRANG_THAI: Record<Incident["status"], string> = { PENDING: "Chờ xử lý", PROCESSING: "Đang xử lý", DONE: "Xong" };
@@ -24,6 +25,8 @@ export function DevicePage() {
   const canManage = useCan("device.manage");
   const canEvents = useCan("machine_events.view");
   const canVnc = useCan("remote.vnc");
+  const canControl = useCan("device.control");
+  const [ctl, setCtl] = useState<ControlKind | null>(null);
   const [dialog, setDialog] = useState<"move" | "delete" | null>(null);
   const [notice, setNotice] = useState("");
   const q = useQuery({
@@ -84,8 +87,11 @@ export function DevicePage() {
           {" "}<small className="muted"><span className={`dot ${d.is_online ? "on" : "off"}`} />
             {d.is_online ? (d.channel === "http" ? "Online (mất kênh lệnh)" : "Online") : "Offline"}</small>
         </h1>
-        {(canManage || canVnc) && (
+        {(canManage || canVnc || canControl) && (
           <div className="toolbar">
+            {canControl && (
+              <ControlMenu target={{ kind: "devices", ids: [id], names: [host] }} onPick={(k) => setCtl(k)} />
+            )}
             {canVnc && d.is_online && (
               <button onClick={() => openVnc(d).catch((e: Error) => setNotice(e.message))}>Điều khiển màn hình</button>
             )}
@@ -167,6 +173,10 @@ export function DevicePage() {
         </>
       )}
 
+      {ctl && (
+        <ControlDialog kind={ctl} target={{ kind: "devices", ids: [d.id], names: [d.hostname] }}
+                       onClose={() => setCtl(null)} />
+      )}
       {dialog === "move" && (
         <MoveDialog devices={[d]} currentRoom={d.room_name} onClose={() => setDialog(null)}
                     onDone={(m) => { setDialog(null); setNotice(m); }} />

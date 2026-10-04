@@ -6,7 +6,7 @@
 > Kế hoạch đầy đủ: `docs/plan/SoTay_ThucHien_ITMonitor_SaaS.html` (số bước bên dưới theo Sổ tay;
 > tài liệu đó còn ghi `D:\Platform` — hiểu là `D:\ITSupportPlatform`).
 
-Cập nhật lần cuối: 04/10/2026 trưa (GĐ4 4.1–4.6 xong, 4.7 chờ cổng :7443; GĐ5 5.1–5.5 xong phần mã — cổng ra GĐ5 cần canary; kế: GĐ6)
+Cập nhật lần cuối: 04/10/2026 chiều (GĐ4 4.1–4.6 xong, 4.7 chờ cổng :7443; GĐ5 5.1–5.5 + GĐ6 6.1–6.3 xong phần mã — cổng ra cần canary; kế: 6.4)
 
 ## Cách mở phiên mới để làm tiếp
 
@@ -16,7 +16,7 @@ Cập nhật lần cuối: 04/10/2026 trưa (GĐ4 4.1–4.6 xong, 4.7 chờ cổ
 4. Kiểm nhanh trạng thái trước khi làm tiếp (tất cả phải xanh):
    ```powershell
    cd D:\ITSupportPlatform\platform-core
-   uv run pytest -q                 # 181 passed, 1 skipped (05b chờ GĐ7 tải tệp)
+   uv run pytest -q                 # 190 passed, 1 skipped (05b chờ GĐ7 tải tệp)
    uv run ruff check .
    uv run pyright
    pnpm -C ..\desktop-app typecheck; pnpm -C ..\desktop-app build   # PATH cần C:\Program Files\nodejs + %APPDATA%\npm
@@ -76,6 +76,8 @@ Cập nhật lần cuối: 04/10/2026 trưa (GĐ4 4.1–4.6 xong, 4.7 chờ cổ
 | — | Người vận hành `CapNhat` (04/10/2026 ~08:30) | `KiemTra`: bản `1215e22` = main, ping CSDL 53 ms (có API sơ đồ + lọc sự cố) |
 | 5.4 (Core) | `app/devices/vnc.py`: `POST /api/devices/<id>/vnc/open` (cấp token 256 bit, gửi `vnc_start {relay_url, token}` BỌC `command_obj`, trả `viewer_url` noVNC: `path` TUYỆT ĐỐI `/vncws`, `view_only=0`, `quality=9&compression=2`, `reconnect`, mật khẩu VNC) + `…/vnc/close` (`vnc_stop`); quyền `remote.vnc` + phạm vi phòng; máy mất kênh lệnh → 409. Cấu hình `VNC_RELAY_PUBLIC` (mặc định `wss://10.21.24.142:5443/vncws` — đường agent đang dùng), `VNC_PASSWORD` (= `6xw2Yykq`, bất biến 4 chỗ của hệ cũ, `HOAN_BAO_MAT`), `VNC_VIEWER_BASE` (rỗng = địa chỉ Core của Desktop). `PUT /api/rooms/<id>/live-layout` (`room_map.edit`, làm sạch như `/api/live_layout` cũ, realtime `room_map_updated {what: live_layout}`). Relay `PhenikaaVncRelay` + noVNC GIỮ NGUYÊN; khối Caddy `:7443` thêm `/vncws` → 6080 và `/novnc/*` (file tĩnh `D:/RemoteControl/novnc`, chỉ đọc) — đã `caddy adapt` | 4 test mới (181 xanh): agent giả nhận `execute_command` có `command_obj` đúng, URL đúng từng tham số, 403/404/409 theo quyền/phạm vi/tổ chức/máy tắt, bố trí lọc rác |
 | 5.4 (Desktop) | Trang phòng thêm kiểu xem **Màn hình** (quyền `remote.vnc`): card 16:9 xếp theo bố trí đã lưu → mirror sơ đồ (gom hàng/cột theo tâm thẻ máy như `_axis` cũ) → số ghế; ảnh `vnc_thumb` (rải 25 ms/máy, 1,5 s/lượt, ảnh < 800 B bỏ — giữ ảnh cũ, tab ẩn thì ngừng hỏi); rê chuột 1,2 s → khung HD (xin HD TRƯỚC khi chuột vừa vào card, KHÔNG phóng ảnh nhỏ mờ); bấm đúp / nút "Điều khiển" / nút "Màn hình" ở bảng máy / "Điều khiển màn hình" ở trang máy → **cửa sổ con noVNC** (Tauri `WebviewWindow`, mỗi máy MỘT cửa sổ — bấm lại thì đưa lên trước; đóng cửa sổ → `vnc/close`); "Sửa bố trí" (`room_map.edit`): kéo card, thả vào ô có máy thì đổi chỗ, bàn GV bước 0,25 ô, "Theo sơ đồ" xoá bố trí đã lưu. Quyền Tauri thêm `core:webview:allow-create-webview-window`, `core:window:allow-set-focus` (`cargo check` qua) | Chạy thử đầu-cuối (scratchpad `e2e_live.py`, 3 AGENT GIẢ python-socketio trả PNG + ghi lệnh; `VNC_VIEWER_BASE` = Core thử để KHÔNG chạm relay thật): 3/3 card có ảnh, vị trí mirror sơ đồ phòng 301 thật; khung HD ảnh rộng 480 (agent nhận 2 yêu cầu HD: xin trước + mở khung); kéo card 03 sang ô máy 01 → đổi chỗ, lưu; bấm đúp máy 02 → cửa sổ `/novnc/vnc.html?…` có đúng token agent nhận trong `vnc_start`; đóng cửa sổ → agent nhận `vnc_stop`. Bắt lỗi: lớp CSS `.live` trùng khối số đo ở trang máy → lưới bị nhét vào cột 240px (đổi `.live-view`). **Chưa thử với winvnc thật** — cần cổng `:7443` (hoặc `VNC_VIEWER_BASE=https://10.21.24.142:5443`) + máy canary |
+| 6.1–6.3 (Core) | `app/control/`: đích = danh sách máy HOẶC cả phòng, luôn lọc phạm vi phòng + tổ chức, cả phòng mặc định chừa máy GV (`is_teacher_pc` đúng regex hub cũ). **6.1** `POST /api/power`: shutdown/restart `{"command": …}` chỉ tới máy đang bật (ghi "tắt có chủ ý" lúc ra lệnh); wake = `relay_wake_batch` tới tối đa 2 máy trung gian CÙNG subnet /24 (ưu tiên cùng phòng, có socket; IP lấy từ nhịp tim sống) — thay "nhờ cả trường" của hub cũ; subnet không có máy bật → `no_helper`, Core KHÔNG tự bắn gói. **6.2** `POST /api/remote-login` (+`/logout`): `login_encrypted` AES-GCM (nonce 12 B + ciphertext, hex) đúng định dạng agent giải; khoá = biến môi trường MỨC MÁY `AES_256_KEY_HEX` có sẵn từ hệ cũ (dịch vụ LocalSystem tự thấy — KHÔNG chép bí mật sang tệp nào); thiếu khoá → 503; `/login_result` về đúng người bấm (room `t:<tid>:u:<user>`, Desktop tự vào lúc kết nối); audit chỉ ghi đường dẫn, không ghi mật khẩu. **6.3** `POST /api/internet`: `internet_control` như hub cũ; đã đối chiếu agent: "disable" chặn TCP 80/443/8080/8443 + UDP 80/443 + tiến trình trình duyệt, đường agent ↔ máy chủ là `:5443` → KHÔNG bị chặn; **chốt §0**: đường agent gọi về (`VNC_RELAY_PUBLIC`) rơi vào cổng bị chặn thì TỪ CHỐI "disable" (409), "enable" luôn được | 12 test mới (190 xanh), gồm giải mã lại bản mã AES, kết quả không lọt sang người khác, chốt §0 |
+| 6.1–6.3 (Desktop) | `src/control/ControlDialog.tsx`: menu "Điều khiển…" (Nguồn / Windows / Internet) ở đầu trang phòng (cả phòng), trong thanh "Đã chọn N máy" và ở trang máy; hộp xác nhận nêu rõ đích, "Chừa máy giảng viên" (cả phòng), nút đỏ cho lệnh gây gián đoạn; kết quả: số máy đã gửi, máy bỏ qua + lý do, máy trung gian bật hộ / không có máy trung gian; đăng nhập: bảng kết quả từng máy cập nhật trực tiếp. Cột chọn máy hiện cho cả quyền `device.control` | Chạy thử đầu-cuối (scratchpad `e2e_control.py`, agent giả GIẢI gói đăng nhập bằng đúng khoá mức máy): tắt cả phòng → 2 máy socket nhận `shutdown`; chọn 2 máy → đăng nhập "SV" → agent giải ra `user=SV`, bảng hiện "Đã nhận, đang đăng nhập" cả 2; bật máy 03 đã tắt → 2 máy trung gian nhận `relay_wake_batch`; ngắt Internet → 2 máy nhận `disable`. Sửa ô "Chừa máy GV" bị `.form label` (lưới) đè bố cục |
 | 3.1 | Hợp đồng agent v2: `platform-core/tests/contract_v2/HOP_DONG.md` (luật sống còn A1–A11, thông số, 18 route HTTP, 15 sự kiện socket, 15 action lệnh) + 45 fixture + `test_contract_v2.py` | 3 test kiểm fixture xanh; 45 test hợp đồng `xfail strict` chờ 3.3 |
 
 ## Đang làm
@@ -96,10 +98,12 @@ Cập nhật lần cuối: 04/10/2026 trưa (GĐ4 4.1–4.6 xong, 4.7 chờ cổ
    (`tauri.conf.json` + `package.json` + `Cargo.toml`), build lại, `phat_hanh_desktop.py --data-dir D:\ITSupportPlatformData`
    → ứng dụng 0.1.0 báo bản mới → cập nhật → mở lại ở 0.1.1. Sửa 1 ký tự trong `signature` của `latest.json` → ứng dụng
    PHẢI từ chối. (Dịch vụ đã `CapNhat` lên `77f0c1e` lúc 10:20 03/10 — `/desktop/latest.json` trả 204.)
-6. **GĐ6 Điều khiển từ xa** (Sổ tay 6.1 nguồn + Wake-on-LAN qua agent cùng subnet `relay_wake`, ghi "tắt có chủ ý"
-   lúc ra lệnh · 6.2 đăng nhập/đăng xuất từ xa AES-GCM, kết quả về `t:<tenant>:u:<user>` · 6.3 Internet chặn/mở —
-   §0: dải IP máy chủ phải nằm trong vùng agent chừa ra · 6.x PowerShell hàng loạt / terminal / trình duyệt tệp phía
-   Desktop — Core đã có đường lệnh). Đọc kỹ `app.py` + `client.py` hệ cũ của từng lệnh TRƯỚC khi viết.
+6. **GĐ6 tiếp — 6.4 PowerShell, ConPTY, chạy hàng loạt** (2 tuần): terminal xterm.js trên Desktop (lịch sử, dán, Ctrl+C,
+   Tab; ConPTY: ANSI, resize, xem/thôi xem — socket `/desktop` đã có `pty_*`/`ps_input`/`watch_device`); hàng loạt
+   `POST /api/terminal/bulk` (lọc PHẠM VI PHÒNG — thay `/api/legacy/powershell` hiện CHƯA lọc phạm vi) trả token, kết quả
+   từng máy lưu MongoDB; Desktop đệm kết quả về sớm + poll 3 s + quá 135 s đánh dấu Timeout (bài học 18b); script hàng
+   loạt chạy quyền SYSTEM (không truyền user/pass). Rồi 6.5 ra lệnh bằng giọng nói (Gemini, khoá chỉ ở Core).
+   Cổng ra GĐ6 cần máy canary thật: tắt/bật lại 1 phòng (0.7 không báo động), ngắt Internet 15 phút máy vẫn online.
    5.4 thử thật với winvnc: cần cổng `:7443` (mục dưới) HOẶC chạy Desktop trên máy chủ với Core đặt
    `VNC_VIEWER_BASE=https://10.21.24.142:5443` + một máy canary đã vào Core (3.5–3.8).
 7. 5.3 còn lại khi CHUYỂN HẲN (không làm lúc chạy song song): `maps_cli nhap-cu --tenant PHENIKAA` → `maps_cli xuat` → trỏ
@@ -135,6 +139,8 @@ Cập nhật lần cuối: 04/10/2026 trưa (GĐ4 4.1–4.6 xong, 4.7 chờ cổ
 - [ ] Đổi mật khẩu tài khoản `admin` của tổ chức PHENIKAA (đang là mật khẩu dựng thử trong `.env`).
 - [ ] Đặt `MASTER_KEY_B64` riêng (đang dùng khoá dev mặc định trong `app/config/settings.py`); `ALLOWED_ORIGINS` theo Desktop.
 - [ ] Rà mọi nhãn `HOAN_BAO_MAT` trong mã (`rg HOAN_BAO_MAT D:\ITSupportPlatform`).
+- [ ] `/api/legacy/command` + `/api/legacy/powershell` (từ 3.3) chỉ kiểm quyền `device.control`, CHƯA lọc phạm vi phòng —
+      người bị giới hạn phòng ra lệnh được máy phòng khác. Thay bằng API GĐ6 có lọc (6.4 `/api/terminal/bulk`) rồi khoá lại.
 - [ ] Khoá ký cập nhật Desktop: hiện ở `%USERPROFILE%\.tauri\itmonitor.key` + mật khẩu ngẫu nhiên ghi CẠNH khoá
       (`itmonitor.key.password.txt`). Khi hoàn thiện: tạo khoá mới, mật khẩu do người vận hành gõ tay, cất khoá vào kho bí mật
       + sao lưu ngoại tuyến, đổi `pubkey` trong `tauri.conf.json` (bản đã cài thử phải cài lại tay — không tự cập nhật sang khoá mới).

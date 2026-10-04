@@ -183,3 +183,6 @@ agent (hub cũ dùng chung một namespace cho cả trình duyệt lẫn agent).
 `command_obj`, cùng `relay_url` `wss://10.21.24.142:5443/vncws`, cùng tham số URL noVNC) · `GET/POST /api/live_layout` →
 `GET /api/rooms/<id>` (`live_layout`) + `PUT /api/rooms/<id>/live-layout` · `/api/save_map`, `/api/get_map`, `/api/delete_map`
 → `PUT/GET/DELETE /api/rooms/<id>/map` (+ tệp định dạng cũ cho hệ thi).
+`POST /power_control` → `POST /api/power` (wake: `relay_wake_batch` tới máy trung gian CÙNG subnet thay vì "nhờ cả trường")
+· `POST /remote_login` / `/remote_logout` → `POST /api/remote-login` / `/api/remote-login/logout` (cùng `login_encrypted`)
+· `POST /internet_control` → `POST /api/internet` (cùng `internet_control`, thêm chốt §0).

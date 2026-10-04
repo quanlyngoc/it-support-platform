@@ -104,6 +104,59 @@
     },
     "type": "object"
    },
+   "InternetIn": {
+    "properties": {
+     "action": {
+      "enum": [
+       "disable",
+       "enable",
+       "block_web",
+       "unblock_web"
+      ],
+      "title": "Action",
+      "type": "string"
+     },
+     "device_ids": {
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 2000,
+      "title": "Device Ids",
+      "type": "array"
+     },
+     "exclude_gv": {
+      "default": true,
+      "description": "Cả phòng: chừa máy giảng viên (như hệ cũ)",
+      "title": "Exclude Gv",
+      "type": "boolean"
+     },
+     "room_id": {
+      "anyOf": [
+       {
+        "maxLength": 24,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Room Id"
+     },
+     "websites": {
+      "default": "",
+      "description": "Tên miền cách nhau bằng dấu phẩy / xuống dòng",
+      "maxLength": 4000,
+      "title": "Websites",
+      "type": "string"
+     }
+    },
+    "required": [
+     "action"
+    ],
+    "title": "InternetIn",
+    "type": "object"
+   },
    "LiveLayoutIn": {
     "properties": {
      "layout": {
@@ -155,6 +208,55 @@
      "tenant_code",
      "username",
      "password"
+    ],
+    "title": "LoginIn",
+    "type": "object"
+   },
+   "LoginIn1": {
+    "properties": {
+     "device_ids": {
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 2000,
+      "title": "Device Ids",
+      "type": "array"
+     },
+     "exclude_gv": {
+      "default": true,
+      "description": "Cả phòng: chừa máy giảng viên (như hệ cũ)",
+      "title": "Exclude Gv",
+      "type": "boolean"
+     },
+     "password": {
+      "default": "",
+      "maxLength": 256,
+      "title": "Password",
+      "type": "string"
+     },
+     "room_id": {
+      "anyOf": [
+       {
+        "maxLength": 24,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Room Id"
+     },
+     "user": {
+      "description": "Tài khoản Windows trên máy trạm (vd. SV, THI)",
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "User",
+      "type": "string"
+     }
+    },
+    "required": [
+     "user"
     ],
     "title": "LoginIn",
     "type": "object"
@@ -482,6 +584,51 @@
     "title": "MoveIn",
     "type": "object"
    },
+   "PowerIn": {
+    "properties": {
+     "action": {
+      "enum": [
+       "shutdown",
+       "restart",
+       "wake"
+      ],
+      "title": "Action",
+      "type": "string"
+     },
+     "device_ids": {
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 2000,
+      "title": "Device Ids",
+      "type": "array"
+     },
+     "exclude_gv": {
+      "default": true,
+      "description": "Cả phòng: chừa máy giảng viên (như hệ cũ)",
+      "title": "Exclude Gv",
+      "type": "boolean"
+     },
+     "room_id": {
+      "anyOf": [
+       {
+        "maxLength": 24,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Room Id"
+     }
+    },
+    "required": [
+     "action"
+    ],
+    "title": "PowerIn",
+    "type": "object"
+   },
    "PowerShellIn": {
     "properties": {
      "hostnames": {
@@ -525,6 +672,39 @@
      "script"
     ],
     "title": "PowerShellIn",
+    "type": "object"
+   },
+   "TargetsIn": {
+    "properties": {
+     "device_ids": {
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 2000,
+      "title": "Device Ids",
+      "type": "array"
+     },
+     "exclude_gv": {
+      "default": true,
+      "description": "Cả phòng: chừa máy giảng viên (như hệ cũ)",
+      "title": "Exclude Gv",
+      "type": "boolean"
+     },
+     "room_id": {
+      "anyOf": [
+       {
+        "maxLength": 24,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Room Id"
+     }
+    },
+    "title": "TargetsIn",
     "type": "object"
    },
    "ValidationError": {
@@ -1222,6 +1402,44 @@
     ]
    }
   },
+  "/api/internet": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/InternetIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Ngắt / mở Internet, chặn / bỏ chặn website (lệnh internet_control như hệ cũ)",
+    "tags": [
+     "Điều khiển từ xa"
+    ]
+   }
+  },
   "/api/legacy/command": {
    "post": {
     "parameters": [],
@@ -1407,6 +1625,120 @@
     "summary": "Đặt cổng chia đợt (mặc định TẮT hết). Luôn canary vài máy trước (luật §0.5)",
     "tags": [
      "Agent v2 (bộ tương thích)"
+    ]
+   }
+  },
+  "/api/power": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PowerIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Tắt / khởi động lại / bật (Wake-on-LAN qua máy cùng subnet) cho danh sách máy hoặc cả phòng",
+    "tags": [
+     "Điều khiển từ xa"
+    ]
+   }
+  },
+  "/api/remote-login": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/LoginIn1"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Đăng nhập Windows từ xa (mã hoá AES-GCM như hệ cũ); kết quả từng máy về sự kiện login_response",
+    "tags": [
+     "Điều khiển từ xa"
+    ]
+   }
+  },
+  "/api/remote-login/logout": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/TargetsIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Đăng xuất Windows từ xa",
+    "tags": [
+     "Điều khiển từ xa"
     ]
    }
   },
@@ -1847,6 +2179,9 @@
   },
   {
    "name": "Xem / điều khiển màn hình"
+  },
+  {
+   "name": "Điều khiển từ xa"
   },
   {
    "name": "Cập nhật Desktop"

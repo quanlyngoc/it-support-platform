@@ -265,3 +265,12 @@ select { font: 14px var(--font); padding: 8px 10px; border-radius: 6px; border: 
 .live-hd-bar button { padding: 5px 12px; }
 .live-hd-box img { display: block; width: 100%; max-height: 82vh; object-fit: contain; background: #000; cursor: zoom-in; }
 .live-hd-wait { height: 50vh; display: grid; place-items: center; color: var(--muted); }
+
+/* Điều khiển từ xa */
+.ctl-menu { width: auto; padding: 6px 10px; font-weight: 600; }
+.ctl-res { display: grid; gap: 10px; }
+.ctl-res ul { margin: 6px 0 0; padding-left: 18px; max-height: 180px; overflow: auto; }
+.ok-text { color: var(--ok); }
+textarea { font: 14px var(--font); padding: 8px 10px; border-radius: 6px; border: 1px solid var(--line);
+           background: var(--surface); color: var(--ink); width: 100%; resize: vertical; }
+.form label.check { display: inline-flex; align-items: center; gap: 8px; font-weight: 400; } /* thắng .form label (lưới) */

@@ -16,6 +16,7 @@ import { RoomMap } from "./map/RoomMap";
 import { normalize, type MapResponse } from "./map/model";
 import { LiveGrid } from "./live/LiveGrid";
 import { openVnc } from "../devices/vnc";
+import { ControlDialog, ControlMenu, type ControlKind, type ControlTarget } from "../control/ControlDialog";
 
 export function RoomPage() {
   const { id = "" } = useParams();
@@ -41,6 +42,9 @@ export function RoomPage() {
   const [notice, setNotice] = useState("");
   const navigate = useNavigate();
   const canVnc = useCan("remote.vnc");
+  const canControl = useCan("device.control");
+  const canSelect = canManage || canControl;
+  const [ctl, setCtl] = useState<{ kind: ControlKind; target: ControlTarget } | null>(null);
   const canMapEdit = useCan("room_map.edit");
   const [view, setView] = useState<"list" | "map" | "live">(() => {
     try {
@@ -140,6 +144,10 @@ export function RoomPage() {
       <div className="dash-head">
         <h1>{r.name} <small className="muted">{r.online} / {r.total} online</small></h1>
         <div className="toolbar">
+          {canControl && (
+            <ControlMenu target={{ kind: "room", roomId: id, name: r.name }}
+                         onPick={(kind, target) => setCtl({ kind, target })} />
+          )}
           <div className="seg" role="tablist" aria-label="Kiểu xem">
             <button role="tab" aria-selected={shownView === "list"} className={shownView === "list" ? "on" : ""}
                     onClick={() => pickView("list")}>Danh sách</button>
@@ -161,10 +169,14 @@ export function RoomPage() {
         </div>
       </div>
       {notice && <p className="notice" role="status">{notice}</p>}
-      {canManage && sel.size > 0 && (
+      {canSelect && sel.size > 0 && (
         <div className="bulkbar">
           <span>Đã chọn <b>{sel.size}</b> máy</span>
-          <button onClick={() => setMoving(selected)}>Chuyển phòng…</button>
+          {canControl && (
+            <ControlMenu target={{ kind: "devices", ids: selected.map((d) => d.id), names: selected.map((d) => d.hostname) }}
+                         onPick={(kind, target) => setCtl({ kind, target })} />
+          )}
+          {canManage && <button onClick={() => setMoving(selected)}>Chuyển phòng…</button>}
           <button className="ghost" onClick={() => setSel(new Set())}>Bỏ chọn</button>
         </div>
       )}
@@ -179,7 +191,7 @@ export function RoomPage() {
       <table className="grid devices">
         <thead>
           <tr>
-            {canManage && (
+            {canSelect && (
               <th className="c-sel">
                 <input type="checkbox" aria-label="Chọn tất cả" checked={allSel}
                        onChange={() => setSel(allSel ? new Set() : new Set(devices.map((d) => d.id)))} />
@@ -191,7 +203,7 @@ export function RoomPage() {
         </thead>
         <tbody>
           {devices.map((d) => (
-            <Row key={d.id} d={d} canManage={canManage} canVnc={canVnc} selected={sel.has(d.id)}
+            <Row key={d.id} d={d} canManage={canManage} canVnc={canVnc} canSelect={canSelect} selected={sel.has(d.id)}
                  onToggle={() => toggle(d.id)} incidents={incByHost.get(d.hostname.toUpperCase()) ?? []}
                  onMove={() => setMoving([d])} onDelete={() => setDeleting(d)}
                  onVnc={() => openVnc(d).catch((e: Error) => setNotice(e.message))} />
@@ -203,18 +215,20 @@ export function RoomPage() {
       )}
       {moving && <MoveDialog devices={moving} currentRoom={r.name} onClose={() => setMoving(null)} onDone={done} />}
       {deleting && <DeleteDialog device={deleting} onClose={() => setDeleting(null)} onDone={done} />}
+      {ctl && <ControlDialog kind={ctl.kind} target={ctl.target} onClose={() => setCtl(null)} />}
     </section>
   );
 }
 
-function Row({ d, canManage, canVnc, selected, onToggle, incidents, onMove, onDelete, onVnc }: {
-  d: Device; canManage: boolean; canVnc: boolean; selected: boolean; onToggle: () => void; incidents: Incident[];
+function Row({ d, canManage, canVnc, canSelect, selected, onToggle, incidents, onMove, onDelete, onVnc }: {
+  d: Device; canManage: boolean; canVnc: boolean; canSelect: boolean; selected: boolean; onToggle: () => void;
+  incidents: Incident[];
   onMove: () => void; onDelete: () => void; onVnc: () => void;
 }) {
   const disks = d.is_online ? parseDisks(d.disk_usage) : [];
   return (
     <tr className={`${d.is_online ? "" : "off"}${selected ? " sel" : ""}`}>
-      {canManage && (
+      {canSelect && (
         <td className="c-sel"><input type="checkbox" checked={selected} onChange={onToggle}
                                      aria-label={`Chọn ${d.hostname}`} /></td>
       )}
