@@ -65,6 +65,14 @@ def room_from_hostname_raw(hostname: str) -> str:
     return "Phòng chờ"
 
 
+_RE_GV = re.compile(r"(^GV|-GV|_GV|\sGV|GV$|GIẢNG VIÊN|GIANG VIEN)")
+
+
+def is_teacher_pc(hostname: object) -> bool:
+    """Máy giảng viên — GIỐNG HỆT `is_teacher_pc` của hub cũ (app.py): lệnh cả phòng mặc định chừa máy GV ra."""
+    return bool(hostname) and bool(_RE_GV.search(str(hostname).upper()))
+
+
 def is_official_room(room: str) -> bool:
     """Phòng máy chính thức = 'Phòng <số>…' (loại Phòng chờ / Khu vực … khỏi tổng online)."""
     return bool(re.match(r"^Phòng\s+\d+", str(room or "").strip()))

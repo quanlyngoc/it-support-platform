@@ -61,6 +61,9 @@ class LegacyAdapter:
         self._writer: Writer | None = None
         self.started = False
         self._last_report = self.state.clock()
+        # Đăng nhập từ xa (Sổ tay 6.2): MAC (12 hex) → (room riêng của người bấm, hạn) — kết quả /login_result về
+        # ĐÚNG người đó. Một tiến trình Core duy nhất nên giữ RAM là đủ; mất (khởi động lại) thì vẫn còn room "watch".
+        self._login_wait: dict[str, tuple[str, float]] = {}
 
     # ------------------------------------------------------------------ tổ chức + thư mục
     @property
@@ -306,6 +309,17 @@ class LegacyAdapter:
                         "channel": self.state.channel(h.host), "last_seen_s": round(now - h.last_seen, 1),
                         "client_version": h.hb.get("client_version")})
         return sorted(out, key=lambda d: d["hostname"])
+
+    def expect_login(self, mac: str, room: str, ttl: float = 300) -> None:
+        now = self.state.clock()
+        if len(self._login_wait) > 5000:  # chặn phình: bỏ mục đã hết hạn
+            self._login_wait = {k: v for k, v in self._login_wait.items() if v[1] > now}
+        if mac12(mac):
+            self._login_wait[mac12(mac)] = (room, now + ttl)
+
+    def login_room(self, mac: str) -> str | None:
+        w = self._login_wait.get(mac12(mac))
+        return w[0] if w and w[1] > self.state.clock() else None
 
     def tat_sach_since(self, host: str) -> datetime | None:
         ts = self.state.tat_sach.get(norm_host(host))

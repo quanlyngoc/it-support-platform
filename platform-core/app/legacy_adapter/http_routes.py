@@ -118,6 +118,8 @@ def _auth_result(kind: str, event: str, key: str):
     store.put_event(kind, mac12(mac) or hexid(key) or str(key)[:80], out)
     if mac:
         ad.emit(event, out, ad.room_dev("watch" if kind == "login" else kind.split("_")[0], mac))
+        if kind == "login" and (room := ad.login_room(mac)):
+            ad.emit(event, out, room)  # về ĐÚNG người đã bấm đăng nhập từ xa (Sổ tay 6.2)
     return {"status": "ok"}
 
 

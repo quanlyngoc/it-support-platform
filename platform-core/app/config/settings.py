@@ -48,6 +48,10 @@ class Settings:
     VNC_PASSWORD: str = "6xw2Yykq"
     # Gốc web phục vụ /novnc/* + /vncws cho người xem; rỗng = chính địa chỉ Core mà Desktop đang dùng (khối Caddy :7443)
     VNC_VIEWER_BASE: str = ""
+    # Đăng nhập từ xa (Sổ tay 6.2): khoá AES-256-GCM DÙNG CHUNG với agent (bộ cài ghi vào Registry
+    # HKLM\SOFTWARE\PhenikaaIT\AesKey) — cùng biến môi trường AES_256_KEY_HEX của hệ cũ. Chỉ nằm trong .env, KHÔNG có
+    # giá trị mặc định trong mã; thiếu thì API đăng nhập từ xa báo 503.
+    AES_256_KEY_HEX: str = ""
 
 
 def _load_env() -> None:
@@ -82,6 +86,7 @@ def get_settings() -> Settings:
         VNC_RELAY_PUBLIC=os.getenv("VNC_RELAY_PUBLIC", "").strip() or "wss://10.21.24.142:5443/vncws",
         VNC_PASSWORD=os.getenv("VNC_PASSWORD", "") or "6xw2Yykq",
         VNC_VIEWER_BASE=os.getenv("VNC_VIEWER_BASE", "").strip().rstrip("/"),
+        AES_256_KEY_HEX=os.getenv("AES_256_KEY_HEX", "").strip().strip('"').strip("'"),
     )
 
 

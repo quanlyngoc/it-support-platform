@@ -55,6 +55,10 @@ def _err(msg: str) -> dict:
     return {"ok": False, "error": msg}
 
 
+def user_room(ctx: Ctx) -> str:
+    return f"t:{ctx.tenant_id}:u:{ctx.user_id}"
+
+
 @socketio.on("connect", namespace=DESKTOP_NS)
 def on_connect(auth=None):
     token = auth.get("token") if isinstance(auth, dict) else None
@@ -62,6 +66,7 @@ def on_connect(auth=None):
     if ctx is None:
         raise ConnectionRefusedError("Chưa đăng nhập hoặc phiên đã hết hạn")
     _TOKENS[_sid()] = str(token)
+    join_room(user_room(ctx))  # kết quả lệnh chỉ dành cho người bấm (đăng nhập từ xa…)
     if _unrestricted(ctx):
         join_room(f"t:{ctx.tenant_id}:devices")
         join_room(f"t:{ctx.tenant_id}:incidents")
