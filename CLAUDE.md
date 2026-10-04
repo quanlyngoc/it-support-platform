@@ -216,6 +216,12 @@ sự kiện riêng `vnc_thumb_req`, `fs_request`. (`kill_and_update` KHÔNG còn
   Mỗi máy một cửa sổ điều khiển (bấm lại = đưa lên trước, KHÔNG mở phiên mới — phiên mới làm cửa sổ cũ rớt). Lưới: ảnh
   < 800 B bỏ (giữ ảnh cũ), khung HD không phóng ảnh nhỏ. ⚠️ Tên lớp CSS dùng chung một tệp `app.css` — đặt tên riêng
   (`.live-view`, không `.live`: `.live` là khối số đo ở trang máy; trùng tên từng làm lưới bị nhét vào cột 240px).
+- **Terminal + PowerShell hàng loạt** (`src/devices/TerminalDialog.tsx`, `src/control/BulkPsDialog.tsx`, Core
+  `app/control/bulk.py` + `routes.py`): terminal 2 pha — `terminal/validate` (agent LogonUser) → chờ `pty_auth_response` →
+  `terminal/start {cols, rows}` (Core chỉ cho khi CHÍNH người đó vừa xác thực đúng, dùng một lần) → luồng `pty_output`.
+  `TerminalDialog` **nạp lười** (`React.lazy`) — xterm.js ≈ 336 kB, đừng import thẳng vào trang. Hàng loạt: `user`/`pass`
+  LUÔN rỗng (= SYSTEM, bài học 10.22 hệ cũ — có user/pass là ghi HKLM bị "Access denied"); Core tạo phiên kết quả TRƯỚC khi
+  gửi lệnh; Desktop vừa nghe `ps_bulk_result` vừa POLL 3 s (bài học 18b — đừng bỏ poll), Core tự đánh dấu `timeout`.
 
 ---
 
@@ -355,6 +361,7 @@ Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay l�
 | 03/10/2026 | 4.1–4.3 + 4.5 Desktop: công cụ, khung `desktop-app`, api-client/realtime-client/phiên | Xong | Node 24.15, Rust 1.99, VS 2022 BT, pnpm 12.8.1; typecheck/build + `cargo build` đạt; Core thêm CORS + namespace `/desktop` (cần `CapNhat`); job `desktop` trong CI |
 | 03/10/2026 | 4.4 plugin updater/notification/process + khoá ký | Xong | `pnpm tauri build` sinh bộ cài NSIS 2,35 MB + `.sig` (chữ ký ghi `version:0.1.0`), 550 s BelowNormal |
 | 03/10/2026 | 4.6 Đăng nhập + Dashboard + trang phòng + Giới thiệu | Xong (chờ máy canary để đối chiếu số thật) | Core thêm `GET /api/incidents` + `/api/incidents/summary`; Dashboard: phiếu sự cố, cảnh báo phần cứng, đồng hồ, biểu đồ Chart.js, sự cố đang mở; `incident_new` → thông báo HĐH. Chạy thử đầu-cuối đạt |
+| 04/10/2026 | 6.4 PowerShell hàng loạt + terminal ConPTY | Xong phần mã (thử agent thật chờ canary) | Core `/api/terminal/bulk` (SYSTEM, phiên có trước khi gửi, quá hạn → timeout) + `/api/devices/<id>/terminal/*` (mở chỉ sau xác thực đúng, dùng 1 lần); khoá `/api/legacy/command`+`/powershell` với tài khoản giới hạn phòng; Desktop terminal xterm.js (nạp lười) + hộp PowerShell hàng loạt. 194 test, thử đầu-cuối đạt |
 | 04/10/2026 | 6.1–6.3 Nguồn + WoL, đăng nhập từ xa, Internet | Xong phần mã (cổng ra GĐ6 cần canary) | `app/control/` (lọc phạm vi + chừa GV), `/api/power` (WoL qua máy trung gian cùng subnet), `/api/remote-login` (AES-GCM, khoá biến môi trường mức máy, kết quả về đúng người bấm), `/api/internet` (chốt §0); Desktop menu Điều khiển + hộp xác nhận/kết quả |
 | 04/10/2026 | 5.4 View desktop + VNC | Xong phần mã (thử winvnc thật chờ `:7443`/canary) | Core mở/đóng phiên VNC + bố trí lưới; Desktop kiểu xem "Màn hình" (card theo sơ đồ, HD khi rê, kéo sửa bố trí) + cửa sổ con noVNC. Thử đầu-cuối với agent giả |
 | 04/10/2026 | 5.3 Sơ đồ phòng + tệp sơ đồ cho hệ thi | Xong (chuyển kho sơ đồ của hệ thi làm lúc chuyển hẳn) | Core `rooms.map` + xuất đúng định dạng cũ (chính `sodo.js` vẽ giống hệt 19/19 phòng); Desktop xem trạng thái + trình sửa đầy đủ, Excel, Move PC từ sơ đồ. `maps_cli nhap-cu`/`xuat` |

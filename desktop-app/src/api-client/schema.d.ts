@@ -410,6 +410,173 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/devices/{device_id}/terminal/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Pha 2 terminal: mở ConPTY đúng cỡ cửa sổ — CHỈ sau khi chính người này vừa xác thực đúng */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    device_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["TermStartIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/devices/{device_id}/terminal/stop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Đóng terminal ConPTY của máy */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    device_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/devices/{device_id}/terminal/validate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Pha 1 terminal: máy xác thực tài khoản Windows (LogonUser) → sự kiện pty_auth_response */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    device_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["TermAuthIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/devices/{device_id}/vnc/close": {
         parameters: {
             query?: never;
@@ -1520,6 +1687,102 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/terminal/bulk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Chạy PowerShell quyền SYSTEM trên nhiều máy / cả phòng; kết quả theo token */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["BulkIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/terminal/bulk/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Trạng thái từng máy của một lượt chạy hàng loạt (máy quá hạn → timeout) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    token: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/desktop/latest.json": {
         parameters: {
             query?: never;
@@ -1607,6 +1870,30 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** BulkIn */
+        BulkIn: {
+            /** Device Ids */
+            device_ids?: string[];
+            /**
+             * Exclude Gv
+             * @description Cả phòng: chừa máy giảng viên (như hệ cũ)
+             * @default true
+             */
+            exclude_gv: boolean;
+            /**
+             * Room Id
+             * @default null
+             */
+            room_id: string | null;
+            /** Script */
+            script: string;
+            /**
+             * Timeout
+             * @description Giây agent chờ script (Core chờ thêm 45 s)
+             * @default 90
+             */
+            timeout: number;
+        };
         /** CloseIn */
         CloseIn: {
             /**
@@ -1944,6 +2231,29 @@ export interface components {
              * @default null
              */
             room_id: string | null;
+        };
+        /** TermAuthIn */
+        TermAuthIn: {
+            /** Password */
+            password: string;
+            /**
+             * User
+             * @description Tài khoản Windows (máy cục bộ hoặc DOMAIN\user)
+             */
+            user: string;
+        };
+        /** TermStartIn */
+        TermStartIn: {
+            /**
+             * Cols
+             * @default 120
+             */
+            cols: number;
+            /**
+             * Rows
+             * @default 30
+             */
+            rows: number;
         };
         ValidationError: {
             detail?: {

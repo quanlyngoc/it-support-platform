@@ -5,13 +5,17 @@ import { useEffect, useState, type FormEvent } from "react";
 import { api, errorMessage } from "../api-client";
 import { realtime } from "../realtime-client";
 import { Modal } from "../shared/ui";
+import { BulkPsDialog } from "./BulkPsDialog";
 
 export type ControlKind = "wake" | "shutdown" | "restart" | "login" | "logout" | "disable" | "enable" | "block_web"
-  | "unblock_web";
+  | "unblock_web" | "bulk_ps";
+
+type DialogKind = Exclude<ControlKind, "bulk_ps">; // PowerShell hàng loạt có hộp thoại riêng
 
 export const CONTROL_LABEL: Record<ControlKind, string> = {
   wake: "Bật máy", shutdown: "Tắt máy", restart: "Khởi động lại", login: "Đăng nhập Windows…", logout: "Đăng xuất Windows",
   disable: "Ngắt Internet", enable: "Mở Internet", block_web: "Chặn website…", unblock_web: "Bỏ chặn website…",
+  bulk_ps: "PowerShell hàng loạt…",
 };
 const DANGER: ControlKind[] = ["shutdown", "restart", "logout", "disable"];
 
@@ -27,7 +31,7 @@ type Result = {
 };
 type LoginRes = { hostname: string; status: string; msg?: string };
 
-export function ControlDialog({ kind, target, onClose }: { kind: ControlKind; target: ControlTarget; onClose: () => void }) {
+export function ControlDialog({ kind, target, onClose }: { kind: DialogKind; target: ControlTarget; onClose: () => void }) {
   const [exGv, setExGv] = useState(true);
   const [user, setUser] = useState("");
   const [pass, setPass] = useState("");
@@ -120,7 +124,7 @@ export function ControlDialog({ kind, target, onClose }: { kind: ControlKind; ta
 }
 
 function ResultView({ kind, res, logins, onClose }: {
-  kind: ControlKind; res: Result; logins: Record<string, LoginRes>; onClose: () => void;
+  kind: DialogKind; res: Result; logins: Record<string, LoginRes>; onClose: () => void;
 }) {
   return (
     <div className="ctl-res">
@@ -191,6 +195,16 @@ export function ControlMenu({ target, disabled, onPick }: {
         <option value="block_web">{CONTROL_LABEL.block_web}</option>
         <option value="unblock_web">{CONTROL_LABEL.unblock_web}</option>
       </optgroup>
+      <optgroup label="Lệnh">
+        <option value="bulk_ps">{CONTROL_LABEL.bulk_ps}</option>
+      </optgroup>
     </select>
   );
+}
+
+/** Mở đúng hộp thoại cho lệnh đã chọn (PowerShell hàng loạt có hộp riêng). */
+export function ControlHost({ kind, target, onClose }: { kind: ControlKind; target: ControlTarget; onClose: () => void }) {
+  return kind === "bulk_ps"
+    ? <BulkPsDialog target={target} onClose={onClose} />
+    : <ControlDialog kind={kind} target={target} onClose={onClose} />;
 }

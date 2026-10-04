@@ -186,3 +186,9 @@ agent (hub cũ dùng chung một namespace cho cả trình duyệt lẫn agent).
 `POST /power_control` → `POST /api/power` (wake: `relay_wake_batch` tới máy trung gian CÙNG subnet thay vì "nhờ cả trường")
 · `POST /remote_login` / `/remote_logout` → `POST /api/remote-login` / `/api/remote-login/logout` (cùng `login_encrypted`)
 · `POST /internet_control` → `POST /api/internet` (cùng `internet_control`, thêm chốt §0).
+`POST /remote_cmd` + `GET /ps_bulk_status/<token>` → `POST /api/terminal/bulk` + `GET /api/terminal/bulk/<token>` (cùng
+`powershell` với `user`/`pass` RỖNG = SYSTEM, cùng `result_token`; agent vẫn nộp về `/ps_bulk_result/<token>` như cũ)
+· `POST /pty_validate` / `/start_pty_session` / `/stop_pty_session` → `POST /api/devices/<id>/terminal/validate` / `start` /
+`stop` (cùng `pty_validate`/`start_pty`/`stop_pty`; agent vẫn nộp `/pty_auth_result/<mac>` + `client_pty_output`; Core thêm
+chốt: chỉ `start` sau khi CHÍNH người đó vừa xác thực đúng). `/start_ps_session` + `/stop_ps_session` (PowerShell không
+ConPTY) KHÔNG chuyển — ConPTY thay thế; action `start_ps`/`stop_ps` vẫn nằm trong hợp đồng cho agent cũ.

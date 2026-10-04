@@ -6,7 +6,7 @@
 > Kế hoạch đầy đủ: `docs/plan/SoTay_ThucHien_ITMonitor_SaaS.html` (số bước bên dưới theo Sổ tay;
 > tài liệu đó còn ghi `D:\Platform` — hiểu là `D:\ITSupportPlatform`).
 
-Cập nhật lần cuối: 04/10/2026 chiều (GĐ4 4.1–4.6 xong, 4.7 chờ cổng :7443; GĐ5 5.1–5.5 + GĐ6 6.1–6.3 xong phần mã — cổng ra cần canary; kế: 6.4)
+Cập nhật lần cuối: 04/10/2026 tối (GĐ4 4.1–4.6 xong, 4.7 chờ cổng :7443; GĐ5 5.1–5.5 + GĐ6 6.1–6.4 xong phần mã — cổng ra cần canary; kế: 6.5)
 
 ## Cách mở phiên mới để làm tiếp
 
@@ -16,7 +16,7 @@ Cập nhật lần cuối: 04/10/2026 chiều (GĐ4 4.1–4.6 xong, 4.7 chờ c�
 4. Kiểm nhanh trạng thái trước khi làm tiếp (tất cả phải xanh):
    ```powershell
    cd D:\ITSupportPlatform\platform-core
-   uv run pytest -q                 # 190 passed, 1 skipped (05b chờ GĐ7 tải tệp)
+   uv run pytest -q                 # 194 passed, 1 skipped (05b chờ GĐ7 tải tệp)
    uv run ruff check .
    uv run pyright
    pnpm -C ..\desktop-app typecheck; pnpm -C ..\desktop-app build   # PATH cần C:\Program Files\nodejs + %APPDATA%\npm
@@ -78,6 +78,8 @@ Cập nhật lần cuối: 04/10/2026 chiều (GĐ4 4.1–4.6 xong, 4.7 chờ c�
 | 5.4 (Desktop) | Trang phòng thêm kiểu xem **Màn hình** (quyền `remote.vnc`): card 16:9 xếp theo bố trí đã lưu → mirror sơ đồ (gom hàng/cột theo tâm thẻ máy như `_axis` cũ) → số ghế; ảnh `vnc_thumb` (rải 25 ms/máy, 1,5 s/lượt, ảnh < 800 B bỏ — giữ ảnh cũ, tab ẩn thì ngừng hỏi); rê chuột 1,2 s → khung HD (xin HD TRƯỚC khi chuột vừa vào card, KHÔNG phóng ảnh nhỏ mờ); bấm đúp / nút "Điều khiển" / nút "Màn hình" ở bảng máy / "Điều khiển màn hình" ở trang máy → **cửa sổ con noVNC** (Tauri `WebviewWindow`, mỗi máy MỘT cửa sổ — bấm lại thì đưa lên trước; đóng cửa sổ → `vnc/close`); "Sửa bố trí" (`room_map.edit`): kéo card, thả vào ô có máy thì đổi chỗ, bàn GV bước 0,25 ô, "Theo sơ đồ" xoá bố trí đã lưu. Quyền Tauri thêm `core:webview:allow-create-webview-window`, `core:window:allow-set-focus` (`cargo check` qua) | Chạy thử đầu-cuối (scratchpad `e2e_live.py`, 3 AGENT GIẢ python-socketio trả PNG + ghi lệnh; `VNC_VIEWER_BASE` = Core thử để KHÔNG chạm relay thật): 3/3 card có ảnh, vị trí mirror sơ đồ phòng 301 thật; khung HD ảnh rộng 480 (agent nhận 2 yêu cầu HD: xin trước + mở khung); kéo card 03 sang ô máy 01 → đổi chỗ, lưu; bấm đúp máy 02 → cửa sổ `/novnc/vnc.html?…` có đúng token agent nhận trong `vnc_start`; đóng cửa sổ → agent nhận `vnc_stop`. Bắt lỗi: lớp CSS `.live` trùng khối số đo ở trang máy → lưới bị nhét vào cột 240px (đổi `.live-view`). **Chưa thử với winvnc thật** — cần cổng `:7443` (hoặc `VNC_VIEWER_BASE=https://10.21.24.142:5443`) + máy canary |
 | 6.1–6.3 (Core) | `app/control/`: đích = danh sách máy HOẶC cả phòng, luôn lọc phạm vi phòng + tổ chức, cả phòng mặc định chừa máy GV (`is_teacher_pc` đúng regex hub cũ). **6.1** `POST /api/power`: shutdown/restart `{"command": …}` chỉ tới máy đang bật (ghi "tắt có chủ ý" lúc ra lệnh); wake = `relay_wake_batch` tới tối đa 2 máy trung gian CÙNG subnet /24 (ưu tiên cùng phòng, có socket; IP lấy từ nhịp tim sống) — thay "nhờ cả trường" của hub cũ; subnet không có máy bật → `no_helper`, Core KHÔNG tự bắn gói. **6.2** `POST /api/remote-login` (+`/logout`): `login_encrypted` AES-GCM (nonce 12 B + ciphertext, hex) đúng định dạng agent giải; khoá = biến môi trường MỨC MÁY `AES_256_KEY_HEX` có sẵn từ hệ cũ (dịch vụ LocalSystem tự thấy — KHÔNG chép bí mật sang tệp nào); thiếu khoá → 503; `/login_result` về đúng người bấm (room `t:<tid>:u:<user>`, Desktop tự vào lúc kết nối); audit chỉ ghi đường dẫn, không ghi mật khẩu. **6.3** `POST /api/internet`: `internet_control` như hub cũ; đã đối chiếu agent: "disable" chặn TCP 80/443/8080/8443 + UDP 80/443 + tiến trình trình duyệt, đường agent ↔ máy chủ là `:5443` → KHÔNG bị chặn; **chốt §0**: đường agent gọi về (`VNC_RELAY_PUBLIC`) rơi vào cổng bị chặn thì TỪ CHỐI "disable" (409), "enable" luôn được | 12 test mới (190 xanh), gồm giải mã lại bản mã AES, kết quả không lọt sang người khác, chốt §0 |
 | 6.1–6.3 (Desktop) | `src/control/ControlDialog.tsx`: menu "Điều khiển…" (Nguồn / Windows / Internet) ở đầu trang phòng (cả phòng), trong thanh "Đã chọn N máy" và ở trang máy; hộp xác nhận nêu rõ đích, "Chừa máy giảng viên" (cả phòng), nút đỏ cho lệnh gây gián đoạn; kết quả: số máy đã gửi, máy bỏ qua + lý do, máy trung gian bật hộ / không có máy trung gian; đăng nhập: bảng kết quả từng máy cập nhật trực tiếp. Cột chọn máy hiện cho cả quyền `device.control` | Chạy thử đầu-cuối (scratchpad `e2e_control.py`, agent giả GIẢI gói đăng nhập bằng đúng khoá mức máy): tắt cả phòng → 2 máy socket nhận `shutdown`; chọn 2 máy → đăng nhập "SV" → agent giải ra `user=SV`, bảng hiện "Đã nhận, đang đăng nhập" cả 2; bật máy 03 đã tắt → 2 máy trung gian nhận `relay_wake_batch`; ngắt Internet → 2 máy nhận `disable`. Sửa ô "Chừa máy GV" bị `.form label` (lưới) đè bố cục |
+| 6.4 (Core) | `app/control/bulk.py` + `routes.py`. **Hàng loạt** `POST /api/terminal/bulk` (đích = máy chọn / cả phòng, lọc phạm vi + chừa GV, timeout 5–3600 s, mặc định 90): `powershell` với `user`/`pass` RỖNG → agent chạy quyền SYSTEM (bài học 10.22); phiên kết quả tạo TRƯỚC khi gửi lệnh (agent nhanh báo trước khi có phiên thì bị bỏ — kiểu lỗi 18b), rồi thu danh sách chờ về đúng các máy thật sự nhận lệnh (`store.update_meta`). `GET /api/terminal/bulk/<token>`: trạng thái từng máy; quá `timeout + 45 s` thì Core đánh dấu `timeout` (không để "Đang chạy" mãi); tài khoản giới hạn phòng chỉ xem lượt của mình. **Terminal ConPTY** `POST /api/devices/<id>/terminal/validate` (`pty_validate` — agent LogonUser) → `pty_auth_response` về người theo dõi → `…/terminal/start {cols, rows}` CHỈ được khi CHÍNH người đó vừa xác thực đúng trên đúng máy (≤ 2 phút, dùng MỘT lần — hub cũ cho mở PowerShell SYSTEM không cần xác thực) → `…/terminal/stop`. **Đóng lỗ hổng 3.3:** `/api/legacy/command` + `/api/legacy/powershell` (không lọc phạm vi) trả 403 với tài khoản bị giới hạn phòng | 4 test mới (194 xanh): agent nhanh vẫn được ghi kết quả, lệnh đúng dạng SYSTEM, quá hạn → timeout, lượt của người khác 404, máy ngoài phạm vi bị bỏ, sai mật khẩu / người khác / lần 2 đều 403 |
+| 6.4 (Desktop) | `src/devices/TerminalDialog.tsx` (xterm.js 6 + addon fit, **nạp lười** — gói chính 990 → 654 kB): pha 1 hỏi tài khoản Windows của máy, chờ `pty_auth_response` (30 s); pha 2 mở ConPTY đúng cỡ khung, ANSI màu, Tab/mũi tên/lịch sử/Ctrl+C do PSReadLine trên máy xử lý, có chọn chữ thì Ctrl+C = sao chép, Ctrl+V dán, kéo giãn → `pty_resize` (gom 150 ms), socket nối lại → tự theo dõi lại; đóng → `terminal/stop`. Nút "Terminal" ở trang máy. `src/control/BulkPsDialog.tsx`: mục "PowerShell hàng loạt…" trong menu Điều khiển (cả phòng / máy đã chọn / 1 máy), mẫu script, thời gian chờ, bảng kết quả từng máy (bấm dòng xem đầu ra đầy đủ); nghe `ps_bulk_result` + POLL 3 s (bài học 18b). `Modal` thêm kiểu `wide` | Chạy thử đầu-cuối (scratchpad `e2e_terminal.py`, 2 agent giả): hàng loạt cả phòng → máy 01 báo NGAY vẫn hiện "Xong", máy 02 báo sau 4 s được poll bắt ("Đã báo 2 / 2"), agent nhận `user`/`pass` rỗng; terminal: sai mật khẩu → "Sai tài khoản hoặc mật khẩu!", đúng → ConPTY 164×47, gõ `hostname` + Enter tới agent và vọng lại màn hình, đóng → agent nhận `stop_pty`. **Chưa thử với agent thật** (cần máy canary) |
 | 3.1 | Hợp đồng agent v2: `platform-core/tests/contract_v2/HOP_DONG.md` (luật sống còn A1–A11, thông số, 18 route HTTP, 15 sự kiện socket, 15 action lệnh) + 45 fixture + `test_contract_v2.py` | 3 test kiểm fixture xanh; 45 test hợp đồng `xfail strict` chờ 3.3 |
 
 ## Đang làm
@@ -98,11 +100,10 @@ Cập nhật lần cuối: 04/10/2026 chiều (GĐ4 4.1–4.6 xong, 4.7 chờ c�
    (`tauri.conf.json` + `package.json` + `Cargo.toml`), build lại, `phat_hanh_desktop.py --data-dir D:\ITSupportPlatformData`
    → ứng dụng 0.1.0 báo bản mới → cập nhật → mở lại ở 0.1.1. Sửa 1 ký tự trong `signature` của `latest.json` → ứng dụng
    PHẢI từ chối. (Dịch vụ đã `CapNhat` lên `77f0c1e` lúc 10:20 03/10 — `/desktop/latest.json` trả 204.)
-6. **GĐ6 tiếp — 6.4 PowerShell, ConPTY, chạy hàng loạt** (2 tuần): terminal xterm.js trên Desktop (lịch sử, dán, Ctrl+C,
-   Tab; ConPTY: ANSI, resize, xem/thôi xem — socket `/desktop` đã có `pty_*`/`ps_input`/`watch_device`); hàng loạt
-   `POST /api/terminal/bulk` (lọc PHẠM VI PHÒNG — thay `/api/legacy/powershell` hiện CHƯA lọc phạm vi) trả token, kết quả
-   từng máy lưu MongoDB; Desktop đệm kết quả về sớm + poll 3 s + quá 135 s đánh dấu Timeout (bài học 18b); script hàng
-   loạt chạy quyền SYSTEM (không truyền user/pass). Rồi 6.5 ra lệnh bằng giọng nói (Gemini, khoá chỉ ở Core).
+6. **GĐ6 tiếp — 6.5 ra lệnh bằng giọng nói**: Desktop ghi âm (MediaRecorder) → Core `POST /api/voice` gọi Gemini (REST,
+   ép JSON, khoá CHỈ ở Core — biến môi trường, không vào Desktop) → trả ý định (tắt/khởi động lại/bật/ngắt Internet… + đích
+   phòng/máy) → Desktop hiện hộp XÁC NHẬN như menu Điều khiển, không tự chạy lệnh. Đối chiếu tính năng "AI Voice Command"
+   của hệ cũ (`D:\NetworkInventory\app.py`, chỉ đọc). Chưa có khoá Gemini → 503, giao diện báo rõ.
    Cổng ra GĐ6 cần máy canary thật: tắt/bật lại 1 phòng (0.7 không báo động), ngắt Internet 15 phút máy vẫn online.
    5.4 thử thật với winvnc: cần cổng `:7443` (mục dưới) HOẶC chạy Desktop trên máy chủ với Core đặt
    `VNC_VIEWER_BASE=https://10.21.24.142:5443` + một máy canary đã vào Core (3.5–3.8).
@@ -125,7 +126,8 @@ Cập nhật lần cuối: 04/10/2026 chiều (GĐ4 4.1–4.6 xong, 4.7 chờ c�
 - [ ] 3.5–3.9: canary bằng Caddy — chỉ làm sau khi 0.6 + 0.7 chạy và có người trực (3.2 không còn bắt buộc).
 - [x] Cài Node.js 24 LTS, Rust, VS Build Tools trên máy phát triển desktop-app (GĐ4) — Claude kiểm đủ 03/10/2026.
 - [x] `dich_vu_core.ps1 -Lenh CapNhat` lên `1215e22` (04/10/2026) — có API sơ đồ + lọc sự cố; dịch vụ tự đọc sơ đồ cũ ở
-      `D:\NetworkInventory\Maps` (CHỈ ĐỌC). Mã 5.4 (mở/đóng phiên VNC, bố trí lưới màn hình) cần `CapNhat` lần kế — không gấp.
+      `D:\NetworkInventory\Maps` (CHỈ ĐỌC). Mã 5.4 + 6.1–6.4 (VNC, nguồn/đăng nhập/Internet, terminal + PowerShell hàng
+      loạt) cần `CapNhat` lần kế — không gấp (chưa máy nào nối vào Core).
 - [ ] 4.7 — mở cổng Desktop (PowerShell **Run as Administrator** trên máy chủ, làm theo phần đầu tệp
       `platform-deployment\caddy\khoi_7443.caddy`): chép khối vào CUỐI `D:\Caddy\Caddyfile` → `caddy validate` → `caddy reload`
       (nạp nóng, không đụng `:5443/:5444`; khối đã có `/vncws` + `/novnc/*` cho xem màn hình) → mở tường lửa TCP 7443. Trên **2 máy quản trị** thử: `Import-Certificate` tệp
@@ -139,8 +141,9 @@ Cập nhật lần cuối: 04/10/2026 chiều (GĐ4 4.1–4.6 xong, 4.7 chờ c�
 - [ ] Đổi mật khẩu tài khoản `admin` của tổ chức PHENIKAA (đang là mật khẩu dựng thử trong `.env`).
 - [ ] Đặt `MASTER_KEY_B64` riêng (đang dùng khoá dev mặc định trong `app/config/settings.py`); `ALLOWED_ORIGINS` theo Desktop.
 - [ ] Rà mọi nhãn `HOAN_BAO_MAT` trong mã (`rg HOAN_BAO_MAT D:\ITSupportPlatform`).
-- [ ] `/api/legacy/command` + `/api/legacy/powershell` (từ 3.3) chỉ kiểm quyền `device.control`, CHƯA lọc phạm vi phòng —
-      người bị giới hạn phòng ra lệnh được máy phòng khác. Thay bằng API GĐ6 có lọc (6.4 `/api/terminal/bulk`) rồi khoá lại.
+- [x] `/api/legacy/command` + `/api/legacy/powershell` (từ 3.3) không lọc phạm vi phòng — ĐÃ khoá (6.4): tài khoản giới hạn
+      phòng nhận 403, dùng API GĐ6 có lọc (`/api/power`, `/api/internet`, `/api/terminal/bulk`…). Khi hoàn thiện có thể gỡ
+      hẳn 2 route này (công cụ thử tải 3.3 là nơi còn dùng).
 - [ ] Khoá ký cập nhật Desktop: hiện ở `%USERPROFILE%\.tauri\itmonitor.key` + mật khẩu ngẫu nhiên ghi CẠNH khoá
       (`itmonitor.key.password.txt`). Khi hoàn thiện: tạo khoá mới, mật khẩu do người vận hành gõ tay, cất khoá vào kho bí mật
       + sao lưu ngoại tuyến, đổi `pubkey` trong `tauri.conf.json` (bản đã cài thử phải cài lại tay — không tự cập nhật sang khoá mới).

@@ -1,7 +1,7 @@
 // Chi tiết một máy (Sổ tay 5.2): số đo theo giây (chỉ khi online — bài học 10.11), cấu hình phần cứng, pin CMOS, phiên
 // bản agent, sự cố của máy, nhật ký thay đổi định danh (tráo phần cứng / đổi serial / đổi MAC — quyền
 // machine_events.view), Chuyển phòng / Xoá máy (quyền device.manage).
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router";
 import { getJson } from "../api-client";
@@ -12,7 +12,10 @@ import { useCan } from "../shared/perm";
 import { Meter } from "../shared/ui";
 import { DeleteDialog, MoveDialog } from "./DeviceDialogs";
 import { openVnc } from "./vnc";
-import { ControlDialog, ControlMenu, type ControlKind } from "../control/ControlDialog";
+import { ControlHost, ControlMenu, type ControlKind } from "../control/ControlDialog";
+
+// xterm.js chỉ nạp khi mở terminal (gói chính nhẹ hơn ~300 KB)
+const TerminalDialog = lazy(() => import("./TerminalDialog").then((m) => ({ default: m.TerminalDialog })));
 
 const SU_KIEN: Record<string, string> = { trao_phan_cung: "Tráo phần cứng", doi_serial: "Đổi serial", doi_mac: "Đổi MAC" };
 const TRANG_THAI: Record<Incident["status"], string> = { PENDING: "Chờ xử lý", PROCESSING: "Đang xử lý", DONE: "Xong" };
@@ -27,6 +30,7 @@ export function DevicePage() {
   const canVnc = useCan("remote.vnc");
   const canControl = useCan("device.control");
   const [ctl, setCtl] = useState<ControlKind | null>(null);
+  const [term, setTerm] = useState(false);
   const [dialog, setDialog] = useState<"move" | "delete" | null>(null);
   const [notice, setNotice] = useState("");
   const q = useQuery({
@@ -91,6 +95,9 @@ export function DevicePage() {
           <div className="toolbar">
             {canControl && (
               <ControlMenu target={{ kind: "devices", ids: [id], names: [host] }} onPick={(k) => setCtl(k)} />
+            )}
+            {canControl && d.is_online && (
+              <button className="ghost" onClick={() => setTerm(true)} title="PowerShell trên máy (ConPTY)">Terminal</button>
             )}
             {canVnc && d.is_online && (
               <button onClick={() => openVnc(d).catch((e: Error) => setNotice(e.message))}>Điều khiển màn hình</button>
@@ -173,9 +180,14 @@ export function DevicePage() {
         </>
       )}
 
+      {term && (
+        <Suspense fallback={<p className="muted">Đang mở terminal…</p>}>
+          <TerminalDialog dev={{ id: d.id, hostname: d.hostname, mac: d.mac }} onClose={() => setTerm(false)} />
+        </Suspense>
+      )}
       {ctl && (
-        <ControlDialog kind={ctl} target={{ kind: "devices", ids: [d.id], names: [d.hostname] }}
-                       onClose={() => setCtl(null)} />
+        <ControlHost kind={ctl} target={{ kind: "devices", ids: [d.id], names: [d.hostname] }}
+                     onClose={() => setCtl(null)} />
       )}
       {dialog === "move" && (
         <MoveDialog devices={[d]} currentRoom={d.room_name} onClose={() => setDialog(null)}

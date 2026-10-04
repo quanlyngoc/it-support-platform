@@ -16,7 +16,7 @@ import { RoomMap } from "./map/RoomMap";
 import { normalize, type MapResponse } from "./map/model";
 import { LiveGrid } from "./live/LiveGrid";
 import { openVnc } from "../devices/vnc";
-import { ControlDialog, ControlMenu, type ControlKind, type ControlTarget } from "../control/ControlDialog";
+import { ControlHost, ControlMenu, type ControlKind, type ControlTarget } from "../control/ControlDialog";
 
 export function RoomPage() {
   const { id = "" } = useParams();
@@ -215,7 +215,7 @@ export function RoomPage() {
       )}
       {moving && <MoveDialog devices={moving} currentRoom={r.name} onClose={() => setMoving(null)} onDone={done} />}
       {deleting && <DeleteDialog device={deleting} onClose={() => setDeleting(null)} onDone={done} />}
-      {ctl && <ControlDialog kind={ctl.kind} target={ctl.target} onClose={() => setCtl(null)} />}
+      {ctl && <ControlHost kind={ctl.kind} target={ctl.target} onClose={() => setCtl(null)} />}
     </section>
   );
 }

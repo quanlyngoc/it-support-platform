@@ -13,8 +13,8 @@ export function Meter({ pct, title, text }: { pct: number; title?: string; text?
 }
 
 /** Hộp thoại phủ màn hình: Esc hoặc bấm nền để đóng (trừ khi đang bận). */
-export function Modal({ title, children, onClose, busy = false }: {
-  title: string; children: ReactNode; onClose: () => void; busy?: boolean;
+export function Modal({ title, children, onClose, busy = false, wide = false }: {
+  title: string; children: ReactNode; onClose: () => void; busy?: boolean; wide?: boolean;
 }) {
   useEffect(() => {
     const k = (e: KeyboardEvent) => {
@@ -25,7 +25,7 @@ export function Modal({ title, children, onClose, busy = false }: {
   }, [onClose, busy]);
   return (
     <div className="modal-back" onMouseDown={(e) => e.target === e.currentTarget && !busy && onClose()}>
-      <div className="modal" role="dialog" aria-modal="true" aria-label={title}>
+      <div className={`modal${wide ? " wide" : ""}`} role="dialog" aria-modal="true" aria-label={title}>
         <h2>{title}</h2>
         {children}
       </div>

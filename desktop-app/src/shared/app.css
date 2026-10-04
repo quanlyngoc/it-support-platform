@@ -274,3 +274,21 @@ select { font: 14px var(--font); padding: 8px 10px; border-radius: 6px; border: 
 textarea { font: 14px var(--font); padding: 8px 10px; border-radius: 6px; border: 1px solid var(--line);
            background: var(--surface); color: var(--ink); width: 100%; resize: vertical; }
 .form label.check { display: inline-flex; align-items: center; gap: 8px; font-weight: 400; } /* thắng .form label (lưới) */
+
+/* Hộp thoại rộng (PowerShell hàng loạt) */
+.modal.wide { width: min(1000px, 100%); max-height: 90vh; overflow: auto; }
+.mono { font-family: 'Cascadia Mono', Consolas, 'Courier New', monospace; font-size: 13px; }
+.bulk-res td { vertical-align: top; cursor: pointer; }
+.bulk-res pre { margin: 0; white-space: pre-wrap; max-height: 300px; overflow: auto; background: var(--surface-2);
+                padding: 6px 8px; border-radius: 6px; }
+
+/* Terminal ConPTY */
+.term-back { position: fixed; inset: 0; background: rgb(0 0 0 / .55); display: grid; place-items: center; z-index: 60;
+             padding: 16px; }
+.term-box { width: min(1400px, 96vw); height: min(860px, 90vh); display: grid; grid-template-rows: auto minmax(0, 1fr);
+            background: var(--surface); border-radius: 10px; overflow: hidden; box-shadow: 0 20px 60px rgb(0 0 0 / .4); }
+.term-bar { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+.term-bar .grow { flex: 1; }
+.term-bar button { padding: 5px 12px; }
+.term-login { width: min(420px, 100%); margin: 40px auto; }
+.term-screen { background: #0c1a17; padding: 6px 8px; min-height: 0; }

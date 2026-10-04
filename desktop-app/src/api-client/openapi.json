@@ -1,6 +1,56 @@
 {
  "components": {
   "schemas": {
+   "BulkIn": {
+    "properties": {
+     "device_ids": {
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 2000,
+      "title": "Device Ids",
+      "type": "array"
+     },
+     "exclude_gv": {
+      "default": true,
+      "description": "Cả phòng: chừa máy giảng viên (như hệ cũ)",
+      "title": "Exclude Gv",
+      "type": "boolean"
+     },
+     "room_id": {
+      "anyOf": [
+       {
+        "maxLength": 24,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Room Id"
+     },
+     "script": {
+      "maxLength": 100000,
+      "minLength": 1,
+      "title": "Script",
+      "type": "string"
+     },
+     "timeout": {
+      "default": 90,
+      "description": "Giây agent chờ script (Core chờ thêm 45 s)",
+      "maximum": 3600,
+      "minimum": 5,
+      "title": "Timeout",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "script"
+    ],
+    "title": "BulkIn",
+    "type": "object"
+   },
    "CloseIn": {
     "properties": {
      "token": {
@@ -707,6 +757,49 @@
     "title": "TargetsIn",
     "type": "object"
    },
+   "TermAuthIn": {
+    "properties": {
+     "password": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Password",
+      "type": "string"
+     },
+     "user": {
+      "description": "Tài khoản Windows (máy cục bộ hoặc DOMAIN\\user)",
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "User",
+      "type": "string"
+     }
+    },
+    "required": [
+     "user",
+     "password"
+    ],
+    "title": "TermAuthIn",
+    "type": "object"
+   },
+   "TermStartIn": {
+    "properties": {
+     "cols": {
+      "default": 120,
+      "maximum": 500,
+      "minimum": 20,
+      "title": "Cols",
+      "type": "integer"
+     },
+     "rows": {
+      "default": 30,
+      "maximum": 200,
+      "minimum": 5,
+      "title": "Rows",
+      "type": "integer"
+     }
+    },
+    "title": "TermStartIn",
+    "type": "object"
+   },
    "ValidationError": {
     "properties": {
      "detail": {
@@ -1143,6 +1236,158 @@
     "summary": "Chuyển 1 máy sang phòng khác (Move PC), tuỳ chọn số vị trí",
     "tags": [
      "Phòng & thiết bị"
+    ]
+   }
+  },
+  "/api/devices/{device_id}/terminal/start": {
+   "post": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "device_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/TermStartIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Pha 2 terminal: mở ConPTY đúng cỡ cửa sổ — CHỈ sau khi chính người này vừa xác thực đúng",
+    "tags": [
+     "Điều khiển từ xa"
+    ]
+   }
+  },
+  "/api/devices/{device_id}/terminal/stop": {
+   "post": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "device_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Đóng terminal ConPTY của máy",
+    "tags": [
+     "Điều khiển từ xa"
+    ]
+   }
+  },
+  "/api/devices/{device_id}/terminal/validate": {
+   "post": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "device_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/TermAuthIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Pha 1 terminal: máy xác thực tài khoản Windows (LogonUser) → sự kiện pty_auth_response",
+    "tags": [
+     "Điều khiển từ xa"
     ]
    }
   },
@@ -2097,6 +2342,82 @@
     "summary": "Nhập Excel vào sơ đồ ĐANG SỬA (multipart: file + map JSON tuỳ chọn) — trả sơ đồ mới, CHƯA lưu",
     "tags": [
      "Sơ đồ phòng"
+    ]
+   }
+  },
+  "/api/terminal/bulk": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/BulkIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Chạy PowerShell quyền SYSTEM trên nhiều máy / cả phòng; kết quả theo token",
+    "tags": [
+     "Điều khiển từ xa"
+    ]
+   }
+  },
+  "/api/terminal/bulk/{token}": {
+   "get": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "token",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Trạng thái từng máy của một lượt chạy hàng loạt (máy quá hạn → timeout)",
+    "tags": [
+     "Điều khiển từ xa"
     ]
    }
   },
