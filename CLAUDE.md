@@ -205,6 +205,10 @@ sự kiện riêng `vnc_thumb_req`, `fs_request`. (`kill_and_update` KHÔNG còn
 - Phiên bản đang chạy: trang **Giới thiệu** (`#/about`) — phiên bản ứng dụng + Core + trạng thái realtime (thay cho
   `FB_VER`/`CHATBOX_VER` của web cũ).
 - Địa chỉ Core mặc định: `pnpm dev` → `http://127.0.0.1:7009`; bản cài → `https://10.21.24.142:7443` (đổi ở ô "Máy chủ").
+- **Sơ đồ phòng** (`src/rooms/map/`): toạ độ lưu theo hệ px của nền (không theo mức phóng) — `MapCanvas` đổi toạ độ chuột
+  bằng `/ scale - leftPad`. Hít lưới dùng đúng mốc `colToX/rowToY` của hệ cũ (để xuất Excel suy ngược được cột/hàng). Khớp số
+  ghế ↔ tên máy bằng `findHost` = `mapFindHost` của hệ thi (đổi một bên là hai bên lệch nhau). Tỉ lệ "vừa khung" tính theo
+  nền + viền phòng, KHÔNG theo phần tử (kéo máy ra mép mà tính theo phần tử thì tỉ lệ nhảy giữa lúc kéo).
 
 ---
 
@@ -214,6 +218,13 @@ sự kiện riêng `vnc_thumb_req`, `fs_request`. (`kill_and_update` KHÔNG còn
 - Xác thực: on-prem giữ `X-Internal-Token` + chỉ localhost/allowlist; khi lên cloud chuyển sang API key theo
   tổ chức (`X-ITM-Key-Id` + HMAC-SHA256 `X-ITM-Signature` + `X-ITM-Timestamp` ±300s).
 - `/internal/machines` trả cờ `online` (nhịp tim) và `nhan_lenh` (có socket) — hai thứ KHÁC NHAU.
+- **Sơ đồ phòng — hệ thi đọc THẲNG tệp** (`MONITOR_MAPS_DIR`, `shared/maps_store.py` + `shared/web/sodo.js`): tệp là ẢNH
+  CHỤP DOM của trình vẽ cũ (`bounds`, `items[id] = {t, l, w, h, html, parentId}`, `pcClasses`, `canvasWidth`,
+  `machineGridHTML`); `sodo.js` lấy mọi `.pc-node` trong `items[].html`, chữ `.pc-name` (số ghế, khớp tên máy bằng
+  `mapFindHost`), `l`/`t` và lớp `dir-*`. Core lưu mô hình có cấu trúc (`rooms.map`, `app/rooms/maps.py`) và XUẤT lại đúng
+  định dạng đó mỗi lần lưu (`to_legacy`). **Đổi `to_legacy` là phải chạy lại `test_room_maps.py` (có test 19 sơ đồ thật) +
+  scratchpad `sodo_that.py` (chạy chính `sodo.js` so HTML)** — lệch một thuộc tính là giám thị đọc sơ đồ ra nhầm máy.
+  Core KHÔNG BAO GIỜ ghi vào `D:\NetworkInventory\Maps` (chỉ đọc làm dự phòng); kho xuất là `<DATA_DIR>/<MÃ>/Maps`.
 
 ---
 
@@ -337,6 +348,7 @@ Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay l�
 | 03/10/2026 | 4.1–4.3 + 4.5 Desktop: công cụ, khung `desktop-app`, api-client/realtime-client/phiên | Xong | Node 24.15, Rust 1.99, VS 2022 BT, pnpm 12.8.1; typecheck/build + `cargo build` đạt; Core thêm CORS + namespace `/desktop` (cần `CapNhat`); job `desktop` trong CI |
 | 03/10/2026 | 4.4 plugin updater/notification/process + khoá ký | Xong | `pnpm tauri build` sinh bộ cài NSIS 2,35 MB + `.sig` (chữ ký ghi `version:0.1.0`), 550 s BelowNormal |
 | 03/10/2026 | 4.6 Đăng nhập + Dashboard + trang phòng + Giới thiệu | Xong (chờ máy canary để đối chiếu số thật) | Core thêm `GET /api/incidents` + `/api/incidents/summary`; Dashboard: phiếu sự cố, cảnh báo phần cứng, đồng hồ, biểu đồ Chart.js, sự cố đang mở; `incident_new` → thông báo HĐH. Chạy thử đầu-cuối đạt |
+| 04/10/2026 | 5.3 Sơ đồ phòng + tệp sơ đồ cho hệ thi | Xong (chuyển kho sơ đồ của hệ thi làm lúc chuyển hẳn) | Core `rooms.map` + xuất đúng định dạng cũ (chính `sodo.js` vẽ giống hệt 19/19 phòng); Desktop xem trạng thái + trình sửa đầy đủ, Excel, Move PC từ sơ đồ. `maps_cli nhap-cu`/`xuat` |
 | 03/10/2026 | 5.2 Màn Phòng, chi tiết phòng, thiết bị (Desktop) | Xong | `#/rooms`, `#/rooms/:id` (CPU/RAM/ổ đĩa theo giây, GV, sự cố, chọn nhiều máy), `#/devices/:id`; Chuyển phòng 1/nhiều máy + Xoá máy có hộp xác nhận. Chạy thử đầu-cuối đạt |
 | — | 4.7 NSIS + tự cập nhật | Phần mã xong; chờ người vận hành | Core `/desktop/*` + script phát hành (đã chạy thật: tải bộ cài trùng SHA-256). Cần: khối Caddy `:7443` + tường lửa + tin chứng chỉ trên 2 máy quản trị, rồi thử 0.1.0 → 0.1.1 |
 | — | 3.4 Cập nhật agent từ Core · 3.5–3.9 Caddy canary | Kế tiếp (sau 0.6 + 0.7) | 3.4 phần mã đã có trong `update_gate.py`; chỉ chép bộ cài khi có bản > 2.7.5.3; 3.2 không còn bắt buộc |

@@ -6,7 +6,7 @@
 > Kế hoạch đầy đủ: `docs/plan/SoTay_ThucHien_ITMonitor_SaaS.html` (số bước bên dưới theo Sổ tay;
 > tài liệu đó còn ghi `D:\Platform` — hiểu là `D:\ITSupportPlatform`).
 
-Cập nhật lần cuối: 03/10/2026 chiều (GĐ4 4.1–4.6 xong, 4.7 chờ cổng :7443; GĐ5 5.2 Desktop xong; kế: 5.3 sơ đồ phòng)
+Cập nhật lần cuối: 04/10/2026 (GĐ4 4.1–4.6 xong, 4.7 chờ cổng :7443; GĐ5 5.1–5.3 + 5.5 xong; kế: 5.4 View desktop + VNC)
 
 ## Cách mở phiên mới để làm tiếp
 
@@ -16,7 +16,7 @@ Cập nhật lần cuối: 03/10/2026 chiều (GĐ4 4.1–4.6 xong, 4.7 chờ c�
 4. Kiểm nhanh trạng thái trước khi làm tiếp (tất cả phải xanh):
    ```powershell
    cd D:\ITSupportPlatform\platform-core
-   uv run pytest -q                 # 168 passed, 1 skipped (05b chờ GĐ7 tải tệp)
+   uv run pytest -q                 # 177 passed, 1 skipped (05b chờ GĐ7 tải tệp)
    uv run ruff check .
    uv run pyright
    pnpm -C ..\desktop-app typecheck; pnpm -C ..\desktop-app build   # PATH cần C:\Program Files\nodejs + %APPDATA%\npm
@@ -71,6 +71,8 @@ Cập nhật lần cuối: 03/10/2026 chiều (GĐ4 4.1–4.6 xong, 4.7 chờ c�
 | 4.7 (phần mã) | Core `GET /desktop/latest.json` (204 khi chưa có bản nào → updater coi là "không có bản mới") + `/desktop/<tên>.exe` + `.sig` (chỉ đúng mẫu tên, không cần đăng nhập — an toàn nhờ chữ ký), kho `<DATA_DIR>/desktop/`. `platform-deployment/desktop/phat_hanh_desktop.py`: kiểm phiên bản trong chữ ký, chép bộ cài + `.sig` (ghi tạm → đổi tên), ghi `latest.json` CUỐI, giữ bản vừa phát hành + 2 bản lớn nhất; `--notes-file` cho ghi chú có dấu. Khối Caddy `platform-deployment/caddy/khoi_7443.caddy` | 2 test Core + 4 test QA (27 xanh). Chạy thật: phát hành bộ cài 0.1.0 vào kho tạm → Core 7019 trả `latest.json` (no-store) + bộ cài tải về trùng SHA-256. `caddy adapt` bản sao Caddyfile + khối mới → 3 server `:5443/:5444/:7443`. Bắt được lỗi: dọn bản cũ từng xoá đúng bộ cài `latest.json` đang trỏ khi phát hành bản hạ cấp |
 | — | Người vận hành `CapNhat` (03/10/2026 10:20) | `KiemTra`: bản `77f0c1e` = main, ping CSDL 55 ms; trên dịch vụ: `/desktop/latest.json` 204, `/api/incidents/summary` + `/api/rooms` 401 khi chưa đăng nhập, CORS trả đúng origin `http://tauri.localhost`. 3 traceback trong `core-err.log` là của 02/10 (11:20Z, 11:21Z, 17:32Z — trước khi có bản chặn `d2aaaa8`); lần dừng 10:20 hôm nay không sinh traceback |
 | 5.2 | Desktop: trang **Phòng máy** (`#/rooms`, tìm theo tên); **chi tiết phòng**: máy sắp theo số ghế (GV cuối, nhãn GV như `_isGV` cũ), trạng thái + kênh lệnh, CPU/RAM/ổ đĩa theo giây (thanh đo ngưỡng cũ > 50 vàng / > 90 đỏ, tách `disk_usage` như `scripts.html`), IP·MAC, Model·Service tag, agent, số sự cố đang mở; lọc "chỉ online" + tìm; chọn nhiều máy → **Chuyển phòng** hàng loạt; Chuyển / Xoá từng máy với **hộp xác nhận** (máy đang online → cảnh báo sẽ tự thêm lại). **Chi tiết máy** (`#/devices/:id`): số đo realtime, cấu hình đầy đủ (CMOS hết pin tô đỏ), sự cố của máy, nhật ký thay đổi máy (quyền `machine_events.view`). Nút theo quyền `device.manage`. Core: `/api/incidents` thêm lọc `hostname` (đúng tên) + `room_id` | 168 test Core xanh. Chạy thử đầu-cuối (scratchpad `e2e_rooms.py`, 7 máy giả có `disk_usage`): thứ tự 01,02,03,GV; ổ C 61% vàng / D 91% đỏ; CPU đổi theo giây (88% → 94%); chi tiết máy đủ cấu hình + sự cố; Chuyển 1 máy kèm vị trí 9 → nhãn "chuyển tay · 9"; chọn 2 máy → chuyển cùng lúc (không có ô vị trí) → máy về đúng phòng theo tên tự gỡ nhãn; Xoá máy online → có cảnh báo, bản ghi vào `computers_archive` |
+| 5.3 (Core) | `app/rooms/maps.py`: sơ đồ CÓ CẤU TRÚC trong `rooms.map` (máy · bàn GV · cửa 1–4 · bảng · đồ vật y tế/PCCC/kệ giày/tủ đồ/tủ rack · bàn SV · phần tử lạ giữ nguyên HTML; hướng `dir-*`; cụm có tên; mã thiết bị / màn hình / case), toạ độ cùng hệ px với trình vẽ cũ. Đọc tệp sơ đồ cũ (ẢNH CHỤP DOM của `room_detail.html` captureState: `bounds`/`items[].html`/`pcClasses`/`canvasWidth`) và **xuất lại đúng định dạng đó** (`to_legacy`). API `GET/PUT/DELETE /api/rooms/<id>/map` · `POST …/map/import-excel` (multipart, trả sơ đồ mới CHƯA lưu) · `POST …/map/export-excel`; quyền `room_map.edit` + phạm vi phòng; lưu → ghi tệp NGUYÊN TỬ vào `MAPS_EXPORT_DIR` (mặc định `<DATA_DIR>/<MÃ>/Maps`) cho `MONITOR_MAPS_DIR` của hệ thi, xuất lỗi vẫn lưu + báo; chưa có trong Core → đọc kho cũ `LEGACY_MAPS_DIR` (CHỈ ĐỌC, mặc định `D:\NetworkInventory\Maps` nếu có); realtime `room_map_updated`. Excel: quy tắc `renderGrid` cũ (85×95, cặp bàn 20, giữa bàn 80, hàng 22, gốc 90; 1 chữ số thêm 0) + bảng mã thiết bị. `maps_cli nhap-cu` / `xuat` | 9 test (177 xanh). **19/19 sơ đồ thật** đọc → xuất → đọc ổn định. **Chạy CHÍNH `sodo.js` của hệ thi** (Chrome headless, scratchpad `sodo_that.py`): HTML sơ đồ vẽ từ tệp gốc và từ tệp Core xuất **giống hệt** ở 19/19 phòng. Test bắt 2 lỗi: dọn nhầm cột trống khi xuất Excel; cửa mặc định CSS bị đọc thành y=0 |
+| 5.3 (Desktop) | Trang phòng có 2 kiểu xem **Danh sách / Sơ đồ** (nhớ trong phiên). Sơ đồ: thẻ máy tô theo trạng thái thật (xanh online · vàng chỉ HTTP · mờ offline · viền đứt = chữ trên thẻ không khớp máy nào, khớp như `mapFindHost` của hệ thi), tooltip CPU/RAM, bấm → chi tiết máy, Ctrl+bấm → chọn máy để Chuyển phòng (dùng chung thanh chọn), danh sách "máy chưa có trên sơ đồ"; phóng/thu (Ctrl+lăn chuột). **Trình sửa** (`room_map.edit`): kéo 1/nhiều phần tử hít lưới cũ (Alt = tự do), khoanh vùng / Ctrl+bấm chọn nhiều, đổi cỡ phần tử + viền phòng, cửa chỉ trượt dọc tường, thêm máy theo số ghế / bàn GV / bảng / bàn SV / đồ vật, xoay hướng, gom/bỏ cụm có tên, xoá, hoàn tác/làm lại 50 bước (Ctrl+Z/Y), phím mũi tên, nhập/xuất Excel, Lưu (báo lỗi xuất cho hệ thi nếu có) / Huỷ (hỏi nếu chưa lưu); người khác lưu cùng lúc → báo; phòng chưa có sơ đồ → "Tạo từ danh sách máy" / "Sơ đồ trống" | Chạy thử đầu-cuối (scratchpad `e2e_map.py`, sơ đồ phòng 301 THẬT đọc từ kho cũ): 48 máy + 4 cửa + GV, 6 máy có nhịp tim sáng đúng; kéo chuột máy 01: 810 → 735 (đúng mốc lưới); Ctrl+Z → 810, làm lại → 735; gom cụm "Nhóm thi A"; Lưu → tệp `Phòng_301_-_A6.json` trong kho xuất có `l=735px` + cụm; Ctrl+bấm máy 04 → thanh "Đã chọn 1 máy". Sửa 2 lỗi thấy qua ảnh chụp: tỉ lệ "vừa khung" không chạy (ResizeObserver gắn lúc đang tải), cửa tường trái bị cắt |
 | 3.1 | Hợp đồng agent v2: `platform-core/tests/contract_v2/HOP_DONG.md` (luật sống còn A1–A11, thông số, 18 route HTTP, 15 sự kiện socket, 15 action lệnh) + 45 fixture + `test_contract_v2.py` | 3 test kiểm fixture xanh; 45 test hợp đồng `xfail strict` chờ 3.3 |
 
 ## Đang làm
@@ -91,10 +93,14 @@ Cập nhật lần cuối: 03/10/2026 chiều (GĐ4 4.1–4.6 xong, 4.7 chờ c�
    (`tauri.conf.json` + `package.json` + `Cargo.toml`), build lại, `phat_hanh_desktop.py --data-dir D:\ITSupportPlatformData`
    → ứng dụng 0.1.0 báo bản mới → cập nhật → mở lại ở 0.1.1. Sửa 1 ký tự trong `signature` của `latest.json` → ứng dụng
    PHẢI từ chối. (Dịch vụ đã `CapNhat` lên `77f0c1e` lúc 10:20 03/10 — `/desktop/latest.json` trả 204.)
-6. **5.3 Sơ đồ phòng + tệp sơ đồ cho hệ thi** (HỆ THI PHỤ THUỘC): đọc kỹ định dạng `D:\NetworkInventory\Maps\*.json` +
-   `/api/get_map` / lưu sơ đồ của hệ cũ + chỗ ThiPM đọc `MONITOR_MAPS_DIR` (D:\ExaminationSystem) TRƯỚC khi viết. Core lưu
-   `rooms.map` + xuất tệp JSON đúng định dạng cũ; Desktop: zoom, kéo, đổi cỡ, nhóm có tên, undo/redo, nhập/xuất Excel.
-7. **5.4 View desktop + VNC** (lưới card theo `{fx,fy}`, khung HD, noVNC cửa sổ con, `rooms.live_layout`).
+6. **5.4 View desktop + VNC** (lưới card theo `{fx,fy}` mirror sơ đồ, khung HD khi rê chuột, noVNC cửa sổ con,
+   `rooms.live_layout`; relay `D:\RemoteControl` + bất biến mật khẩu VNC 4 chỗ — bài học 10.22–10.24 hệ cũ). Đọc kỹ
+   `room_detail.html` (View desktop) + `client.py` (`_rfb_stream_loop`, `do_vnc_thumb`) + relay TRƯỚC khi viết.
+7. 5.3 còn lại khi CHUYỂN HẲN (không làm lúc chạy song song): `maps_cli nhap-cu --tenant PHENIKAA` → `maps_cli xuat` → trỏ
+   `MONITOR_MAPS_DIR` của ThiHSK/ThiPM sang `D:\ITSupportPlatformData\PHENIKAA\Maps` (người vận hành, dịch vụ hệ thi).
+   **Chưa nhập sớm có chủ ý:** trong lúc song song quản trị vẫn sửa sơ đồ ở hệ cũ; Core chưa có bản riêng thì luôn hiện bản
+   MỚI NHẤT của hệ cũ, nhập sớm thì Core giữ một bản chụp đứng yên. Hệ thi đọc kho của chính nó trước, kho cũ sau — không
+   đổi gì cho tới lúc chuyển.
    Core: thêm schema `@output` để kiểu response cũng sinh tự động (hiện viết tay ở `desktop-app/src/api-client/types.ts`).
 
 ## Việc cần người vận hành (Claude không có quyền Administrator)
@@ -108,8 +114,9 @@ Cập nhật lần cuối: 03/10/2026 chiều (GĐ4 4.1–4.6 xong, 4.7 chờ c�
 - [x] Bước 0.6, 0.7: đã cài 03/10/2026 (`ops\cai_dat_ops.ps1 -Lenh KiemTra` để xem).
 - [ ] 3.5–3.9: canary bằng Caddy — chỉ làm sau khi 0.6 + 0.7 chạy và có người trực (3.2 không còn bắt buộc).
 - [x] Cài Node.js 24 LTS, Rust, VS Build Tools trên máy phát triển desktop-app (GĐ4) — Claude kiểm đủ 03/10/2026.
-- [x] `dich_vu_core.ps1 -Lenh CapNhat` lên `77f0c1e` (03/10/2026 10:20). Mã 5.2 (lọc sự cố theo máy/phòng) cần `CapNhat`
-      lần kế — không gấp, chưa máy nào gửi về Core.
+- [x] `dich_vu_core.ps1 -Lenh CapNhat` lên `77f0c1e` (03/10/2026 10:20). Mã 5.2 (lọc sự cố theo máy/phòng) + 5.3 (API sơ
+      đồ, kho xuất `D:\ITSupportPlatformData\PHENIKAA\Maps`) cần `CapNhat` lần kế — không gấp, chưa máy nào gửi về Core.
+      Sau `CapNhat` dịch vụ tự đọc sơ đồ cũ ở `D:\NetworkInventory\Maps` (CHỈ ĐỌC — không cần đặt biến môi trường).
 - [ ] 4.7 — mở cổng Desktop (PowerShell **Run as Administrator** trên máy chủ, làm theo phần đầu tệp
       `platform-deployment\caddy\khoi_7443.caddy`): chép khối vào CUỐI `D:\Caddy\Caddyfile` → `caddy validate` → `caddy reload`
       (nạp nóng, không đụng `:5443/:5444`) → mở tường lửa TCP 7443. Trên **2 máy quản trị** thử: `Import-Certificate` tệp

@@ -32,6 +32,34 @@ export function errorMessage(err: unknown, fallback = "Có lỗi khi gọi máy 
   return fallback;
 }
 
+/** fetch tới Core kèm token (dùng cho tải tệp / gửi multipart — chỗ openapi-fetch không hợp). 401 → về đăng nhập. */
+export async function authFetch(path: string, init: RequestInit = {}): Promise<Response> {
+  const headers = new Headers(init.headers);
+  headers.set("Authorization", `Bearer ${useSession.getState().token ?? ""}`);
+  const res = await fetch(useSession.getState().baseUrl + path, { ...init, headers });
+  if (res.status === 401) useSession.getState().logout();
+  return res;
+}
+
+/** Đọc JSON của phản hồi; lỗi → ném Error mang thông báo tiếng Việt của Core. */
+export async function jsonOf<T>(res: Response): Promise<T> {
+  const body = (await res.json().catch(() => ({}))) as unknown;
+  if (!res.ok) throw new Error(errorMessage(body, `Lỗi ${res.status}`));
+  return body as T;
+}
+
+/** Lưu Blob thành tệp tải về (WebView2 / trình duyệt đều nhận thẻ <a download>). */
+export function saveBlob(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+
 /** Gọi GET trả dữ liệu đã ép kiểu; lỗi → ném Error với thông báo tiếng Việt của Core. */
 export async function getJson<T>(path: string): Promise<T> {
   const res = await fetch(useSession.getState().baseUrl + path, {

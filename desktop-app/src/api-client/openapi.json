@@ -135,6 +135,282 @@
     "title": "LoginIn",
     "type": "object"
    },
+   "MapModel": {
+    "properties": {
+     "bounds": {
+      "$ref": "#/components/schemas/MapModel.Rect"
+     },
+     "canvas_w": {
+      "default": 1000,
+      "exclusiveMinimum": 0,
+      "maximum": 20000,
+      "title": "Canvas W",
+      "type": "number"
+     },
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/MapModel.MapItem"
+      },
+      "maxItems": 3000,
+      "title": "Items",
+      "type": "array"
+     },
+     "v": {
+      "const": 1,
+      "default": 1,
+      "title": "V",
+      "type": "integer"
+     }
+    },
+    "title": "MapModel",
+    "type": "object"
+   },
+   "MapModel.MapItem": {
+    "properties": {
+     "case_code": {
+      "anyOf": [
+       {
+        "maxLength": 60,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Case Code"
+     },
+     "code": {
+      "anyOf": [
+       {
+        "maxLength": 60,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Mã thiết bị chung",
+      "title": "Code"
+     },
+     "decor": {
+      "anyOf": [
+       {
+        "enum": [
+         "y-te",
+         "cuu-hoa",
+         "ke-giay",
+         "tu-do",
+         "tu-rack"
+        ],
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Decor"
+     },
+     "dir": {
+      "default": "",
+      "enum": [
+       "",
+       "dir-col",
+       "dir-col-rev",
+       "dir-row",
+       "dir-row-rev"
+      ],
+      "title": "Dir",
+      "type": "string"
+     },
+     "gname": {
+      "anyOf": [
+       {
+        "maxLength": 60,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Tên cụm",
+      "title": "Gname"
+     },
+     "group": {
+      "anyOf": [
+       {
+        "maxLength": 40,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Mã cụm máy (nhóm có tên)",
+      "title": "Group"
+     },
+     "h": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "H"
+     },
+     "html": {
+      "anyOf": [
+       {
+        "maxLength": 20000,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Chỉ cho kind=other: giữ nguyên HTML cũ",
+      "title": "Html"
+     },
+     "id": {
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.-]+$",
+      "title": "Id",
+      "type": "string"
+     },
+     "kind": {
+      "enum": [
+       "pc",
+       "gv",
+       "door",
+       "board",
+       "decor",
+       "ban-sv",
+       "other"
+      ],
+      "title": "Kind",
+      "type": "string"
+     },
+     "label": {
+      "anyOf": [
+       {
+        "maxLength": 60,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Chữ trên bảng / số bàn SV",
+      "title": "Label"
+     },
+     "monitor_code": {
+      "anyOf": [
+       {
+        "maxLength": 60,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Monitor Code"
+     },
+     "pos": {
+      "anyOf": [
+       {
+        "maximum": 4,
+        "minimum": 1,
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Cửa 1–2 tường trái, 3–4 tường phải",
+      "title": "Pos"
+     },
+     "seat": {
+      "anyOf": [
+       {
+        "maxLength": 16,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Chữ trên thẻ máy (.pc-name): số ghế / GV",
+      "title": "Seat"
+     },
+     "w": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "W"
+     },
+     "x": {
+      "default": 0,
+      "title": "X",
+      "type": "number"
+     },
+     "y": {
+      "default": 0,
+      "title": "Y",
+      "type": "number"
+     }
+    },
+    "required": [
+     "id",
+     "kind"
+    ],
+    "title": "MapItem",
+    "type": "object"
+   },
+   "MapModel.Rect": {
+    "properties": {
+     "h": {
+      "default": 1300,
+      "title": "H",
+      "type": "number"
+     },
+     "w": {
+      "default": 1000,
+      "title": "W",
+      "type": "number"
+     },
+     "x": {
+      "default": 0,
+      "title": "X",
+      "type": "number"
+     },
+     "y": {
+      "default": 0,
+      "title": "Y",
+      "type": "number"
+     }
+    },
+    "title": "Rect",
+    "type": "object"
+   },
    "MoveBulkIn": {
     "properties": {
      "device_ids": {
@@ -1110,6 +1386,212 @@
     ]
    }
   },
+  "/api/rooms/{room_id}/map": {
+   "delete": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "room_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Xoá sơ đồ (không đọc lại tệp hệ cũ nữa) + xoá tệp đã xuất cho hệ thi",
+    "tags": [
+     "Sơ đồ phòng"
+    ]
+   },
+   "get": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "room_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Sơ đồ phòng (nguồn: core = đã lưu ở Core, legacy = tệp của hệ cũ, null = chưa có)",
+    "tags": [
+     "Sơ đồ phòng"
+    ]
+   },
+   "put": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "room_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/MapModel"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Lưu sơ đồ + xuất tệp định dạng cũ cho hệ thi",
+    "tags": [
+     "Sơ đồ phòng"
+    ]
+   }
+  },
+  "/api/rooms/{room_id}/map/export-excel": {
+   "post": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "room_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Xuất Excel (lưới số ghế + mã thiết bị) từ sơ đồ gửi lên, không gửi thì dùng sơ đồ đã lưu",
+    "tags": [
+     "Sơ đồ phòng"
+    ]
+   }
+  },
+  "/api/rooms/{room_id}/map/import-excel": {
+   "post": {
+    "description": "Sheet đầu là lưới số ghế (dòng 1 tiêu đề) → thay toàn bộ máy; hoặc bảng mã thiết bị (cột A 'ID…') → cập nhật mã màn hình / mã case / mã thiết bị.",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "room_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Nhập Excel vào sơ đồ ĐANG SỬA (multipart: file + map JSON tuỳ chọn) — trả sơ đồ mới, CHƯA lưu",
+    "tags": [
+     "Sơ đồ phòng"
+    ]
+   }
+  },
   "/desktop/latest.json": {
    "get": {
     "parameters": [],
@@ -1183,6 +1665,9 @@
   },
   {
    "name": "Sự cố"
+  },
+  {
+   "name": "Sơ đồ phòng"
   },
   {
    "name": "Cập nhật Desktop"

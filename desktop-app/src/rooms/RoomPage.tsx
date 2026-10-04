@@ -4,7 +4,7 @@
 // vẽ số đo bọc is_online — máy offline KHÔNG có cpu_usage/ram_usage/disk_usage (bài học 10.11 hệ cũ).
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { getJson } from "../api-client";
 import type { Device, Incident, ListResult, RoomDetail } from "../api-client/types";
 import { DeleteDialog, MoveDialog } from "../devices/DeviceDialogs";
@@ -12,6 +12,7 @@ import { realtime, request, useRealtime, type BatchDeviceUpdate } from "../realt
 import { diskLabel, isGV, parseDisks, seatNo } from "../shared/metrics";
 import { useCan } from "../shared/perm";
 import { Meter } from "../shared/ui";
+import { RoomMap } from "./map/RoomMap";
 
 export function RoomPage() {
   const { id = "" } = useParams();
@@ -35,6 +36,22 @@ export function RoomPage() {
   const [moving, setMoving] = useState<Device[] | null>(null);
   const [deleting, setDeleting] = useState<Device | null>(null);
   const [notice, setNotice] = useState("");
+  const navigate = useNavigate();
+  const [view, setView] = useState<"list" | "map">(() => {
+    try {
+      return sessionStorage.getItem("rd_view") === "map" ? "map" : "list";
+    } catch {
+      return "list";
+    }
+  });
+  const pickView = (v: "list" | "map") => {
+    setView(v);
+    try {
+      sessionStorage.setItem("rd_view", v);
+    } catch {
+      // không có sessionStorage → chỉ nhớ trong lúc mở trang
+    }
+  };
 
   useEffect(() => {
     setSel(new Set());
@@ -111,10 +128,20 @@ export function RoomPage() {
       <div className="dash-head">
         <h1>{r.name} <small className="muted">{r.online} / {r.total} online</small></h1>
         <div className="toolbar">
-          <label className="check"><input type="checkbox" checked={onlyOnline}
-                                          onChange={(e) => setOnlyOnline(e.target.checked)} /> Chỉ máy online</label>
-          <input className="search" value={filter} onChange={(e) => setFilter(e.target.value)}
-                 placeholder="Tìm tên máy / IP / MAC / service tag" aria-label="Tìm máy" />
+          <div className="seg" role="tablist" aria-label="Kiểu xem">
+            <button role="tab" aria-selected={view === "list"} className={view === "list" ? "on" : ""}
+                    onClick={() => pickView("list")}>Danh sách</button>
+            <button role="tab" aria-selected={view === "map"} className={view === "map" ? "on" : ""}
+                    onClick={() => pickView("map")}>Sơ đồ</button>
+          </div>
+          {view === "list" && (
+            <>
+              <label className="check"><input type="checkbox" checked={onlyOnline}
+                                              onChange={(e) => setOnlyOnline(e.target.checked)} /> Chỉ máy online</label>
+              <input className="search" value={filter} onChange={(e) => setFilter(e.target.value)}
+                     placeholder="Tìm tên máy / IP / MAC / service tag" aria-label="Tìm máy" />
+            </>
+          )}
         </div>
       </div>
       {notice && <p className="notice" role="status">{notice}</p>}
@@ -125,6 +152,11 @@ export function RoomPage() {
           <button className="ghost" onClick={() => setSel(new Set())}>Bỏ chọn</button>
         </div>
       )}
+      {view === "map" ? (
+        <RoomMap roomId={id} roomName={r.name} devices={r.devices} devSel={sel} onToggleDevice={toggle}
+                 onOpenDevice={(did) => navigate(`/devices/${did}`)} />
+      ) : (
+      <>
       <table className="grid devices">
         <thead>
           <tr>
@@ -147,6 +179,8 @@ export function RoomPage() {
         </tbody>
       </table>
       {devices.length === 0 && <p className="muted">{f || onlyOnline ? "Không có máy khớp." : "Phòng chưa có máy."}</p>}
+      </>
+      )}
       {moving && <MoveDialog devices={moving} currentRoom={r.name} onClose={() => setMoving(null)} onDone={done} />}
       {deleting && <DeleteDialog device={deleting} onClose={() => setDeleting(null)} onDone={done} />}
     </section>

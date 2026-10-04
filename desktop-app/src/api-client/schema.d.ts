@@ -938,6 +938,225 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/rooms/{room_id}/map": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sơ đồ phòng (nguồn: core = đã lưu ở Core, legacy = tệp của hệ cũ, null = chưa có) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    room_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+            };
+        };
+        /** Lưu sơ đồ + xuất tệp định dạng cũ cho hệ thi */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    room_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["MapModel"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /** Xoá sơ đồ (không đọc lại tệp hệ cũ nữa) + xoá tệp đã xuất cho hệ thi */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    room_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rooms/{room_id}/map/export-excel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Xuất Excel (lưới số ghế + mã thiết bị) từ sơ đồ gửi lên, không gửi thì dùng sơ đồ đã lưu */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    room_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rooms/{room_id}/map/import-excel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Nhập Excel vào sơ đồ ĐANG SỬA (multipart: file + map JSON tuỳ chọn) — trả sơ đồ mới, CHƯA lưu
+         * @description Sheet đầu là lưới số ghế (dòng 1 tiêu đề) → thay toàn bộ máy; hoặc bảng mã thiết bị (cột A 'ID…') → cập nhật mã màn hình / mã case / mã thiết bị.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    room_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/desktop/latest.json": {
         parameters: {
             query?: never;
@@ -1080,6 +1299,139 @@ export interface components {
             totp: string | null;
             /** Username */
             username: string;
+        };
+        /** MapModel */
+        MapModel: {
+            bounds?: components["schemas"]["MapModel.Rect"];
+            /**
+             * Canvas W
+             * @default 1000
+             */
+            canvas_w: number;
+            /** Items */
+            items?: components["schemas"]["MapModel.MapItem"][];
+            /**
+             * V
+             * @default 1
+             * @constant
+             */
+            v: 1;
+        };
+        /** MapItem */
+        "MapModel.MapItem": {
+            /**
+             * Case Code
+             * @default null
+             */
+            case_code: string | null;
+            /**
+             * Code
+             * @description Mã thiết bị chung
+             * @default null
+             */
+            code: string | null;
+            /**
+             * Decor
+             * @default null
+             */
+            decor: ("y-te" | "cuu-hoa" | "ke-giay" | "tu-do" | "tu-rack") | null;
+            /**
+             * Dir
+             * @default
+             * @enum {string}
+             */
+            dir: "" | "dir-col" | "dir-col-rev" | "dir-row" | "dir-row-rev";
+            /**
+             * Gname
+             * @description Tên cụm
+             * @default null
+             */
+            gname: string | null;
+            /**
+             * Group
+             * @description Mã cụm máy (nhóm có tên)
+             * @default null
+             */
+            group: string | null;
+            /**
+             * H
+             * @default null
+             */
+            h: number | null;
+            /**
+             * Html
+             * @description Chỉ cho kind=other: giữ nguyên HTML cũ
+             * @default null
+             */
+            html: string | null;
+            /** Id */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "pc" | "gv" | "door" | "board" | "decor" | "ban-sv" | "other";
+            /**
+             * Label
+             * @description Chữ trên bảng / số bàn SV
+             * @default null
+             */
+            label: string | null;
+            /**
+             * Monitor Code
+             * @default null
+             */
+            monitor_code: string | null;
+            /**
+             * Pos
+             * @description Cửa 1–2 tường trái, 3–4 tường phải
+             * @default null
+             */
+            pos: number | null;
+            /**
+             * Seat
+             * @description Chữ trên thẻ máy (.pc-name): số ghế / GV
+             * @default null
+             */
+            seat: string | null;
+            /**
+             * W
+             * @default null
+             */
+            w: number | null;
+            /**
+             * X
+             * @default 0
+             */
+            x: number;
+            /**
+             * Y
+             * @default 0
+             */
+            y: number;
+        };
+        /** Rect */
+        "MapModel.Rect": {
+            /**
+             * H
+             * @default 1300
+             */
+            h: number;
+            /**
+             * W
+             * @default 1000
+             */
+            w: number;
+            /**
+             * X
+             * @default 0
+             */
+            x: number;
+            /**
+             * Y
+             * @default 0
+             */
+            y: number;
         };
         /** MoveBulkIn */
         MoveBulkIn: {
