@@ -223,6 +223,14 @@ sự kiện riêng `vnc_thumb_req`, `fs_request`. (`kill_and_update` KHÔNG còn
   `TerminalDialog` **nạp lười** (`React.lazy`) — xterm.js ≈ 336 kB, đừng import thẳng vào trang. Hàng loạt: `user`/`pass`
   LUÔN rỗng (= SYSTEM, bài học 10.22 hệ cũ — có user/pass là ghi HKLM bị "Access denied"); Core tạo phiên kết quả TRƯỚC khi
   gửi lệnh; Desktop vừa nghe `ps_bulk_result` vừa POLL 3 s (bài học 18b — đừng bỏ poll), Core tự đánh dấu `timeout`.
+- **Trình quản lý tệp 2 khung** (`src/files/`, Core `app/files/`): chuyển gần 1:1 `FbPane`/`FbWindow` của `fbrowser.js` v13
+  — `pane.ts` là LỚP THUẦN + subscribe (`useSyncExternalStore`), không phải hook: nhiều thao tác bất đồng bộ chồng nhau,
+  hook dễ dính closure cũ. Giữ các hành vi đã tinh chỉnh: mọi thao tác thay đổi dữ liệu tải lại TẠI CHỖ (`go(path, true,
+  {keepScroll|selectNames|selectIndex})`), Back lưu `{p, top, name}` đẩy TRƯỚC khi tải, hai khung không cùng nguồn (hoán
+  đổi). Lệnh máy trạm qua socket `fs_request` (Core chốt token cho `pull`/`push`); BYTES luôn đi HTTP theo token, không
+  qua socket. "Về máy tôi" hỏi chỗ lưu TRƯỚC (`showSaveFilePicker` chỉ chạy trong thao tác bấm) rồi ghi theo luồng.
+  ⚠️ `tauri.conf.json` đặt `dragDropEnabled: false` — bật lại là WebView2 nuốt kéo-thả HTML5 (kéo giữa 2 khung + kéo tệp
+  từ Explorer chết im lặng). "Máy chủ" = kho riêng của tổ chức (mục 8), chỉ Super Admin.
 
 ---
 
@@ -248,7 +256,7 @@ sự kiện riêng `vnc_thumb_req`, `fs_request`. (`kill_and_update` KHÔNG còn
   `local_path`, `purge_partials`). Bản cục bộ `LocalFS` (on-prem, gốc = `DATA_DIR` = `D:\ITSupportPlatformData`) đã có
   (Sổ tay 7.1); `S3` (SeaweedFS / dịch vụ S3 trong nước) sau này — chọn trong `make_storage`, nơi gọi không đổi.
   KHÔNG dùng MinIO (đã ngừng bảo trì, archive 25/04/2026). App giữ một kho chung ở `app.extensions["storage"]`.
-- Khoá luôn có ranh giới tổ chức: `tenants/<tenant_id>/{work,collected,thu,chat,report,temp}/...` (`keys.py`): chặn
+- Khoá luôn có ranh giới tổ chức: `tenants/<tenant_id>/{work,collected,thu,chat,report,temp,drive}/...` (`keys.py`): chặn
   `..`, `\`, đoạn rỗng, ký tự Windows cấm, đoạn kết thúc bằng dấu chấm/dấu cách, tên thiết bị (`CON`, `con.txt`…);
   khoá của tổ chức khác → `KhoaSai`. Tên do người dùng/agent gửi → `safe_segment`/`safe_parts` TRƯỚC, `key_for` chỉ kiểm.
 - Kho của MỘT tổ chức: `TenantFiles` (`files.py`) = kho + sổ `file_metadata` (scope `storage`: key, name, size, sha256,
@@ -262,6 +270,10 @@ sự kiện riêng `vnc_thumb_req`, `fs_request`. (`kill_and_update` KHÔNG còn
 - Tệp lớn truyền dạng luồng (khối 256 KB), không nạp cả tệp vào RAM — đo thật: Core gevent nhận 300 MB chunked, RAM tăng
   1 MB. Agent v2: truyền tệp `temp/fs/<token>_<tên>` · thu bài `collected/<phiên>/<MÁY>.zip` · giao bài
   `work/<lô>/<đường dẫn>`; token chỉ giữ KHOÁ (`pull_key`/`push_key`). Phục vụ bằng `send_file(local_path)` (có Range).
+- Khu `drive` (Sổ tay 7.2) = khung "Máy chủ" của trình quản lý tệp: kho RIÊNG của tổ chức, giữ vô hạn (`app/files/drive.py`).
+  Thư mục ngầm định theo khoá + tệp đánh dấu `.folder` cho thư mục rỗng; so trùng tên KHÔNG phân biệt hoa/thường (NTFS
+  coi `Bai`/`bai` là một — hai dòng sổ trỏ cùng một tệp là mất dữ liệu khi xoá); Thùng rác = thư mục `Thùng rác` hạn 30
+  ngày. KHÔNG BAO GIỜ cho duyệt ổ đĩa thật của máy chủ (hệ cũ cho — SaaS nhiều tổ chức thì là lộ chéo).
 - Index mới (`tenant_id, scope, key` + `tenant_id, scope, delete_after`) phải có trên Atlas: `uv run python -m app.db.init`
   (an toàn khi chạy lại; `CapNhat` KHÔNG tự chạy bước này).
 
@@ -377,6 +389,7 @@ Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay l�
 | 03/10/2026 | 4.1–4.3 + 4.5 Desktop: công cụ, khung `desktop-app`, api-client/realtime-client/phiên | Xong | Node 24.15, Rust 1.99, VS 2022 BT, pnpm 12.8.1; typecheck/build + `cargo build` đạt; Core thêm CORS + namespace `/desktop` (cần `CapNhat`); job `desktop` trong CI |
 | 03/10/2026 | 4.4 plugin updater/notification/process + khoá ký | Xong | `pnpm tauri build` sinh bộ cài NSIS 2,35 MB + `.sig` (chữ ký ghi `version:0.1.0`), 550 s BelowNormal |
 | 03/10/2026 | 4.6 Đăng nhập + Dashboard + trang phòng + Giới thiệu | Xong (chờ máy canary để đối chiếu số thật) | Core thêm `GET /api/incidents` + `/api/incidents/summary`; Dashboard: phiếu sự cố, cảnh báo phần cứng, đồng hồ, biểu đồ Chart.js, sự cố đang mở; `incident_new` → thông báo HĐH. Chạy thử đầu-cuối đạt |
+| 05/10/2026 | 7.2 Trình quản lý tệp 2 khung | Xong phần mã (thử agent thật chờ canary) | Core `/api/files/*` (token, tải lên/về theo luồng, "máy này", khung Máy chủ = kho riêng `drive` + Thùng rác 30 ngày) + chốt token ở relay `fs_request`; Desktop `src/files/` mang hành vi `fbrowser.js` v13 (giữ chỗ cuộn, Back đúng chỗ, kéo-thả, hoàn tác, trạm→trạm 2 chặng). 209 test; thử đầu-cuối 11 bước trên thư mục thật đạt |
 | 05/10/2026 | 6.5 Ra lệnh bằng giọng nói | BỎ (ADR-0014) | Người phụ trách bỏ ghi âm + voice AI; hệ cũ chỉ có 1 route proxy Gemini, không dữ liệu, agent/hệ thi không phụ thuộc → bỏ không ảnh hưởng chuyển đổi |
 | 05/10/2026 | 7.1 StorageService bản cục bộ | Xong | `app/storage/` (LocalFS, khoá `tenants/<tid>/…`, sổ `file_metadata` hạn `delete_after`, worker dọn mỗi giờ); tệp agent v2 chuyển vào kho chung; 300 MB chunked qua Core gevent: RAM +1 MB, SHA-256 khớp. 203 test |
 | 04/10/2026 | 6.4 PowerShell hàng loạt + terminal ConPTY | Xong phần mã (thử agent thật chờ canary) | Core `/api/terminal/bulk` (SYSTEM, phiên có trước khi gửi, quá hạn → timeout) + `/api/devices/<id>/terminal/*` (mở chỉ sau xác thực đúng, dùng 1 lần); khoá `/api/legacy/command`+`/powershell` với tài khoản giới hạn phòng; Desktop terminal xterm.js (nạp lười) + hộp PowerShell hàng loạt. 194 test, thử đầu-cuối đạt |

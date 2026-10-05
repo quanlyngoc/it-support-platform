@@ -192,3 +192,10 @@ agent (hub cũ dùng chung một namespace cho cả trình duyệt lẫn agent).
 `stop` (cùng `pty_validate`/`start_pty`/`stop_pty`; agent vẫn nộp `/pty_auth_result/<mac>` + `client_pty_output`; Core thêm
 chốt: chỉ `start` sau khi CHÍNH người đó vừa xác thực đúng). `/start_ps_session` + `/stop_ps_session` (PowerShell không
 ConPTY) KHÔNG chuyển — ConPTY thay thế; action `start_ps`/`stop_ps` vẫn nằm trong hợp đồng cho agent cũ.
+Trình quản lý tệp (05/10/2026): `POST /fs_token` → `POST /api/files/token` · `GET /fs_get/<t>` → `GET /api/files/pulled/<t>` ·
+`POST /fs_put` → `POST /api/files/upload?name=` (luồng thô, không multipart) · `GET /api/fs/whoami` → `GET /api/files/whoami` ·
+`POST /api/fs/srv` + `/api/fs/srv_download` + `/api/fs/srv_upload` → `/api/files/srv` + `/srv/download` + `/srv/upload` (cùng tên
+lệnh + dạng `{ok, error}`, nhưng "Máy chủ" là kho riêng của tổ chức, không phải ổ đĩa thật). Agent KHÔNG đổi gì: vẫn
+`fs_request`/`fs_response`/`fs_progress` + `/fs_recv_raw`, `/fs_recv`, `/fs_serve/<t>`, `/fs_bridge/<t>` — tệp nay nằm trong kho
+chung (`temp/fs/<token>_<tên>`). Core thêm chốt: `push` chỉ được `download_url` = `/fs_serve|/fs_bridge/<token>` còn hạn của
+đúng tổ chức, `pull` phải có token.

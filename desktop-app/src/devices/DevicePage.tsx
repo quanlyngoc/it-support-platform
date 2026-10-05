@@ -15,6 +15,7 @@ import { openVnc } from "./vnc";
 import { ControlHost, ControlMenu, type ControlKind } from "../control/ControlDialog";
 
 // xterm.js chỉ nạp khi mở terminal (gói chính nhẹ hơn ~300 KB)
+const FileManager = lazy(() => import("../files/FileManager").then((m) => ({ default: m.FileManager })));
 const TerminalDialog = lazy(() => import("./TerminalDialog").then((m) => ({ default: m.TerminalDialog })));
 
 const SU_KIEN: Record<string, string> = { trao_phan_cung: "Tráo phần cứng", doi_serial: "Đổi serial", doi_mac: "Đổi MAC" };
@@ -31,6 +32,7 @@ export function DevicePage() {
   const canControl = useCan("device.control");
   const [ctl, setCtl] = useState<ControlKind | null>(null);
   const [term, setTerm] = useState(false);
+  const [files, setFiles] = useState(false);
   const [dialog, setDialog] = useState<"move" | "delete" | null>(null);
   const [notice, setNotice] = useState("");
   const q = useQuery({
@@ -98,6 +100,9 @@ export function DevicePage() {
             )}
             {canControl && d.is_online && (
               <button className="ghost" onClick={() => setTerm(true)} title="PowerShell trên máy (ConPTY)">Terminal</button>
+            )}
+            {canControl && (
+              <button className="ghost" onClick={() => setFiles(true)} title="Trình quản lý tệp 2 khung">Duyệt tệp</button>
             )}
             {canVnc && d.is_online && (
               <button onClick={() => openVnc(d).catch((e: Error) => setNotice(e.message))}>Điều khiển màn hình</button>
@@ -183,6 +188,11 @@ export function DevicePage() {
       {term && (
         <Suspense fallback={<p className="muted">Đang mở terminal…</p>}>
           <TerminalDialog dev={{ id: d.id, hostname: d.hostname, mac: d.mac }} onClose={() => setTerm(false)} />
+        </Suspense>
+      )}
+      {files && (
+        <Suspense fallback={<p className="muted">Đang mở trình quản lý tệp…</p>}>
+          <FileManager roomId={d.room_id ?? ""} deviceId={d.id} onClose={() => setFiles(false)} />
         </Suspense>
       )}
       {ctl && (

@@ -1,7 +1,7 @@
 """Lưu trữ tệp (Sổ tay 7.1, CLAUDE.md §8).
 
 - `StorageService` (base.py): put_stream / get_stream / delete / list — LocalFS hôm nay, S3 sau này.
-- Khoá `tenants/<tenant_id>/{work,collected,thu,chat,report,temp}/…` (keys.py).
+- Khoá `tenants/<tenant_id>/{work,collected,thu,chat,report,temp,drive}/…` (keys.py).
 - `TenantFiles` (files.py): kho của MỘT tổ chức + sổ `file_metadata` có hạn dọn; `sweeper.py` dọn mỗi giờ.
 """
 from __future__ import annotations

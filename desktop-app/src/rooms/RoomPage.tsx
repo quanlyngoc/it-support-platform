@@ -2,7 +2,7 @@
 // agent, máy GV, sự cố đang mở; chọn nhiều máy để Chuyển phòng; Chuyển / Xoá từng máy (quyền device.manage).
 // Đăng ký room realtime của phòng; mỗi batch_device_update GHI ĐÈ trạng thái từng máy + số online tuyệt đối. Mọi chỗ
 // vẽ số đo bọc is_online — máy offline KHÔNG có cpu_usage/ram_usage/disk_usage (bài học 10.11 hệ cũ).
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router";
 import { getJson } from "../api-client";
@@ -17,6 +17,9 @@ import { normalize, type MapResponse } from "./map/model";
 import { LiveGrid } from "./live/LiveGrid";
 import { openVnc } from "../devices/vnc";
 import { ControlHost, ControlMenu, type ControlKind, type ControlTarget } from "../control/ControlDialog";
+
+// Trình quản lý tệp chỉ nạp khi mở (Sổ tay 7.2)
+const FileManager = lazy(() => import("../files/FileManager").then((m) => ({ default: m.FileManager })));
 
 export function RoomPage() {
   const { id = "" } = useParams();
@@ -45,6 +48,7 @@ export function RoomPage() {
   const canControl = useCan("device.control");
   const canSelect = canManage || canControl;
   const [ctl, setCtl] = useState<{ kind: ControlKind; target: ControlTarget } | null>(null);
+  const [files, setFiles] = useState(false);
   const canMapEdit = useCan("room_map.edit");
   const [view, setView] = useState<"list" | "map" | "live">(() => {
     try {
@@ -148,6 +152,11 @@ export function RoomPage() {
             <ControlMenu target={{ kind: "room", roomId: id, name: r.name }}
                          onPick={(kind, target) => setCtl({ kind, target })} />
           )}
+          {canControl && (
+            <button className="ghost" onClick={() => setFiles(true)} title="Trình quản lý tệp 2 khung (máy trạm ⇄ máy trạm / máy bạn)">
+              📂 Tệp
+            </button>
+          )}
           <div className="seg" role="tablist" aria-label="Kiểu xem">
             <button role="tab" aria-selected={shownView === "list"} className={shownView === "list" ? "on" : ""}
                     onClick={() => pickView("list")}>Danh sách</button>
@@ -216,6 +225,11 @@ export function RoomPage() {
       {moving && <MoveDialog devices={moving} currentRoom={r.name} onClose={() => setMoving(null)} onDone={done} />}
       {deleting && <DeleteDialog device={deleting} onClose={() => setDeleting(null)} onDone={done} />}
       {ctl && <ControlHost kind={ctl.kind} target={ctl.target} onClose={() => setCtl(null)} />}
+      {files && (
+        <Suspense fallback={<p className="muted">Đang mở trình quản lý tệp…</p>}>
+          <FileManager roomId={id} onClose={() => setFiles(false)} />
+        </Suspense>
+      )}
     </section>
   );
 }
