@@ -12,13 +12,13 @@ import time
 from datetime import UTC, datetime
 
 from apiflask import APIBlueprint
-from flask import current_app, g, request, send_file, send_from_directory
-from werkzeug.exceptions import NotFound
+from flask import current_app, g, request, send_file
 
 from app.legacy_adapter.adapter import LegacyAdapter
 from app.legacy_adapter.identity import mac12, norm_host, norm_mac
-from app.legacy_adapter.store import clip, hexid, safe_host, safe_name
+from app.legacy_adapter.store import Store, clip, hexid, safe_host
 from app.legacy_adapter.update_gate import CLOSED, DL_HOLD, DL_MAX, INSTALLER
+from app.storage import KhoaSai, safe_parts, safe_segment
 from app.tenants.repo import repo_for
 
 log = logging.getLogger("legacy.http")
@@ -184,14 +184,15 @@ def _int(v) -> int:
 @bp.get("/work_file/<batch_id>/<path:filename>")
 def work_file(batch_id: str, filename: str):
     ad = _ad()
+    store = ad.store()
     bid = hexid(batch_id)
-    base = ad.root / "work" / bid
-    if not bid or not base.is_dir():
+    if store is None or not bid:
         return {"status": "error"}, 404
-    try:
-        return send_from_directory(base, filename, as_attachment=True, max_age=0)
-    except NotFound:
+    try:  # đường dẫn con lạ (`..`, ký tự cấm…) → khoá không khớp tệp nào → 404 như hub cũ
+        key = store.kho.key("work", bid, *safe_parts(filename))
+    except KhoaSai:
         return {"status": "error"}, 404
+    return _send(store, key, key.rsplit("/", 1)[-1]) or ({"status": "error"}, 404)
 
 
 @bp.post("/collect_upload")
@@ -205,10 +206,10 @@ def collect_upload():
     if not f:
         return {"status": "error", "message": "Không có tệp"}, 400
     host = safe_host(request.form.get("hostname"))
-    dest = store.dir("collect", sid) / f"{host}.zip"
-    f.save(dest)
-    store.put_result("collect", sid, host, {"uploaded": True, "size": dest.stat().st_size, "zip": dest.name})
-    ad.emit("collect_upload", {"session_id": sid, "hostname": norm_host(host), "size": dest.stat().st_size},
+    zip_name = safe_segment(f"{host}.zip")
+    doc = store.kho.save("collected", [sid, zip_name], f.stream, by=norm_host(host))  # 168 giờ như hệ cũ
+    store.put_result("collect", sid, host, {"uploaded": True, "size": doc["size"], "zip": zip_name})
+    ad.emit("collect_upload", {"session_id": sid, "hostname": norm_host(host), "size": doc["size"]},
             ad.room_res(sid))
     return {"status": "ok"}
 
@@ -231,7 +232,18 @@ def collect_report():
 
 
 # ====================================================================== truyền tệp (trình duyệt 2 khung)
-def _fs_save(token: str, name: str, writer):
+def _send(store: Store, key: str, name: str):
+    """Phục vụ tệp trong kho; không có → None. Kho trên đĩa → send_file theo đường dẫn (có Range/ETag)."""
+    p = store.kho.local_path(key)
+    if p is not None:
+        return send_file(p, as_attachment=True, download_name=name, max_age=0)
+    try:
+        return send_file(store.kho.open(key), as_attachment=True, download_name=name, max_age=0)
+    except FileNotFoundError:
+        return None
+
+
+def _fs_save(token: str, name: str, stream):
     ad = _ad()
     store = ad.store()
     if store is None:
@@ -239,9 +251,9 @@ def _fs_save(token: str, name: str, writer):
     tok = hexid(token)
     if not tok or store.fs_token(tok) is None:
         return {"status": "error", "message": "token sai/hết hạn"}, 403
-    dest = store.dir("fs_tmp") / f"{tok}_{safe_name(name)}"
-    writer(dest)
-    store.fs_set(tok, "pull_path", dest)
+    fname = safe_segment(name)
+    doc = store.kho.save("temp", ["fs", safe_segment(f"{tok}_{fname}")], stream, name=fname, by="agent")
+    store.fs_set(tok, "pull_key", doc["key"])
     return {"status": "ok"}
 
 
@@ -251,16 +263,13 @@ def fs_recv():
     tok = request.form.get("token")
     if not hexid(tok) or not f:
         return {"status": "error"}, 400
-    return _fs_save(str(tok), f.filename or "file", f.save)
+    return _fs_save(str(tok), f.filename or "file", f.stream)
 
 
 @bp.post("/fs_recv_raw")
 def fs_recv_raw():
-    def write(dest):
-        with open(dest, "wb") as out:
-            while chunk := request.stream.read(262144):  # luồng thô 256 KB/khối — không nạp cả tệp vào RAM
-                out.write(chunk)
-    return _fs_save(request.args.get("token", ""), request.args.get("name", ""), write)
+    # luồng thô, kho đọc theo khối 256 KB — không nạp cả tệp vào RAM
+    return _fs_save(request.args.get("token", ""), request.args.get("name", ""), request.stream)
 
 
 def _fs_send(token: str, field: str, missing: dict):
@@ -271,17 +280,17 @@ def _fs_send(token: str, field: str, missing: dict):
     doc = store.fs_token(token)
     if doc is None:
         return {"status": "error"}, 403
-    p = store.existing(doc, field)
-    if p is None:
+    meta = store.fs_file(doc, field)
+    if meta is None:
         return missing, 404
-    return send_file(p, as_attachment=True, download_name=p.name.split("_", 1)[-1], max_age=0)
+    return _send(store, meta["key"], meta["name"]) or (missing, 404)
 
 
 @bp.get("/fs_serve/<token>")
 def fs_serve(token: str):
-    return _fs_send(token, "push_path", {"status": "error"})
+    return _fs_send(token, "push_key", {"status": "error"})
 
 
 @bp.get("/fs_bridge/<token>")
 def fs_bridge(token: str):
-    return _fs_send(token, "pull_path", {"status": "pending"})
+    return _fs_send(token, "pull_key", {"status": "pending"})

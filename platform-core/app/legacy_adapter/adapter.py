@@ -18,7 +18,6 @@ from bson import ObjectId
 from pymongo.database import Database
 
 from app.config.settings import Settings
-from app.legacy_adapter.cleanup import don_tep_cu
 from app.legacy_adapter.identity import is_official_room, mac12, norm_host, norm_mac, room_from_hostname_raw
 from app.legacy_adapter.state import LegacyState
 from app.legacy_adapter.store import Store
@@ -26,6 +25,7 @@ from app.legacy_adapter.update_gate import SETTING_KEYS, UpdateGate
 from app.legacy_adapter.writer import Writer, run_forever
 from app.realtime.hub import DESKTOP_NS
 from app.security.ipcheck import ip_allowed
+from app.storage import StorageService, TenantFiles, make_storage
 from app.tenants.repo import SettingRepo
 
 log = logging.getLogger("legacy")
@@ -50,9 +50,11 @@ def co_y_tat_may(payload: dict) -> bool:
 
 
 class LegacyAdapter:
-    def __init__(self, db: Database, settings: Settings, socketio: Any):
+    def __init__(self, db: Database, settings: Settings, socketio: Any, storage: StorageService | None = None):
         self.db = db
         self.s = settings
+        # Kho tệp chung của Core (Sổ tay 7.1): truyền tệp / giao bài / thu bài của agent v2 nằm ở tenants/<tid>/…
+        self.storage = storage or make_storage(settings.DATA_DIR)
         self.sio = socketio
         self.state = LegacyState()
         self._tid: ObjectId | None = None
@@ -89,7 +91,7 @@ class LegacyAdapter:
 
     def store(self) -> Store | None:
         tid = self.tenant_id
-        return Store(self.db, tid, self.root) if tid else None
+        return Store(self.db, tid, TenantFiles(self.db, tid, self.storage)) if tid else None
 
     @property
     def gate(self) -> UpdateGate:
@@ -285,15 +287,7 @@ class LegacyAdapter:
         self.started = True
         self.sio.start_background_task(run_forever, self.writer_tick, self.sio.sleep, 2.0, "ghi computers")
         self.sio.start_background_task(run_forever, self.retry_tick, self.sio.sleep, 2.0, "gửi lại lệnh")
-        self.sio.start_background_task(run_forever, self.cleanup_tick, self.sio.sleep, 6 * 3600.0, "dọn tệp cũ")
         log.info("Bộ tương thích agent v2 chạy cho tổ chức %s (dữ liệu %s)", self.s.LEGACY_TENANT_CODE, self.root)
-
-    def cleanup_tick(self) -> dict[str, int]:
-        """Dọn tệp tạm quá hạn trong kho tệp (6 giờ/lần, như hệ cũ). Trả số mục đã xoá theo kho."""
-        da_xoa = don_tep_cu(self.root)
-        if da_xoa:
-            log.info("Dọn tệp cũ: %s", da_xoa)
-        return da_xoa
 
     # ------------------------------------------------------------------ tiện ích cho API/hệ thi
     def room_of(self, host: str) -> str:

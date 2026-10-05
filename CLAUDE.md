@@ -54,7 +54,7 @@ Bổ sung cho nền tảng mới:
 ```
 platform-core/        app/{api,auth,tenants,users,rbac,rooms,devices,agents,commands,realtime,
                       legacy_adapter,incidents,chat,work,files,reports,audit,settings,
-                      integrations/{ldap,smtp,telegram,gemini,hsk_thipm},workers,storage,
+                      integrations/{ldap,smtp,telegram,hsk_thipm},workers,storage,
                       db/{client,indexes,validators,seeds,migrations},security,config,utils}
                       tests/{unit,isolation,contract_v2,contract_v3} · pyproject.toml · uv.lock
 platform-agent/       agent/ (mã mới theo module: transport_v2, transport_v3, identity, heartbeat, hwinfo,
@@ -104,7 +104,8 @@ thật nhận đúng — đã thử 03/10/2026) → CLI nhận chữ có dấu p
 - Một thiết bị/một thời điểm: `active_sessions` unique `(tenant_id, user_id)`; đăng nhập mới thay phiên cũ.
   Super Admin miễn trừ.
 - Giới hạn IP theo từng tài khoản (`allowed_ip_cidrs`; rỗng = mọi nơi). Nghiêm ngặt: bật mà IP không khớp → chặn.
-- Mật khẩu: **Argon2id**. Secret cấu hình (SMTP, LDAP bind, Telegram, Gemini): AES-256-GCM, khoá chính ngoài DB.
+- Mật khẩu: **Argon2id**. Secret cấu hình (SMTP, LDAP bind, Telegram): AES-256-GCM, khoá chính ngoài DB.
+  (Gemini / ra lệnh bằng giọng nói đã BỎ — ADR-0014.)
 - RBAC: `permissions` (catalog toàn nền tảng) → `policies` (theo tổ chức, có `room_ids`) → user/AD user.
   Policy `Super Admin` là system policy, không sửa/xoá.
 - `g.ctx = {tenant_id, user_id, permissions, room_ids, is_super, system}` gắn trong `before_request`.
@@ -156,9 +157,9 @@ thật nhận đúng — đã thử 03/10/2026) → CLI nhận chữ có dấu p
   máy/nhịp, giãn đều), `usage_stats` +1 phút/máy/60 s. KHÔNG ghi Mongo mỗi nhịp tim. Không bao giờ xoá máy; tráo phần
   cứng → `machine_events` + `computers_archive`. Giá trị tạm `N/A`/`...` không đè dữ liệu thật.
   Đổi RAM/ổ cứng/hết pin CMOS → `incidents` (`hardware.py`, quy tắc hệ cũ; so trong RAM, chống trùng sự cố đang chờ).
-  Dọn kho tệp 6 giờ/lần (`cleanup.py`): CHỈ mục tên mã phiên hex, không đụng `updates/`.
+  Tệp của agent v2 (truyền tệp, thu bài, giao bài) nằm trong kho tệp chung (mục 8), worker dọn theo sổ mỗi giờ.
 - Cổng cập nhật: `settings` `update.all|hosts|rollout_rooms|rollout_percent` (mặc định tắt hết) + bộ cài phải khớp
-  `manifest.json`; kho bộ cài `<DATA_DIR>/<MÃ>/updates/`. Kho tệp khác: `<DATA_DIR>/<MÃ>/{work,collect,fs_tmp}`.
+  `manifest.json`; kho bộ cài `<DATA_DIR>/<MÃ>/updates/` (KHÔNG thuộc kho tệp chung, không bao giờ bị dọn).
 - Nhật ký: `geventwebsocket.handler` ghi MỌI request ở INFO (bỏ qua `log_output`) → `app/server.py` hạ về WARNING;
   quên là ≈ 10 GB/ngày. Tóm tắt `SYNC` 1 dòng/60 s.
 - `engineio.payload.Payload.max_decode_packets = 500` (bài học View desktop).
@@ -243,11 +244,26 @@ sự kiện riêng `vnc_thumb_req`, `fs_request`. (`kill_and_update` KHÔNG còn
 
 ## 8. Lưu trữ tệp
 
-- `StorageService` (giao diện chung): `LocalFS` (on-prem, `D:\ITSupportPlatformData`) hoặc `S3` (SeaweedFS / dịch vụ S3 trong nước).
-  KHÔNG dùng MinIO (đã ngừng bảo trì, archive 25/04/2026).
-- Khoá lưu trữ luôn có ranh giới tổ chức: `tenants/<tenant_id>/{work,collected,thu,chat,report,temp}/...`.
-- MongoDB chỉ giữ metadata (`file_metadata`); tệp lớn truyền dạng luồng, không nạp cả tệp vào RAM.
-- Dọn tự động: `temp` 48h, `work` 48h, `collected` 168h (worker đọc `file_metadata.expires_at`).
+- `StorageService` (`app/storage/base.py`): `put_stream` / `get_stream` / `delete` / `list(prefix)` (+ `stat`,
+  `local_path`, `purge_partials`). Bản cục bộ `LocalFS` (on-prem, gốc = `DATA_DIR` = `D:\ITSupportPlatformData`) đã có
+  (Sổ tay 7.1); `S3` (SeaweedFS / dịch vụ S3 trong nước) sau này — chọn trong `make_storage`, nơi gọi không đổi.
+  KHÔNG dùng MinIO (đã ngừng bảo trì, archive 25/04/2026). App giữ một kho chung ở `app.extensions["storage"]`.
+- Khoá luôn có ranh giới tổ chức: `tenants/<tenant_id>/{work,collected,thu,chat,report,temp}/...` (`keys.py`): chặn
+  `..`, `\`, đoạn rỗng, ký tự Windows cấm, đoạn kết thúc bằng dấu chấm/dấu cách, tên thiết bị (`CON`, `con.txt`…);
+  khoá của tổ chức khác → `KhoaSai`. Tên do người dùng/agent gửi → `safe_segment`/`safe_parts` TRƯỚC, `key_for` chỉ kiểm.
+- Kho của MỘT tổ chức: `TenantFiles` (`files.py`) = kho + sổ `file_metadata` (scope `storage`: key, name, size, sha256,
+  by, status, `delete_after`). Ghi 3 nhịp: giữ chỗ dòng sổ `uploading` (hạn 1 ngày) → ghi tệp NGUYÊN TỬ (`.up-<hex>.part`
+  rồi `os.replace`) → chốt `ok` + hạn → không bao giờ có tệp nằm ngoài sổ.
+  ⚠️ Hạn dọn là `delete_after`, KHÔNG phải `expires_at`: `file_metadata.expires_at` có TTL index (token truyền tệp) →
+  MongoDB tự xoá dòng sổ đúng hạn, worker không còn thấy để xoá tệp → tệp mồ côi mãi.
+- Dọn tự động (`sweeper.py`, mỗi giờ): `temp` 48h, `work` 48h, `collected` 168h; `thu`/`chat`/`report` giữ tới khi xoá chủ
+  động. CHỈ xoá thứ đã ghi sổ — không quét đĩa xoá theo tuổi tệp (bài học "suýt xoá nguyên ca thi" của hệ cũ); ngoại lệ
+  duy nhất là `.up-*.part` bị bỏ > 24 giờ. Đi từng tổ chức qua `repo_for`; khoá chéo tổ chức → không xoá, gỡ hạn.
+- Tệp lớn truyền dạng luồng (khối 256 KB), không nạp cả tệp vào RAM — đo thật: Core gevent nhận 300 MB chunked, RAM tăng
+  1 MB. Agent v2: truyền tệp `temp/fs/<token>_<tên>` · thu bài `collected/<phiên>/<MÁY>.zip` · giao bài
+  `work/<lô>/<đường dẫn>`; token chỉ giữ KHOÁ (`pull_key`/`push_key`). Phục vụ bằng `send_file(local_path)` (có Range).
+- Index mới (`tenant_id, scope, key` + `tenant_id, scope, delete_after`) phải có trên Atlas: `uv run python -m app.db.init`
+  (an toàn khi chạy lại; `CapNhat` KHÔNG tự chạy bước này).
 
 ---
 
@@ -361,6 +377,8 @@ Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay l�
 | 03/10/2026 | 4.1–4.3 + 4.5 Desktop: công cụ, khung `desktop-app`, api-client/realtime-client/phiên | Xong | Node 24.15, Rust 1.99, VS 2022 BT, pnpm 12.8.1; typecheck/build + `cargo build` đạt; Core thêm CORS + namespace `/desktop` (cần `CapNhat`); job `desktop` trong CI |
 | 03/10/2026 | 4.4 plugin updater/notification/process + khoá ký | Xong | `pnpm tauri build` sinh bộ cài NSIS 2,35 MB + `.sig` (chữ ký ghi `version:0.1.0`), 550 s BelowNormal |
 | 03/10/2026 | 4.6 Đăng nhập + Dashboard + trang phòng + Giới thiệu | Xong (chờ máy canary để đối chiếu số thật) | Core thêm `GET /api/incidents` + `/api/incidents/summary`; Dashboard: phiếu sự cố, cảnh báo phần cứng, đồng hồ, biểu đồ Chart.js, sự cố đang mở; `incident_new` → thông báo HĐH. Chạy thử đầu-cuối đạt |
+| 05/10/2026 | 6.5 Ra lệnh bằng giọng nói | BỎ (ADR-0014) | Người phụ trách bỏ ghi âm + voice AI; hệ cũ chỉ có 1 route proxy Gemini, không dữ liệu, agent/hệ thi không phụ thuộc → bỏ không ảnh hưởng chuyển đổi |
+| 05/10/2026 | 7.1 StorageService bản cục bộ | Xong | `app/storage/` (LocalFS, khoá `tenants/<tid>/…`, sổ `file_metadata` hạn `delete_after`, worker dọn mỗi giờ); tệp agent v2 chuyển vào kho chung; 300 MB chunked qua Core gevent: RAM +1 MB, SHA-256 khớp. 203 test |
 | 04/10/2026 | 6.4 PowerShell hàng loạt + terminal ConPTY | Xong phần mã (thử agent thật chờ canary) | Core `/api/terminal/bulk` (SYSTEM, phiên có trước khi gửi, quá hạn → timeout) + `/api/devices/<id>/terminal/*` (mở chỉ sau xác thực đúng, dùng 1 lần); khoá `/api/legacy/command`+`/powershell` với tài khoản giới hạn phòng; Desktop terminal xterm.js (nạp lười) + hộp PowerShell hàng loạt. 194 test, thử đầu-cuối đạt |
 | 04/10/2026 | 6.1–6.3 Nguồn + WoL, đăng nhập từ xa, Internet | Xong phần mã (cổng ra GĐ6 cần canary) | `app/control/` (lọc phạm vi + chừa GV), `/api/power` (WoL qua máy trung gian cùng subnet), `/api/remote-login` (AES-GCM, khoá biến môi trường mức máy, kết quả về đúng người bấm), `/api/internet` (chốt §0); Desktop menu Điều khiển + hộp xác nhận/kết quả |
 | 04/10/2026 | 5.4 View desktop + VNC | Xong phần mã (thử winvnc thật chờ `:7443`/canary) | Core mở/đóng phiên VNC + bố trí lưới; Desktop kiểu xem "Màn hình" (card theo sơ đồ, HD khi rê, kéo sửa bố trí) + cửa sổ con noVNC. Thử đầu-cuối với agent giả |

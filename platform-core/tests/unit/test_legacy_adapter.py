@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import dataclasses
-import time
 
 import pytest
 
@@ -342,32 +341,3 @@ def test_doi_ram_luc_core_tat_van_bat_duoc(world, db):
     world["ad"].writer_tick()
     assert [i["title"] for i in _incidents(world)] == ["MẤT RAM"]
 
-
-# ====================================================================== dọn tệp cũ
-def test_don_tep_cu_chi_xoa_ma_phien_qua_han(tmp_path):
-    import os
-
-    from app.legacy_adapter.cleanup import don_tep_cu
-
-    now = time.time()
-    cu, moi = now - 200 * 3600, now - 3600
-
-    def tao(rel, mtime, thu_muc=False):
-        p = tmp_path / rel
-        p.parent.mkdir(parents=True, exist_ok=True)
-        if thu_muc:
-            p.mkdir()
-        else:
-            p.write_text("x")
-        os.utime(p, (mtime, mtime))
-        return p
-
-    giu = [tao("work/ba7c4000000000000000000000000002", moi, True),          # còn hạn
-           tao("work/Ca sang", cu, True),                                    # không phải mã phiên → giữ
-           tao("collect/c0ec7000000000000000000000000002", now - 100 * 3600, True),  # collect giữ 168 giờ
-           tao("updates/Client_Management.exe", cu)]                         # bộ cài: không bao giờ dọn
-    xoa = [tao("work/ba7c4000000000000000000000000001", cu, True),
-           tao("collect/c0ec7000000000000000000000000001", cu, True),
-           tao("fs_tmp/f5000000000000000000000000000001_bai.zip", cu)]
-    assert don_tep_cu(tmp_path, now) == {"work": 1, "collect": 1, "fs_tmp": 1}
-    assert all(p.exists() for p in giu) and not any(p.exists() for p in xoa)

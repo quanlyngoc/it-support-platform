@@ -52,6 +52,8 @@ INDEXES: dict[str, list[tuple[list, dict]]] = {
     "pushed_files": [([("tenant_id", A), ("batch_id", A)], {}), ([("tenant_id", A), ("device_id", A)], {})],
     "file_metadata": [([("tenant_id", A), ("scope", A), ("created_at", Z)], {}),
                       ([("tenant_id", A), ("scope", A), ("token", A)], {}),  # token truyền tệp agent v2
+                      ([("tenant_id", A), ("scope", A), ("key", A)], {}),  # sổ kho tệp (Sổ tay 7.1)
+                      ([("tenant_id", A), ("scope", A), ("delete_after", A)], {}),  # worker dọn kho tệp
                       ([("expires_at", A)], {"expireAfterSeconds": 0, "partialFilterExpression":
                                              {"expires_at": {"$type": "date"}}})],
     "machine_events": [([("tenant_id", A), ("created_at", Z)], {}), ([("tenant_id", A), ("hostname", A)], {})],

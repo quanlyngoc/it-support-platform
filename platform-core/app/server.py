@@ -31,6 +31,9 @@ def create_app(db=None, settings: Settings | None = None, async_mode: str | None
 
         db = get_db()
     app.extensions["itm_db"] = db
+    from app.storage import make_storage
+
+    app.extensions["storage"] = make_storage(s.DATA_DIR)  # kho tệp chung (Sổ tay 7.1): <DATA_DIR>/tenants/<tid>/…
 
     from app.api import cors
     from app.api.desktop_release import bp as desktop_release_bp
@@ -97,6 +100,9 @@ def main() -> None:
     s = get_settings()
     app = create_app()
     app.extensions["legacy"].start()  # vòng nền: ghi computers theo lô + gửi lại lệnh chưa ACK
+    from app.storage import sweeper
+
+    sweeper.start(app, socketio)  # dọn kho tệp theo hạn, mỗi giờ
     print(f"Platform-Core {s.VERSION} chạy {s.HOST}:{s.PORT} (CSDL {s.MONGO_DB})", flush=True)
     _quiet_ctrl_c()
     try:

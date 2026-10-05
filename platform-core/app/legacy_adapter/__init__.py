@@ -19,7 +19,7 @@ def init_app(app: Flask, db: Database, settings: Settings, socketio: Any) -> Leg
     from app.legacy_adapter.api import bp as api_bp
     from app.legacy_adapter.http_routes import bp as http_bp
 
-    ad = LegacyAdapter(db, settings, socketio)
+    ad = LegacyAdapter(db, settings, socketio, app.extensions.get("storage"))
     app.extensions["legacy"] = ad
     app.register_blueprint(http_bp)
     app.register_blueprint(api_bp)

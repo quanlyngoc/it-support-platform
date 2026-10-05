@@ -3,21 +3,21 @@
 - `command_results`: phiên (role=session) + kết quả từng máy (role=result) của PowerShell hàng loạt / giao bài /
   thu bài, và kết quả đăng nhập-terminal (role=event). Tự xoá sau 2 ngày (TTL theo created_at).
 - `file_metadata` scope=fs_token: token truyền tệp do SERVER cấp (2 giờ, TTL theo expires_at).
-- Tệp nằm trên đĩa: <DATA_DIR>/<MÃ TỔ CHỨC>/{work,collect,fs_tmp}/…
+- Tệp nằm trong kho tệp chung (Sổ tay 7.1, `app.storage`), có sổ + hạn dọn:
+  truyền tệp → `temp/fs/<token>_<tên>` (48 giờ) · thu bài → `collected/<phiên>/<MÁY>.zip` (168 giờ) ·
+  giao bài → `work/<lô>/<đường dẫn>` (48 giờ). Token chỉ giữ KHOÁ (`pull_key`/`push_key`), không giữ đường dẫn đĩa.
 """
 from __future__ import annotations
 
-import os
 import re
 import uuid
 from datetime import UTC, datetime, timedelta
-from pathlib import Path
-from typing import Any
 
 from bson import ObjectId
 from pymongo.database import Database
 
 from app.legacy_adapter.identity import norm_host
+from app.storage import TenantFiles
 from app.tenants.repo import repo_for
 
 KINDS = ("ps_bulk", "send", "collect")
@@ -30,12 +30,6 @@ def hexid(s: object, n: int = 64) -> str:
     return re.sub(r"[^a-fA-F0-9]", "", str(s or ""))[:n].lower()
 
 
-def safe_name(name: object) -> str:
-    """Giữ tên tệp tiếng Việt nhưng bỏ mọi đường dẫn (app.py _safe_name)."""
-    s = os.path.basename(str(name or "")).replace("\\", "").replace("/", "").replace("..", "")
-    return s.strip()[:200] or "file"
-
-
 def safe_host(h: object) -> str:
     return (re.sub(r"[^\w\-.]", "_", str(h or "unknown"))[:80]) or "unknown"
 
@@ -46,17 +40,11 @@ def clip(s: object, n: int = CLIP) -> str:
 
 
 class Store:
-    def __init__(self, db: Database, tenant_id: ObjectId, root: Path):
+    def __init__(self, db: Database, tenant_id: ObjectId, kho: TenantFiles):
         self.tid = tenant_id
-        self.root = root
+        self.kho = kho
         self.results = repo_for(db, tenant_id, "command_results")
         self.files = repo_for(db, tenant_id, "file_metadata")
-
-    # ------------------------------------------------------------------ thư mục tệp
-    def dir(self, kind: str, *parts: str) -> Path:
-        p = self.root.joinpath(kind, *parts)
-        p.mkdir(parents=True, exist_ok=True)
-        return p
 
     # ------------------------------------------------------------------ phiên + kết quả
     def create_session(self, kind: str, *, token: str | None = None, meta: dict | None = None) -> str:
@@ -119,12 +107,16 @@ class Store:
             exp = exp.replace(tzinfo=UTC)
         return doc if exp is None or exp > datetime.now(UTC) else None
 
-    def fs_set(self, token: str, field: str, path: Path) -> None:
-        if field not in ("pull_path", "push_path"):
+    def fs_set(self, token: str, field: str, key: str) -> None:
+        """Gắn tệp (khoá kho) vào token: pull_key = máy trạm đã nộp lên · push_key = máy chủ để sẵn cho máy trạm tải."""
+        if field not in ("pull_key", "push_key"):
             raise ValueError(field)
-        self.files.update_one({"scope": "fs_token", "token": hexid(token)}, {"$set": {field: str(path)}})
+        self.files.update_one({"scope": "fs_token", "token": hexid(token)}, {"$set": {field: key}})
 
-    @staticmethod
-    def existing(doc: dict | None, field: str) -> Path | None:
-        p: Any = (doc or {}).get(field)
-        return Path(p) if p and os.path.isfile(p) else None
+    def fs_file(self, doc: dict | None, field: str) -> dict | None:
+        """Dòng sổ của tệp gắn với token (chỉ khi tệp CÒN trong kho)."""
+        key = (doc or {}).get(field)
+        if not key:
+            return None
+        meta = self.kho.get(key)
+        return meta if meta is not None and self.kho.storage.stat(key) is not None else None

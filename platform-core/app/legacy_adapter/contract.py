@@ -9,6 +9,7 @@ Chỉ dùng trong test — dùng Socket.IO test client của Flask-SocketIO (ch�
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 import time
 from collections.abc import Callable
@@ -130,17 +131,14 @@ def apply_setup(app: Flask, step: str) -> None:
         store.create_session(kind, token=arg, meta={"total": 1})
     elif name == "work_batch":
         bid, _, rel = arg.partition(":")
-        p = ad.root / "work" / bid / rel
-        p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_bytes(b"PK\x03\x04 de thi")
+        store.kho.save("work", [bid, rel], io.BytesIO(b"PK\x03\x04 de thi"))
     elif name == "fs_token":
         store.new_fs_token(token=arg)
     elif name == "fs_push":
         tok, _, fname = arg.partition(":")
         store.new_fs_token(token=tok)
-        p = store.dir("fs_tmp") / f"{tok}_{fname}"
-        p.write_bytes(b"noi dung tep")
-        store.fs_set(tok, "push_path", p)
+        doc = store.kho.save("temp", ["fs", f"{tok}_{fname}"], io.BytesIO(b"noi dung tep"), name=fname)
+        store.fs_set(tok, "push_key", doc["key"])
     elif name == "pending_ack":
         agent(app)
         ad.state.track(arg, FX_HOST, FX_MAC, {"command": "logout", "command_id": arg})
