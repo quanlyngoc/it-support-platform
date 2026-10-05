@@ -90,6 +90,18 @@ def _setup_logging() -> None:
     # (đúng lỗi server.log phình GB của hub cũ). Chỉ giữ cảnh báo/lỗi.
     for noisy in ("geventwebsocket.handler", "engineio.server", "socketio.server"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
+    _quiet_benign_warnings()
+
+
+def _quiet_benign_warnings() -> None:
+    """gevent cảnh báo "libuv only supports millisecond timer resolution" khi một lệnh chờ nhận thời gian < 1 ms (vd.
+    "thời gian còn lại" khi phân giải DNS / nối Atlas lúc khởi động) — rồi tự làm tròn lên 1 ms, hoàn toàn vô hại.
+    Xuất hiện NGẪU NHIÊN theo thời điểm (CapNhat 05/10/2026 dính một lần, các lần trước không) → báo động giả trong
+    core-err.log như traceback Ctrl+C. Chỉ lọc ĐÚNG câu này của gevent; mọi cảnh báo khác vẫn ghi."""
+    import warnings
+
+    warnings.filterwarnings("ignore", message=r"libuv only supports millisecond timer resolution",
+                            category=UserWarning, module=r"gevent\.")
 
 
 def main() -> None:
