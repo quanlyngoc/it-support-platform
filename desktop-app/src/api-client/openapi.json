@@ -724,6 +724,82 @@
     "title": "PowerShellIn",
     "type": "object"
    },
+   "SrvIn": {
+    "properties": {
+     "dst": {
+      "default": "",
+      "maxLength": 900,
+      "title": "Dst",
+      "type": "string"
+     },
+     "filename": {
+      "default": "",
+      "maxLength": 255,
+      "title": "Filename",
+      "type": "string"
+     },
+     "folder": {
+      "default": "",
+      "maxLength": 900,
+      "title": "Folder",
+      "type": "string"
+     },
+     "name": {
+      "default": "",
+      "maxLength": 255,
+      "title": "Name",
+      "type": "string"
+     },
+     "op": {
+      "enum": [
+       "list",
+       "mkdir",
+       "delete",
+       "recycle",
+       "rename",
+       "copy",
+       "stage",
+       "land"
+      ],
+      "title": "Op",
+      "type": "string"
+     },
+     "path": {
+      "default": "",
+      "maxLength": 900,
+      "title": "Path",
+      "type": "string"
+     },
+     "src": {
+      "default": "",
+      "maxLength": 900,
+      "title": "Src",
+      "type": "string"
+     },
+     "target": {
+      "default": "",
+      "maxLength": 900,
+      "title": "Target",
+      "type": "string"
+     },
+     "token": {
+      "default": "",
+      "maxLength": 64,
+      "title": "Token",
+      "type": "string"
+     },
+     "zipped": {
+      "default": false,
+      "title": "Zipped",
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "op"
+    ],
+    "title": "SrvIn",
+    "type": "object"
+   },
    "TargetsIn": {
     "properties": {
      "device_ids": {
@@ -1483,6 +1559,177 @@
     "summary": "Mở phiên xem/điều khiển: cấp token, bảo agent mở tunnel tới relay, trả URL noVNC",
     "tags": [
      "Xem / điều khiển màn hình"
+    ]
+   }
+  },
+  "/api/files/pulled/{token}": {
+   "get": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "token",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Tải tệp máy trạm vừa nộp theo token (404 `pending` khi máy trạm chưa nộp xong)",
+    "tags": [
+     "Trình quản lý tệp"
+    ]
+   }
+  },
+  "/api/files/srv": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SrvIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Khung Máy chủ: list / mkdir / delete / recycle (Thùng rác 30 ngày) / rename / copy / stage / land — cùng tên lệnh + dạng kết quả {ok, error} như máy trạm",
+    "tags": [
+     "Trình quản lý tệp"
+    ]
+   }
+  },
+  "/api/files/srv/download": {
+   "get": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Khung Máy chủ: tải một tệp về máy bạn (`?path=`)",
+    "tags": [
+     "Trình quản lý tệp"
+    ]
+   }
+  },
+  "/api/files/srv/upload": {
+   "post": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Khung Máy chủ: đưa một tệp của máy bạn vào thư mục `?path=` (thân = luồng thô, `?name=`)",
+    "tags": [
+     "Trình quản lý tệp"
+    ]
+   }
+  },
+  "/api/files/token": {
+   "post": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Cấp token truyền tệp (2 giờ) — máy trạm nộp tệp lên theo token này (lệnh `pull`)",
+    "tags": [
+     "Trình quản lý tệp"
+    ]
+   }
+  },
+  "/api/files/upload": {
+   "post": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Đưa một tệp của máy bạn lên Core (thân = luồng thô, `?name=`) → token để máy trạm tải (`push`)",
+    "tags": [
+     "Trình quản lý tệp"
+    ]
+   }
+  },
+  "/api/files/whoami": {
+   "get": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Ai đang mở trình quản lý tệp: có thấy khung Máy chủ không, máy đang ngồi (dò ngược IP, phải online)",
+    "tags": [
+     "Trình quản lý tệp"
     ]
    }
   },
@@ -2503,6 +2750,9 @@
   },
   {
    "name": "Điều khiển từ xa"
+  },
+  {
+   "name": "Trình quản lý tệp"
   },
   {
    "name": "Cập nhật Desktop"

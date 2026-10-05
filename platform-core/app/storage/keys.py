@@ -16,7 +16,9 @@ from datetime import timedelta
 
 from bson import ObjectId
 
-AREAS = ("work", "collected", "thu", "chat", "report", "temp")
+AREAS = ("work", "collected", "thu", "chat", "report", "temp", "drive")
+# `drive` (Sổ tay 7.2): "Máy chủ" trong trình quản lý tệp = kho tệp RIÊNG của tổ chức (KHÔNG phải ổ đĩa thật của máy
+# chủ — SaaS nhiều tổ chức dùng chung máy chủ). Giữ vô hạn; riêng thư mục "Thùng rác" có hạn 30 ngày (files/drive.py).
 # Hạn giữ như hệ cũ (cleanup_temp_files): tạm + giao bài 48 giờ, bài thu 168 giờ (giáo viên kịp tải).
 # Khu không có trong bảng (thu, chat, report) giữ tới khi bị xoá chủ động.
 RETENTION: dict[str, timedelta] = {"temp": timedelta(hours=48), "work": timedelta(hours=48),

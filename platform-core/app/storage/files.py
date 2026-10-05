@@ -21,7 +21,7 @@ from typing import IO
 from bson import ObjectId
 from pymongo.database import Database
 
-from app.storage.base import Source, StorageService
+from app.storage.base import KhongCo, Source, StorageService
 from app.storage.keys import RETENTION, key_for, parse, parse_prefix
 from app.tenants.repo import repo_for
 
@@ -86,6 +86,38 @@ class TenantFiles:
         pre = "/".join(segs) + "/"
         return list(self.meta.find({"scope": SCOPE, "status": "ok", "key": {"$regex": "^" + re.escape(pre)}},
                                    _HIDE).sort("key", 1))
+
+    def exists(self, key: str) -> bool:
+        return self.get(key) is not None
+
+    # ------------------------------------------------------------------ chuyển / chép (giữ sổ khớp kho)
+    def move(self, src: str, dst: str, *, name: str | None = None, ttl: timedelta | None = None) -> dict:
+        """Chuyển tệp sang khoá khác (cùng tổ chức). Hạn dọn tính lại theo khu ĐÍCH, `ttl` ghi đè (vd. Thùng rác)."""
+        parse(src, self.tid)
+        _, area, _ = parse(dst, self.tid)
+        doc = self.meta.find_one({"scope": SCOPE, "key": src, "status": "ok"})
+        if doc is None:
+            raise KhongCo(src)
+        self.storage.move(src, dst)
+        self.meta.delete_one({"scope": SCOPE, "key": dst})  # đích bị ghi đè → bỏ dòng sổ cũ của đích
+        now = self._now()
+        keep = ttl if ttl is not None else RETENTION.get(area)
+        self.meta.update_one({"_id": doc["_id"]}, {"$set": {
+            "key": dst, "area": area, "name": name or dst.rsplit("/", 1)[-1], "updated_at": now,
+            "delete_after": now + keep if keep else None}})
+        out = self.get(dst)
+        assert out is not None
+        return out
+
+    def copy(self, src: str, dst: str, *, by: str = "", ttl: timedelta | None = None) -> dict:
+        """Chép tệp (theo luồng) sang khoá khác của cùng tổ chức."""
+        parse(src, self.tid)
+        _, area, rest = parse(dst, self.tid)
+        old = self.get(src)
+        if old is None:
+            raise KhongCo(src)
+        with self.storage.get_stream(src) as f:
+            return self.save(area, rest, f, name=dst.rsplit("/", 1)[-1], by=by, ttl=ttl)
 
     # ------------------------------------------------------------------ xoá chủ động
     def delete(self, key: str) -> bool:

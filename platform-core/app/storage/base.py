@@ -53,6 +53,10 @@ class StorageService(Protocol):
         """Xoá; trả False nếu vốn không có. Tệp đang bị giữ (đang tải) → OSError, để lượt sau."""
         ...
 
+    def move(self, src: str, dst: str) -> None:
+        """Đổi khoá (ghi ĐÈ đích nếu có). Đĩa: đổi tên nguyên tử, không chép lại dữ liệu. Không có nguồn → KhongCo."""
+        ...
+
     def list(self, prefix: str) -> builtins.list[ObjInfo]:
         """Mọi đối tượng dưới tiền tố `tenants/<tid>[/<khu>[/…]]` (không bao giờ liệt kê chéo tổ chức)."""
         ...

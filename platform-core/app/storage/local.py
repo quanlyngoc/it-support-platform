@@ -72,6 +72,14 @@ class LocalFS:
         self._prune(p.parent, self.root.joinpath(*key.split("/")[:3]))
         return True
 
+    def move(self, src: str, dst: str) -> None:
+        a, b = self._path(src), self._path(dst)
+        if not a.is_file():
+            raise KhongCo(src)
+        b.parent.mkdir(parents=True, exist_ok=True)
+        os.replace(a, b)
+        self._prune(a.parent, self.root.joinpath(*src.split("/")[:3]))
+
     def list(self, prefix: str) -> builtins.list[ObjInfo]:
         base = self.root.joinpath(*parse_prefix(prefix))
         if not base.is_dir():

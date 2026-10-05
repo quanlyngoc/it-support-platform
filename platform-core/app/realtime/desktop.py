@@ -12,6 +12,7 @@ Mọi handler trả "ack" `{ok: bool, error?: str}` để Desktop hiện lỗi r
 """
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from flask import current_app, request
@@ -198,6 +199,25 @@ def ps_input(data=None):
 _FS_KEYS = ("op", "req_id", "path", "target", "src", "dst", "name", "token", "folder", "filename", "unzip",
             "download_url")
 _FS_OPS = ("list", "mkdir", "delete", "rename", "pull", "push", "copy", "recycle")
+# push: agent tải `{UPDATE_URL}{download_url}` → CHỈ cho 2 đường tệp theo token (hub cũ để trình duyệt truyền tuỳ ý)
+_FS_DL = re.compile(r"^/fs_(?:serve|bridge)/([0-9a-f]{8,64})$")
+
+
+def _fs_token_ok(ctx: Ctx, data: dict) -> str:
+    """pull/push phải mang token truyền tệp CÒN HẠN của đúng tổ chức (cấp qua /api/files/*). Lỗi → thông báo."""
+    op = data.get("op")
+    if op not in ("pull", "push"):
+        return ""
+    ad = _ad()
+    store = ad.store() if ad is not None and ad.tenant_id == ctx.tenant_id else None
+    if op == "push":
+        m = _FS_DL.match(str(data.get("download_url") or ""))
+        tok = m.group(1) if m else ""
+    else:
+        tok = str(data.get("token") or "")
+    if store is None or not tok or store.fs_token(tok) is None:
+        return "Token truyền tệp sai hoặc đã hết hạn — xin token mới qua /api/files"
+    return ""
 
 
 @socketio.on("fs_request", namespace=DESKTOP_NS)
@@ -207,6 +227,11 @@ def fs_request(data=None):
     if op not in _FS_OPS:
         return _err("op không hợp lệ")
     body = {k: (data or {})[k] for k in _FS_KEYS if k in (data or {})}
+    ctx = _ctx()
+    if ctx is None:
+        return _err("Phiên đã hết hạn")
+    if msg := _fs_token_ok(ctx, body):
+        return _err(msg)
     return _send("device.control", data, lambda ad, host, d: ad.send_fs_request(host, body, _sid()))
 
 
