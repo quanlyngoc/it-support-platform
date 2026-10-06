@@ -49,7 +49,9 @@ INDEXES: dict[str, list[tuple[list, dict]]] = {
     "audit_log": [([("tenant_id", A), ("created_at", Z)], {}),
                   ([("tenant_id", A), ("system", A), ("created_at", Z)], {}),
                   ([("created_at", A)], {"expireAfterSeconds": 180 * 86400})],
-    "pushed_files": [([("tenant_id", A), ("batch_id", A)], {}), ([("tenant_id", A), ("device_id", A)], {})],
+    "pushed_files": [([("tenant_id", A), ("batch_id", A)], {}), ([("tenant_id", A), ("device_id", A)], {}),
+                     ([("tenant_id", A), ("hostname", A), ("full_path", A)], {}),  # ghi sổ theo (máy, đường dẫn)
+                     ([("tenant_id", A), ("status", A)], {})],  # vòng nền xoá tệp chờ
     "file_metadata": [([("tenant_id", A), ("scope", A), ("created_at", Z)], {}),
                       ([("tenant_id", A), ("scope", A), ("token", A)], {}),  # token truyền tệp agent v2
                       ([("tenant_id", A), ("scope", A), ("key", A)], {}),  # sổ kho tệp (Sổ tay 7.1)

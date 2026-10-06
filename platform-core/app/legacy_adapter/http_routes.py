@@ -169,6 +169,12 @@ def send_report():
                "skipped": _int(d.get("skipped")), "failed": _int(d.get("failed")),
                "reason": str(d.get("reason", ""))[:200], "files": files}
         done = store.put_result("send", sid, str(d.get("hostname") or "?"), res)
+        try:  # sổ tệp đã giao (Sổ tay 7.3) — lỗi ở đây KHÔNG được làm hỏng đường báo cáo của agent
+            from app.work.service import on_send_report
+
+            on_send_report(ad, store, sid, str(d.get("hostname") or ""), res)
+        except Exception:
+            log.exception("Ghi sổ tệp đã giao lỗi (phiên %s)", sid)
         ad.emit("send_report", {"session_id": sid, "hostname": norm_host(d.get("hostname")), "result": res,
                                 "done_count": done}, ad.room_res(sid))
     return {"status": "ok"}  # hub cũ luôn ok kể cả phiên lạ
@@ -209,6 +215,13 @@ def collect_upload():
     zip_name = safe_segment(f"{host}.zip")
     doc = store.kho.save("collected", [sid, zip_name], f.stream, by=norm_host(host))  # 168 giờ như hệ cũ
     store.put_result("collect", sid, host, {"uploaded": True, "size": doc["size"], "zip": zip_name})
+    try:  # phiên bật "lưu trên máy chủ" → bản giải nén thu/<Ca>/<Phòng>/<Máy>/ (Sổ tay 7.3)
+        from app.work.service import on_collect_upload
+
+        on_collect_upload(ad, store, sid, host, doc["key"])
+    except Exception as e:
+        log.exception("Lưu cấu trúc THU lỗi (phiên %s, máy %s)", sid, host)
+        store.put_result("collect", sid, host, {"saved_error": str(e)[:200]})
     ad.emit("collect_upload", {"session_id": sid, "hostname": norm_host(host), "size": doc["size"]},
             ad.room_res(sid))
     return {"status": "ok"}

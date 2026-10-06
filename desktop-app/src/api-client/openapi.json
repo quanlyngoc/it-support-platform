@@ -63,6 +63,76 @@
     "title": "CloseIn",
     "type": "object"
    },
+   "CollectIn": {
+    "properties": {
+     "ca": {
+      "default": "",
+      "description": "Ca sáng / Ca chiều (rỗng = theo giờ máy chủ)",
+      "maxLength": 20,
+      "title": "Ca",
+      "type": "string"
+     },
+     "delete_after": {
+      "default": false,
+      "description": "Xoá VĨNH VIỄN tệp gốc sau khi nộp thành công",
+      "title": "Delete After",
+      "type": "boolean"
+     },
+     "device_ids": {
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 2000,
+      "title": "Device Ids",
+      "type": "array"
+     },
+     "mode": {
+      "default": "students",
+      "description": "Theo phòng: máy SV · máy GV · tất cả",
+      "enum": [
+       "students",
+       "teachers",
+       "all"
+      ],
+      "title": "Mode",
+      "type": "string"
+     },
+     "patterns": {
+      "description": "Mẫu tên tệp: * = tất cả; *.docx, *.pdf…",
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 20,
+      "title": "Patterns",
+      "type": "array"
+     },
+     "room_ids": {
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 200,
+      "title": "Room Ids",
+      "type": "array"
+     },
+     "save_thu": {
+      "default": false,
+      "description": "Lưu bản giải nén trên máy chủ: thu/<Ca>/<Phòng>/<Máy>/",
+      "title": "Save Thu",
+      "type": "boolean"
+     },
+     "src_folder": {
+      "maxLength": 260,
+      "minLength": 3,
+      "title": "Src Folder",
+      "type": "string"
+     }
+    },
+    "required": [
+     "src_folder"
+    ],
+    "title": "CollectIn",
+    "type": "object"
+   },
    "CommandIn": {
     "properties": {
      "command": {
@@ -107,6 +177,21 @@
      "hostname"
     ],
     "title": "CommandIn",
+    "type": "object"
+   },
+   "DelIn": {
+    "properties": {
+     "room_ids": {
+      "description": "Rỗng = mọi phòng trong phạm vi",
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 200,
+      "title": "Room Ids",
+      "type": "array"
+     }
+    },
+    "title": "DelIn",
     "type": "object"
    },
    "GateIn": {
@@ -722,6 +807,61 @@
      "script"
     ],
     "title": "PowerShellIn",
+    "type": "object"
+   },
+   "SendIn": {
+    "properties": {
+     "batch_id": {
+      "maxLength": 64,
+      "minLength": 8,
+      "title": "Batch Id",
+      "type": "string"
+     },
+     "dest_folder": {
+      "default": "",
+      "description": "Rỗng = Desktop chung (C:\\Users\\Public\\Desktop)",
+      "maxLength": 260,
+      "title": "Dest Folder",
+      "type": "string"
+     },
+     "device_ids": {
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 2000,
+      "title": "Device Ids",
+      "type": "array"
+     },
+     "mode": {
+      "default": "students",
+      "description": "Theo phòng: máy SV · máy GV · tất cả",
+      "enum": [
+       "students",
+       "teachers",
+       "all"
+      ],
+      "title": "Mode",
+      "type": "string"
+     },
+     "overwrite": {
+      "default": false,
+      "description": "Ghi đè tệp trùng tên (không tích = giữ tệp cũ, bỏ qua)",
+      "title": "Overwrite",
+      "type": "boolean"
+     },
+     "room_ids": {
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 200,
+      "title": "Room Ids",
+      "type": "array"
+     }
+    },
+    "required": [
+     "batch_id"
+    ],
+    "title": "SendIn",
     "type": "object"
    },
    "SrvIn": {
@@ -2668,6 +2808,448 @@
     ]
    }
   },
+  "/api/work/batches/{batch_id}": {
+   "get": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "batch_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Các tệp trong một lô giao bài",
+    "tags": [
+     "Giao bài / thu bài"
+    ]
+   }
+  },
+  "/api/work/collect": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CollectIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Thu bài từ các phòng / các máy đã chọn — kết quả theo session_id",
+    "tags": [
+     "Giao bài / thu bài"
+    ]
+   }
+  },
+  "/api/work/collect/{sid}": {
+   "get": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "sid",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Trạng thái thu bài từng máy: ok / nofile / nofolder / fail / offline / running",
+    "tags": [
+     "Giao bài / thu bài"
+    ]
+   }
+  },
+  "/api/work/collect/{sid}/hosts/{host}/entries": {
+   "get": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "sid",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "in": "path",
+      "name": "host",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Các tệp trong bài của một máy (để lưu thẳng vào <thư mục>/<phòng>/<máy>/ trên máy bạn)",
+    "tags": [
+     "Giao bài / thu bài"
+    ]
+   }
+  },
+  "/api/work/collect/{sid}/hosts/{host}/entry": {
+   "get": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "sid",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "in": "path",
+      "name": "host",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Tải MỘT tệp trong bài của một máy (`?path=` như trong entries) — theo luồng",
+    "tags": [
+     "Giao bài / thu bài"
+    ]
+   }
+  },
+  "/api/work/collect/{sid}/hosts/{host}/zip": {
+   "get": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "sid",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "in": "path",
+      "name": "host",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Tải bài (.zip) của một máy",
+    "tags": [
+     "Giao bài / thu bài"
+    ]
+   }
+  },
+  "/api/work/collect/{sid}/zip": {
+   "get": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "sid",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Tải MỌI bài đã nộp trong một tệp .zip (<Phòng>/<Máy>.zip)",
+    "tags": [
+     "Giao bài / thu bài"
+    ]
+   }
+  },
+  "/api/work/pushed": {
+   "get": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Nhật ký tệp đã giao (đã đẩy / chờ xoá / đã xoá) theo từng máy",
+    "tags": [
+     "Giao bài / thu bài"
+    ]
+   }
+  },
+  "/api/work/pushed/delete": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/DelIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "XOÁ VĨNH VIỄN các tệp đã giao (chỉ tệp agent báo đã ghi); máy đang tắt → tự xoá khi online lại",
+    "tags": [
+     "Giao bài / thu bài"
+    ]
+   }
+  },
+  "/api/work/send": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SendIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Giao lô tệp tới các phòng (máy SV / GV / tất cả) hoặc các máy đã chọn — kết quả theo session_id",
+    "tags": [
+     "Giao bài / thu bài"
+    ]
+   }
+  },
+  "/api/work/send/{sid}": {
+   "get": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "sid",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Kết quả nhận bài từng máy (máy quá hạn chưa báo → timeout)",
+    "tags": [
+     "Giao bài / thu bài"
+    ]
+   }
+  },
+  "/api/work/upload": {
+   "post": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Thêm 1 tệp vào lô giao bài (thân = luồng thô; `?name=` giữ đường dẫn con khi chọn cả thư mục; `?batch=` để thêm vào lô đang có)",
+    "tags": [
+     "Giao bài / thu bài"
+    ]
+   }
+  },
   "/desktop/latest.json": {
    "get": {
     "parameters": [],
@@ -2753,6 +3335,9 @@
   },
   {
    "name": "Trình quản lý tệp"
+  },
+  {
+   "name": "Giao bài / thu bài"
   },
   {
    "name": "Cập nhật Desktop"

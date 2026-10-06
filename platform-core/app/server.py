@@ -48,6 +48,7 @@ def create_app(db=None, settings: Settings | None = None, async_mode: str | None
     from app.incidents.routes import bp as incidents_bp
     from app.legacy_adapter import init_app as legacy_init
     from app.rooms.map_routes import bp as room_maps_bp
+    from app.work.routes import bp as work_bp
 
     app.before_request(load_context)
     audit_hooks.register(app)
@@ -61,6 +62,7 @@ def create_app(db=None, settings: Settings | None = None, async_mode: str | None
     app.register_blueprint(vnc_bp)
     app.register_blueprint(control_bp)
     app.register_blueprint(files_bp)
+    app.register_blueprint(work_bp)
     app.register_blueprint(desktop_release_bp)
     from app.realtime import desktop  # noqa: F401  — đăng ký namespace /desktop lúc import
 
@@ -117,6 +119,9 @@ def main() -> None:
     from app.storage import sweeper
 
     sweeper.start(app, socketio)  # dọn kho tệp theo hạn, mỗi giờ
+    from app.work import service as work
+
+    work.start(app, socketio)  # tệp đã giao đang CHỜ XOÁ → xoá nốt khi máy online lại
     print(f"Platform-Core {s.VERSION} chạy {s.HOST}:{s.PORT} (CSDL {s.MONGO_DB})", flush=True)
     _quiet_ctrl_c()
     try:
