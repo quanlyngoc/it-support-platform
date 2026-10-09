@@ -17,9 +17,11 @@ import { normalize, type MapResponse } from "./map/model";
 import { LiveGrid } from "./live/LiveGrid";
 import { openVnc } from "../devices/vnc";
 import { ControlHost, ControlMenu, type ControlKind, type ControlTarget } from "../control/ControlDialog";
+import type { WorkPreset } from "../work/WorkDialog";
 
 // Trình quản lý tệp chỉ nạp khi mở (Sổ tay 7.2)
 const FileManager = lazy(() => import("../files/FileManager").then((m) => ({ default: m.FileManager })));
+const WorkDialog = lazy(() => import("../work/WorkDialog").then((m) => ({ default: m.WorkDialog })));
 
 export function RoomPage() {
   const { id = "" } = useParams();
@@ -49,6 +51,7 @@ export function RoomPage() {
   const canSelect = canManage || canControl;
   const [ctl, setCtl] = useState<{ kind: ControlKind; target: ControlTarget } | null>(null);
   const [files, setFiles] = useState(false);
+  const [work, setWork] = useState<WorkPreset | null>(null);
   const canMapEdit = useCan("room_map.edit");
   const [view, setView] = useState<"list" | "map" | "live">(() => {
     try {
@@ -157,6 +160,10 @@ export function RoomPage() {
               📂 Tệp
             </button>
           )}
+          {canControl && (
+            <button className="ghost" onClick={() => setWork({ rooms: [{ id, name: r.name }] })}
+                    title="Giao bài / thu bài / tệp đã giao cho cả phòng">📤 Giao/Thu bài</button>
+          )}
           <div className="seg" role="tablist" aria-label="Kiểu xem">
             <button role="tab" aria-selected={shownView === "list"} className={shownView === "list" ? "on" : ""}
                     onClick={() => pickView("list")}>Danh sách</button>
@@ -184,6 +191,10 @@ export function RoomPage() {
           {canControl && (
             <ControlMenu target={{ kind: "devices", ids: selected.map((d) => d.id), names: selected.map((d) => d.hostname) }}
                          onPick={(kind, target) => setCtl({ kind, target })} />
+          )}
+          {canControl && (
+            <button className="ghost" onClick={() => setWork({ rooms: [{ id, name: r.name }],
+              deviceIds: selected.map((d) => d.id), deviceNames: selected.map((d) => d.hostname) })}>Giao/Thu bài…</button>
           )}
           {canManage && <button onClick={() => setMoving(selected)}>Chuyển phòng…</button>}
           <button className="ghost" onClick={() => setSel(new Set())}>Bỏ chọn</button>
@@ -228,6 +239,11 @@ export function RoomPage() {
       {files && (
         <Suspense fallback={<p className="muted">Đang mở trình quản lý tệp…</p>}>
           <FileManager roomId={id} onClose={() => setFiles(false)} />
+        </Suspense>
+      )}
+      {work && (
+        <Suspense fallback={<p className="muted">Đang mở giao/thu bài…</p>}>
+          <WorkDialog preset={work} onClose={() => setWork(null)} />
         </Suspense>
       )}
     </section>

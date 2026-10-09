@@ -199,3 +199,13 @@ lệnh + dạng `{ok, error}`, nhưng "Máy chủ" là kho riêng của tổ ch�
 `fs_request`/`fs_response`/`fs_progress` + `/fs_recv_raw`, `/fs_recv`, `/fs_serve/<t>`, `/fs_bridge/<t>` — tệp nay nằm trong kho
 chung (`temp/fs/<token>_<tên>`). Core thêm chốt: `push` chỉ được `download_url` = `/fs_serve|/fs_bridge/<token>` còn hạn của
 đúng tổ chức, `pull` phải có token.
+Giao bài / thu bài (09/10/2026): `POST /upload_work` → `POST /api/work/upload?name=&batch=` (từng tệp, luồng thô, giữ đường
+dẫn con) · `/send_work` + `/hub_send_work` → `POST /api/work/send` · `/send_status/<sid>` → `GET /api/work/send/<sid>` ·
+`/hub_pushed_list` → `GET /api/work/pushed` · `/hub_delete_pushed` → `POST /api/work/pushed/delete` · `/collect_work` +
+`/hub_collect_work` → `POST /api/work/collect` · `/collect_status` + `/hub_collect_status` → `GET /api/work/collect/<sid>` ·
+`/collect_download/<sid>/<host>` → `…/hosts/<host>/zip` · `/collect_download_all/<sid>` → `…/zip` (thêm `…/entries` +
+`…/entry?path=`). Agent KHÔNG đổi gì: vẫn `receive_work {batch_id, files, dest_folder, overwrite, session_id, report_url}`
+/ `collect_work {session_id, src_folder, patterns, upload_url, delete_after}`, `/work_file/<lô>/<tên>`, `/send_report`,
+`/collect_upload`, `/collect_report`; xoá tệp đã giao vẫn là `fs_request {op: "delete", target}`. Khác hub cũ: tên tệp
+Core gửi đã ở điểm bất động của `_duong_con_agent`; `pushed_files` chỉ ghi tệp agent báo đã ghi (bỏ "đã có, bỏ qua");
+Core từ chối đích `Windows`/thư mục agent, xoá nguồn ở gốc ổ/thư mục hệ thống, mẫu tệp chứa đường dẫn.

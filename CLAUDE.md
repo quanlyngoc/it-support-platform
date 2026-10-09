@@ -231,6 +231,13 @@ sự kiện riêng `vnc_thumb_req`, `fs_request`. (`kill_and_update` KHÔNG còn
   qua socket. "Về máy tôi" hỏi chỗ lưu TRƯỚC (`showSaveFilePicker` chỉ chạy trong thao tác bấm) rồi ghi theo luồng.
   ⚠️ `tauri.conf.json` đặt `dragDropEnabled: false` — bật lại là WebView2 nuốt kéo-thả HTML5 (kéo giữa 2 khung + kéo tệp
   từ Explorer chết im lặng). "Máy chủ" = kho riêng của tổ chức (mục 8), chỉ Super Admin.
+- **Giao bài / thu bài** (`src/work/`, Core `app/work/`): một `WorkDialog` 3 thẻ (giữ trạng thái khi chuyển thẻ — `hidden`, không
+  unmount). Mở từ trang phòng (1 phòng), thanh "Đã chọn N máy" (`deviceIds`), trang Phòng máy (`pickRooms`). Chọn thư mục
+  dùng `webkitRelativePath` làm `?name=` (giữ cây con — Core làm sạch theo luật agent). Thu bài lưu vào thư mục máy bạn
+  bằng `entries` + `entry` (Core đọc từng tệp trong .zip theo luồng) — KHÔNG giải nén trong trình duyệt (không thêm thư
+  viện, không nạp cả bài vào RAM). Không lồng Modal trong Modal: Esc đóng cả hai (nhật ký thu vì vậy hiện trong thẻ).
+- **Chạy thử đầu-cuối không cần Atlas:** scratchpad `core_mock.py` = `app.server.main()` thật (gevent) trên mongomock, tự
+  tạo PHENIKAA + `admin`/`Ui@12345`. Kịch bản e2e chờ form đăng nhập xuất hiện rồi mới điền (Vite nguội > 8 s).
 
 ---
 
@@ -311,6 +318,11 @@ Quy tắc then chốt:
 8. Không tin `errorlevel` của `nssm start`; luôn đọc `nssm status` thật.
 9. Kết quả bất đồng bộ gắn token: đệm kết quả về sớm + poll dự phòng.
 10. "Dịch vụ đang chạy/cổng đang mở" ≠ "cấu hình đúng": tự chữa phải kiểm thứ quan trọng (vd. xác thực thật).
+11. Luật đường dẫn con của tệp giao bài: bất biến 4 nơi (hệ thi `shared/duong_con.py` · hub cũ `_duong_con_work` · agent
+    `_duong_con_agent` · Core `app/work/paths.py`). Core chép ĐÚNG bản agent + gửi tên ở điểm bất động (`on_dinh`); test
+    `test_work_paths.py` giữ bản chép agent làm mẫu — sửa luật ở một nơi là "đẩy một đằng, xoá một nẻo".
+12. Chỉ xoá trên máy trạm thứ mình CHẮC CHẮN đã ghi: `pushed_files` ghi theo báo cáo agent (bỏ tệp "đã có, bỏ qua"), không
+    ghi theo danh sách gửi đi; agent xoá bằng rmtree nếu đích là thư mục.
 
 ---
 
@@ -389,6 +401,7 @@ Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay l�
 | 03/10/2026 | 4.1–4.3 + 4.5 Desktop: công cụ, khung `desktop-app`, api-client/realtime-client/phiên | Xong | Node 24.15, Rust 1.99, VS 2022 BT, pnpm 12.8.1; typecheck/build + `cargo build` đạt; Core thêm CORS + namespace `/desktop` (cần `CapNhat`); job `desktop` trong CI |
 | 03/10/2026 | 4.4 plugin updater/notification/process + khoá ký | Xong | `pnpm tauri build` sinh bộ cài NSIS 2,35 MB + `.sig` (chữ ký ghi `version:0.1.0`), 550 s BelowNormal |
 | 03/10/2026 | 4.6 Đăng nhập + Dashboard + trang phòng + Giới thiệu | Xong (chờ máy canary để đối chiếu số thật) | Core thêm `GET /api/incidents` + `/api/incidents/summary`; Dashboard: phiếu sự cố, cảnh báo phần cứng, đồng hồ, biểu đồ Chart.js, sự cố đang mở; `incident_new` → thông báo HĐH. Chạy thử đầu-cuối đạt |
+| 09/10/2026 | 7.3 Giao bài, thu bài, nhật ký | Xong phần mã (cổng ra GĐ7 chờ canary) | Core `/api/work/*` (lô theo luồng giữ cây con, giao nhiều phòng SV/GV, thu bài 6 trạng thái, tải 1 máy / tất cả / từng tệp, cấu trúc THU, nhật ký + xoá có hàng chờ); luật đường dẫn = bản agent; an toàn hơn hub cũ (chỉ ghi sổ tệp agent báo đã ghi, chặn đích hệ thống/agent, chặn xoá nguồn gốc ổ, mẫu không chứa đường dẫn). Desktop `src/work/` (3 thẻ, tự lưu bài vào <thư mục>/<phòng>/<máy>, nhật ký thu + sao chép). 217 test; thử đầu-cuối trên Core mongomock đạt |
 | 05/10/2026 | 7.2 Trình quản lý tệp 2 khung | Xong phần mã (thử agent thật chờ canary) | Core `/api/files/*` (token, tải lên/về theo luồng, "máy này", khung Máy chủ = kho riêng `drive` + Thùng rác 30 ngày) + chốt token ở relay `fs_request`; Desktop `src/files/` mang hành vi `fbrowser.js` v13 (giữ chỗ cuộn, Back đúng chỗ, kéo-thả, hoàn tác, trạm→trạm 2 chặng). 209 test; thử đầu-cuối 11 bước trên thư mục thật đạt |
 | 05/10/2026 | 6.5 Ra lệnh bằng giọng nói | BỎ (ADR-0014) | Người phụ trách bỏ ghi âm + voice AI; hệ cũ chỉ có 1 route proxy Gemini, không dữ liệu, agent/hệ thi không phụ thuộc → bỏ không ảnh hưởng chuyển đổi |
 | 05/10/2026 | 7.1 StorageService bản cục bộ | Xong | `app/storage/` (LocalFS, khoá `tenants/<tid>/…`, sổ `file_metadata` hạn `delete_after`, worker dọn mỗi giờ); tệp agent v2 chuyển vào kho chung; 300 MB chunked qua Core gevent: RAM +1 MB, SHA-256 khớp. 203 test |
