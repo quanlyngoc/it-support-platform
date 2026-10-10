@@ -459,3 +459,53 @@ textarea { font: 14px var(--font); padding: 8px 10px; border-radius: 6px; border
   border-left: 4px solid var(--accent); box-shadow: 0 8px 26px rgb(0 0 0 / .2); animation: chat-in .25s ease-out; }
 .chat-toast span { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 @keyframes chat-in { from { transform: translateY(-14px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ===== Sự cố + Báo cáo (Sổ tay 8.2) ===== */
+.err-text { color: var(--err); }
+.filters input, .filters select { width: auto; }
+.filters input[type="search"] { min-width: 240px; }
+.filters label { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }
+table.grid tr.click { cursor: pointer; }
+table.grid tr.click:hover td { background: var(--surface-2); }
+.inc-table tr.sys td:first-child { box-shadow: inset 3px 0 0 var(--err); }
+.st { display: inline-block; padding: 1px 9px; border-radius: 99px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.st-PENDING { color: var(--warn); background: color-mix(in srgb, var(--warn) 16%, transparent); }
+.st-PROCESSING { color: var(--accent); background: color-mix(in srgb, var(--accent) 16%, transparent); }
+.st-DONE { color: var(--ok); background: color-mix(in srgb, var(--ok) 16%, transparent); }
+button.badge.as-btn { font: 600 11px var(--font); padding: 0 7px; margin-left: 0; line-height: 18px; }
+.inc-add-btn { opacity: .5; }
+tr:hover .inc-add-btn { opacity: 1; }
+.inc h3 { margin: 16px 0 6px; font-size: 14px; }
+.inc-meta { margin-bottom: 4px; }
+.inc-lines { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.inc-lines li { display: grid; gap: 2px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; }
+.inc-lines li label { display: flex; align-items: flex-start; gap: 8px; color: var(--err); cursor: pointer; }
+.inc-lines li label input { width: auto; margin-top: 3px; }
+.inc-lines li.done { border-color: color-mix(in srgb, var(--ok) 45%, var(--line)); }
+.inc-lines li.done label { color: var(--ok); cursor: default; }
+.inc-sys { white-space: pre-wrap; color: var(--err); margin: 0; }
+.inc-notes { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.inc-add { display: flex; gap: 8px; margin-top: 12px; }
+.inc-add input { flex: 1; }
+.inc-handle { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+.inc-handle textarea, .modal textarea { width: 100%; box-sizing: border-box; font: 14px var(--font); padding: 8px 10px;
+  border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); resize: vertical; }
+.log-err { max-width: 560px; white-space: pre-wrap; overflow-wrap: anywhere; font: 12px/1.4 ui-monospace, Consolas, monospace; }
+.alert-form .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px 16px;
+  max-width: 920px; }
+.alert-form label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+.alert-form label.wide { grid-column: 1 / -1; }
+.alert-form label.chk { display: flex; align-items: center; gap: 6px; align-self: end; }
+.alert-form label.chk input { width: auto; }
+.alert-form textarea { font: 14px var(--font); padding: 8px 10px; border-radius: 6px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink); resize: vertical; }
+.alert-form .actions { display: flex; gap: 10px; margin: 14px 0 8px; }
+table.grid th.num, table.grid td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.rp-room { border: 1px solid var(--line); border-radius: 8px; margin-bottom: 8px; overflow: hidden; background: var(--surface); }
+.rp-head { width: 100%; display: grid; grid-template-columns: 1fr auto auto 18px; gap: 18px; align-items: center;
+  background: transparent; color: var(--ink); border-left: 4px solid var(--accent); border-radius: 0; padding: 10px 14px;
+  text-align: left; font-weight: 400; }
+.rp-head:hover { background: var(--surface-2); }
+.rp-room table.grid { border: 0; border-top: 1px solid var(--line); border-radius: 0; }
+.rp-day h2 { display: flex; align-items: center; gap: 10px; }
+.rp-day h2 button { margin-left: auto; }

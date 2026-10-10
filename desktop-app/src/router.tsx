@@ -4,6 +4,8 @@ import { createHashRouter } from "react-router";
 import { LoginPage } from "./authentication/LoginPage";
 import { DashboardPage } from "./dashboard/DashboardPage";
 import { DevicePage } from "./devices/DevicePage";
+import { IncidentsPage } from "./incidents/IncidentsPage";
+import { ReportsPage } from "./reports/ReportsPage";
 import { RoomPage } from "./rooms/RoomPage";
 import { RoomsPage } from "./rooms/RoomsPage";
 import { AboutPage } from "./shared/AboutPage";
@@ -19,6 +21,8 @@ export const router = createHashRouter([
       { path: "rooms", element: <RoomsPage /> },
       { path: "rooms/:id", element: <RoomPage /> },
       { path: "devices/:id", element: <DevicePage /> },
+      { path: "incidents", element: <IncidentsPage /> },
+      { path: "reports", element: <ReportsPage /> },
       { path: "about", element: <AboutPage /> },
     ],
   },

@@ -6,6 +6,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router";
 import { getJson } from "../api-client";
 import type { Device, Incident, ListResult, MachineEvent } from "../api-client/types";
+import { TRANG_THAI } from "../incidents/api";
 import { realtime, request, useRealtime, type BatchDeviceUpdate } from "../realtime-client";
 import { diskLabel, fmtTime, isGV, parseDisks } from "../shared/metrics";
 import { useCan } from "../shared/perm";
@@ -13,13 +14,13 @@ import { Meter } from "../shared/ui";
 import { DeleteDialog, MoveDialog } from "./DeviceDialogs";
 import { openVnc } from "./vnc";
 import { ControlHost, ControlMenu, type ControlKind } from "../control/ControlDialog";
+import { IncidentDialog, ReportDialog } from "../incidents/IncidentDialog";
 
 // xterm.js chỉ nạp khi mở terminal (gói chính nhẹ hơn ~300 KB)
 const FileManager = lazy(() => import("../files/FileManager").then((m) => ({ default: m.FileManager })));
 const TerminalDialog = lazy(() => import("./TerminalDialog").then((m) => ({ default: m.TerminalDialog })));
 
 const SU_KIEN: Record<string, string> = { trao_phan_cung: "Tráo phần cứng", doi_serial: "Đổi serial", doi_mac: "Đổi MAC" };
-const TRANG_THAI: Record<Incident["status"], string> = { PENDING: "Chờ xử lý", PROCESSING: "Đang xử lý", DONE: "Xong" };
 
 export function DevicePage() {
   const { id = "" } = useParams();
@@ -35,6 +36,8 @@ export function DevicePage() {
   const [files, setFiles] = useState(false);
   const [dialog, setDialog] = useState<"move" | "delete" | null>(null);
   const [notice, setNotice] = useState("");
+  const [report, setReport] = useState(false);
+  const [openInc, setOpenInc] = useState<string | null>(null);
   const q = useQuery({
     queryKey: ["device", id],
     queryFn: () => getJson<Device>(`/api/devices/${encodeURIComponent(id)}`),
@@ -93,24 +96,23 @@ export function DevicePage() {
           {" "}<small className="muted"><span className={`dot ${d.is_online ? "on" : "off"}`} />
             {d.is_online ? (d.channel === "http" ? "Online (mất kênh lệnh)" : "Online") : "Offline"}</small>
         </h1>
-        {(canManage || canVnc || canControl) && (
-          <div className="toolbar">
-            {canControl && (
-              <ControlMenu target={{ kind: "devices", ids: [id], names: [host] }} onPick={(k) => setCtl(k)} />
-            )}
-            {canControl && d.is_online && (
-              <button className="ghost" onClick={() => setTerm(true)} title="PowerShell trên máy (ConPTY)">Terminal</button>
-            )}
-            {canControl && (
-              <button className="ghost" onClick={() => setFiles(true)} title="Trình quản lý tệp 2 khung">Duyệt tệp</button>
-            )}
-            {canVnc && d.is_online && (
-              <button onClick={() => openVnc(d).catch((e: Error) => setNotice(e.message))}>Điều khiển màn hình</button>
-            )}
-            {canManage && <button className={canVnc && d.is_online ? "ghost" : ""} onClick={() => setDialog("move")}>Chuyển phòng…</button>}
-            {canManage && <button className="ghost danger-text" onClick={() => setDialog("delete")}>Xoá máy…</button>}
-          </div>
-        )}
+        <div className="toolbar">
+          <button className="ghost" onClick={() => setReport(true)} title="Báo lỗi máy này cho IT">Báo hỏng…</button>
+          {canControl && (
+            <ControlMenu target={{ kind: "devices", ids: [id], names: [host] }} onPick={(k) => setCtl(k)} />
+          )}
+          {canControl && d.is_online && (
+            <button className="ghost" onClick={() => setTerm(true)} title="PowerShell trên máy (ConPTY)">Terminal</button>
+          )}
+          {canControl && (
+            <button className="ghost" onClick={() => setFiles(true)} title="Trình quản lý tệp 2 khung">Duyệt tệp</button>
+          )}
+          {canVnc && d.is_online && (
+            <button onClick={() => openVnc(d).catch((e: Error) => setNotice(e.message))}>Điều khiển màn hình</button>
+          )}
+          {canManage && <button className={canVnc && d.is_online ? "ghost" : ""} onClick={() => setDialog("move")}>Chuyển phòng…</button>}
+          {canManage && <button className="ghost danger-text" onClick={() => setDialog("delete")}>Xoá máy…</button>}
+        </div>
       </div>
       {notice && <p className="notice" role="status">{notice}</p>}
 
@@ -154,12 +156,19 @@ export function DevicePage() {
       <h2>Sự cố</h2>
       {inc.data && inc.data.items.length > 0 ? (
         <table className="grid">
-          <thead><tr><th>Thời điểm</th><th>Sự cố</th><th>Chi tiết</th><th>Trạng thái</th></tr></thead>
+          <thead><tr><th>Thời điểm</th><th>Người báo</th><th>Lỗi</th><th>IT xử lý</th><th>Trạng thái</th></tr></thead>
           <tbody>
             {inc.data.items.map((i) => (
-              <tr key={i.id}>
-                <td>{fmtTime(i.created_at)}</td><td><b>{i.title}</b></td><td>{i.description}</td>
-                <td>{TRANG_THAI[i.status] ?? i.status}</td>
+              <tr key={i.id} className="click" onClick={() => setOpenInc(i.id)} title="Bấm để xem / xử lý">
+                <td>{fmtTime(i.created_at)}</td>
+                <td>{i.source === "USER" ? i.reporter_name : <span className="badge warn">HỆ THỐNG</span>}</td>
+                <td>
+                  {i.items?.length ? i.items.map((it) => (
+                    <div key={it.n} className={it.done ? "ok-text" : "err-text"}>{it.done ? "✓" : "•"} {it.text}</div>
+                  )) : <><b>{i.title}</b> <span className="muted">{i.description}</span></>}
+                </td>
+                <td>{i.resolver_name}</td>
+                <td><span className={`st st-${i.status}`}>{TRANG_THAI[i.status]}</span></td>
               </tr>
             ))}
           </tbody>
@@ -185,6 +194,11 @@ export function DevicePage() {
         </>
       )}
 
+      {report && (
+        <ReportDialog device={d} hasOpen={inc.data?.items.some((i) => i.source === "USER" && i.status !== "DONE")}
+                      onClose={() => setReport(false)} onDone={(m) => { setReport(false); setNotice(m); }} />
+      )}
+      {openInc && <IncidentDialog id={openInc} onClose={() => setOpenInc(null)} />}
       {term && (
         <Suspense fallback={<p className="muted">Đang mở terminal…</p>}>
           <TerminalDialog dev={{ id: d.id, hostname: d.hostname, mac: d.mac }} onClose={() => setTerm(false)} />

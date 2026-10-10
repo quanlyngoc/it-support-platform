@@ -18,6 +18,7 @@ import { LiveGrid } from "./live/LiveGrid";
 import { openVnc } from "../devices/vnc";
 import { ControlHost, ControlMenu, type ControlKind, type ControlTarget } from "../control/ControlDialog";
 import type { WorkPreset } from "../work/WorkDialog";
+import { IncidentDialog, ReportDialog } from "../incidents/IncidentDialog";
 
 // Trình quản lý tệp chỉ nạp khi mở (Sổ tay 7.2)
 const FileManager = lazy(() => import("../files/FileManager").then((m) => ({ default: m.FileManager })));
@@ -45,6 +46,8 @@ export function RoomPage() {
   const [moving, setMoving] = useState<Device[] | null>(null);
   const [deleting, setDeleting] = useState<Device | null>(null);
   const [notice, setNotice] = useState("");
+  const [openInc, setOpenInc] = useState<string | null>(null);
+  const [reporting, setReporting] = useState<Device | null>(null);
   const navigate = useNavigate();
   const canVnc = useCan("remote.vnc");
   const canControl = useCan("device.control");
@@ -225,6 +228,7 @@ export function RoomPage() {
           {devices.map((d) => (
             <Row key={d.id} d={d} canManage={canManage} canVnc={canVnc} canSelect={canSelect} selected={sel.has(d.id)}
                  onToggle={() => toggle(d.id)} incidents={incByHost.get(d.hostname.toUpperCase()) ?? []}
+                 onIncident={setOpenInc} onReport={() => setReporting(d)}
                  onMove={() => setMoving([d])} onDelete={() => setDeleting(d)}
                  onVnc={() => openVnc(d).catch((e: Error) => setNotice(e.message))} />
           ))}
@@ -236,6 +240,12 @@ export function RoomPage() {
       {moving && <MoveDialog devices={moving} currentRoom={r.name} onClose={() => setMoving(null)} onDone={done} />}
       {deleting && <DeleteDialog device={deleting} onClose={() => setDeleting(null)} onDone={done} />}
       {ctl && <ControlHost kind={ctl.kind} target={ctl.target} onClose={() => setCtl(null)} />}
+      {openInc && <IncidentDialog id={openInc} onClose={() => setOpenInc(null)} />}
+      {reporting && (
+        <ReportDialog device={reporting} onClose={() => setReporting(null)}
+                      hasOpen={(incByHost.get(reporting.hostname.toUpperCase()) ?? []).some((i) => i.source === "USER")}
+                      onDone={(m) => { setReporting(null); setNotice(m); }} />
+      )}
       {files && (
         <Suspense fallback={<p className="muted">Đang mở trình quản lý tệp…</p>}>
           <FileManager roomId={id} onClose={() => setFiles(false)} />
@@ -250,9 +260,10 @@ export function RoomPage() {
   );
 }
 
-function Row({ d, canManage, canVnc, canSelect, selected, onToggle, incidents, onMove, onDelete, onVnc }: {
+function Row({ d, canManage, canVnc, canSelect, selected, onToggle, incidents, onIncident, onReport, onMove, onDelete,
+  onVnc }: {
   d: Device; canManage: boolean; canVnc: boolean; canSelect: boolean; selected: boolean; onToggle: () => void;
-  incidents: Incident[];
+  incidents: Incident[]; onIncident: (id: string) => void; onReport: () => void;
   onMove: () => void; onDelete: () => void; onVnc: () => void;
 }) {
   const disks = d.is_online ? parseDisks(d.disk_usage) : [];
@@ -285,8 +296,13 @@ function Row({ d, canManage, canVnc, canSelect, selected, onToggle, incidents, o
       <td className="two"><span>{d.model ?? ""}</span><span className="muted">{d.serial ?? ""}</span></td>
       <td>{d.client_version ?? ""}</td>
       <td>
-        {incidents.length > 0 && (
-          <span className="badge warn" title={incidents.map((i) => i.title).join("\n")}>{incidents.length}</span>
+        {incidents.length > 0 ? (
+          <button className="badge warn as-btn" title={`${incidents.map((i) => i.title).join("\n")}\n— bấm để xem / xử lý`}
+                  onClick={() => onIncident((incidents.find((i) => i.source === "USER") ?? incidents[0]).id)}>
+            {incidents.length}
+          </button>
+        ) : (
+          <button className="ghost small inc-add-btn" onClick={onReport} title="Báo hỏng máy này">Báo</button>
         )}
       </td>
       {(canManage || canVnc) && (

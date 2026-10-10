@@ -11,6 +11,7 @@ import { notifyOs } from "./notify";
 import { checkUpdate, installUpdate, useUpdate } from "./updater";
 import { ChatPanel } from "../chat/ChatPanel";
 import { ChatButton, ChatNotifier } from "../chat/ChatNotifier";
+import type { IncidentUpdate } from "../incidents/api";
 
 type IncidentNew = { hostname: string; room_name?: string; title: string; description?: string };
 
@@ -35,6 +36,13 @@ export function Layout() {
     s.on("incident_new", (p: IncidentNew) => {
       void qc.invalidateQueries({ queryKey: ["incidents"] }); // lấy lại số tuyệt đối, không tự cộng 1
       void notifyOs(`Sự cố: ${p.title}`, [p.hostname, p.room_name].filter(Boolean).join(" · "));
+    });
+    s.on("incident_update", (p: IncidentUpdate) => {
+      void qc.invalidateQueries({ queryKey: ["incidents"] });
+      // báo hỏng mới của NGƯỜI KHÁC → thông báo Windows (khi cửa sổ không được xem); mình bấm thì không tự báo mình
+      if (p.action === "new" && p.by !== useSession.getState().session?.username) {
+        void notifyOs(`Báo hỏng: ${p.hostname}`, [p.room_name, p.title, p.by].filter(Boolean).join(" · "));
+      }
     });
     return () => disconnectRealtime();
   }, [token, baseUrl, qc]);
@@ -66,6 +74,8 @@ export function Layout() {
         <nav>
           <NavLink to="/" end>Tổng quan</NavLink>
           <NavLink to="/rooms">Phòng máy</NavLink>
+          <NavLink to="/incidents">Sự cố</NavLink>
+          <NavLink to="/reports">Báo cáo</NavLink>
           <NavLink to="/about">Giới thiệu</NavLink>
         </nav>
         <ChatButton />

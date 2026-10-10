@@ -3,11 +3,14 @@
 // Mọi con số là số TUYỆT ĐỐI lấy từ Core — chỉ ghi đè (realtime `room_stats` hoặc tải lại), cấm cộng/trừ (bài học 10.10).
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router";
 import { getJson } from "../api-client";
 import type { Incident, IncidentSummary, ListResult, Room } from "../api-client/types";
 import { useRealtime } from "../realtime-client";
 import { RoomGrid } from "../rooms/RoomGrid";
 import { OnlineChart } from "./OnlineChart";
+import { IncidentDialog } from "../incidents/IncidentDialog";
+import { TRANG_THAI } from "../incidents/api";
 
 export function DashboardPage() {
   const connected = useRealtime((s) => s.connected);
@@ -86,9 +89,8 @@ function Clock() {
   );
 }
 
-const TRANG_THAI: Record<Incident["status"], string> = { PENDING: "Chờ xử lý", PROCESSING: "Đang xử lý", DONE: "Xong" };
-
 function OpenIncidents({ interval }: { interval: number }) {
+  const [open, setOpen] = useState<string | null>(null);
   const q = useQuery({
     queryKey: ["incidents", "open"],
     queryFn: () => getJson<ListResult<Incident>>("/api/incidents?status=OPEN&limit=8"),
@@ -104,7 +106,7 @@ function OpenIncidents({ interval }: { interval: number }) {
         </thead>
         <tbody>
           {q.data.items.map((i) => (
-            <tr key={i.id}>
+            <tr key={i.id} className="click" onClick={() => setOpen(i.id)} title="Bấm để xem / xử lý">
               <td>{i.created_at ? new Date(i.created_at).toLocaleString("vi-VN", { hour12: false }) : ""}</td>
               <td><b>{i.hostname}</b></td>
               <td>{i.room_name}</td>
@@ -114,6 +116,8 @@ function OpenIncidents({ interval }: { interval: number }) {
           ))}
         </tbody>
       </table>
+      <p className="small"><Link to="/incidents">Xem tất cả sự cố →</Link></p>
+      {open && <IncidentDialog id={open} onClose={() => setOpen(null)} />}
     </>
   );
 }

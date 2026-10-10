@@ -176,7 +176,8 @@ def _emit(ctx: Ctx, doc: dict, action: str) -> None:
     """`incident_update` (tên sự kiện của hệ cũ) — tới người không giới hạn phòng + người đang xem đúng phòng đó; hệ
     cũ broadcast cho mọi trình duyệt."""
     payload = {"action": action, "id": str(doc["_id"]), "hostname": doc.get("hostname") or "",
-               "room_name": doc.get("room_name") or "", "status": doc.get("status") or ""}
+               "room_name": doc.get("room_name") or "", "status": doc.get("status") or "", "by": ctx.username,
+               "title": doc.get("title") or ""}
     rooms = [f"t:{ctx.tenant_id}:incidents"]
     if doc.get("room_id"):
         rooms.append(f"t:{ctx.tenant_id}:room:{doc['room_id']}")

@@ -64,6 +64,11 @@ export type RoomDetail = Room & { devices: Device[]; live_layout: Record<string,
 
 export type ListResult<T> = { items: T[]; total: number };
 
+export type IncidentItem = {
+  n: number; text: string; at: string | null; by: string; done: boolean; done_at: string | null; done_by: string;
+};
+export type ItNote = { lines: number[]; text: string; at: string | null; by: string };
+
 export type Incident = {
   id: string;
   hostname?: string;
@@ -71,10 +76,17 @@ export type Incident = {
   room_name?: string;
   title?: string;
   description?: string;
-  category?: string; // hardware_ram | hardware_disk | cmos | …
+  category?: string; // user | hardware_ram | hardware_disk | cmos
   status: "PENDING" | "PROCESSING" | "DONE";
-  source?: string;
+  source?: "USER" | "SYSTEM_WATCHDOG" | string;
+  reporter_name?: string;
+  resolver_name?: string;
   created_at?: string;
+  updated_at?: string;
+  resolved_at?: string;
+  items?: IncidentItem[]; // chỉ phiếu USER (người báo hỏng)
+  it_notes?: ItNote[];
+  rev?: number;
 };
 
 export type IncidentSummary = { open: number; pending: number; processing: number; hardware_open: number };
