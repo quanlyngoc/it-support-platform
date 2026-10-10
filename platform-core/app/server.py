@@ -41,6 +41,7 @@ def create_app(db=None, settings: Settings | None = None, async_mode: str | None
     from app.audit import hooks as audit_hooks
     from app.auth.routes import bp as auth_bp
     from app.auth.routes import load_context
+    from app.chat.routes import bp as chat_bp
     from app.control.routes import bp as control_bp
     from app.devices.routes import bp as devices_bp
     from app.devices.vnc import bp as vnc_bp
@@ -63,6 +64,7 @@ def create_app(db=None, settings: Settings | None = None, async_mode: str | None
     app.register_blueprint(control_bp)
     app.register_blueprint(files_bp)
     app.register_blueprint(work_bp)
+    app.register_blueprint(chat_bp)
     app.register_blueprint(desktop_release_bp)
     from app.realtime import desktop  # noqa: F401  — đăng ký namespace /desktop lúc import
 

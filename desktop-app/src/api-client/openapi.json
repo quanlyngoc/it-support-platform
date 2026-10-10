@@ -51,6 +51,42 @@
     "title": "BulkIn",
     "type": "object"
    },
+   "ClearIn": {
+    "properties": {
+     "keep": {
+      "default": false,
+      "description": "True = xoá nội dung nhưng giữ hội thoại rỗng trong danh sách",
+      "title": "Keep",
+      "type": "boolean"
+     },
+     "room_id": {
+      "anyOf": [
+       {
+        "maxLength": 24,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Rỗng = MỌI phòng của hệ này",
+      "title": "Room Id"
+     },
+     "scope": {
+      "default": "LAB",
+      "enum": [
+       "LAB",
+       "HSK",
+       "PM"
+      ],
+      "title": "Scope",
+      "type": "string"
+     }
+    },
+    "title": "ClearIn",
+    "type": "object"
+   },
    "CloseIn": {
     "properties": {
      "token": {
@@ -809,6 +845,38 @@
     "title": "PowerShellIn",
     "type": "object"
    },
+   "ReactIn": {
+    "properties": {
+     "emoji": {
+      "default": "",
+      "description": "Rỗng hoặc bấm lại cảm xúc cũ = bỏ",
+      "maxLength": 16,
+      "title": "Emoji",
+      "type": "string"
+     },
+     "msg_id": {
+      "maxLength": 24,
+      "minLength": 24,
+      "title": "Msg Id",
+      "type": "string"
+     },
+     "scope": {
+      "default": "LAB",
+      "enum": [
+       "LAB",
+       "HSK",
+       "PM"
+      ],
+      "title": "Scope",
+      "type": "string"
+     }
+    },
+    "required": [
+     "msg_id"
+    ],
+    "title": "ReactIn",
+    "type": "object"
+   },
    "SendIn": {
     "properties": {
      "batch_id": {
@@ -860,6 +928,51 @@
     },
     "required": [
      "batch_id"
+    ],
+    "title": "SendIn",
+    "type": "object"
+   },
+   "SendIn1": {
+    "properties": {
+     "image": {
+      "anyOf": [
+       {
+        "maxLength": 9000000,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "data:image/…;base64 (đã nén ở máy)",
+      "title": "Image"
+     },
+     "message": {
+      "default": "",
+      "maxLength": 4000,
+      "title": "Message",
+      "type": "string"
+     },
+     "room_id": {
+      "maxLength": 24,
+      "minLength": 24,
+      "title": "Room Id",
+      "type": "string"
+     },
+     "scope": {
+      "default": "LAB",
+      "enum": [
+       "LAB",
+       "HSK",
+       "PM"
+      ],
+      "title": "Scope",
+      "type": "string"
+     }
+    },
+    "required": [
+     "room_id"
     ],
     "title": "SendIn",
     "type": "object"
@@ -1121,6 +1234,379 @@
     "summary": "Thông tin phiên hiện tại",
     "tags": [
      "Đăng nhập"
+    ]
+   }
+  },
+  "/api/chat/clear": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ClearIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Admin xoá nội dung chat (kèm ảnh)",
+    "tags": [
+     "Chat"
+    ]
+   }
+  },
+  "/api/chat/conversations": {
+   "get": {
+    "parameters": [
+     {
+      "in": "query",
+      "name": "scope",
+      "required": false,
+      "schema": {
+       "default": "LAB",
+       "enum": [
+        "LAB",
+        "HSK",
+        "PM"
+       ],
+       "title": "Scope",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Hội thoại của tôi: tin cuối + số chưa đọc (chưa đọc lên đầu)",
+    "tags": [
+     "Chat"
+    ]
+   }
+  },
+  "/api/chat/image/{msg_id}": {
+   "get": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "msg_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Ảnh của một tin (kiểm phạm vi phòng)",
+    "tags": [
+     "Chat"
+    ]
+   }
+  },
+  "/api/chat/me": {
+   "get": {
+    "parameters": [
+     {
+      "in": "query",
+      "name": "scope",
+      "required": false,
+      "schema": {
+       "default": "LAB",
+       "enum": [
+        "LAB",
+        "HSK",
+        "PM"
+       ],
+       "title": "Scope",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Tôi là phía nào (admin / phòng) + các phòng của tôi",
+    "tags": [
+     "Chat"
+    ]
+   }
+  },
+  "/api/chat/messages": {
+   "get": {
+    "parameters": [
+     {
+      "in": "query",
+      "name": "scope",
+      "required": false,
+      "schema": {
+       "default": "LAB",
+       "enum": [
+        "LAB",
+        "HSK",
+        "PM"
+       ],
+       "title": "Scope",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "room_id",
+      "required": true,
+      "schema": {
+       "maxLength": 24,
+       "minLength": 24,
+       "title": "Room Id",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "since",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "maxLength": 24,
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "description": "Chỉ lấy tin sau id này (poll)",
+       "title": "Since"
+      }
+     },
+     {
+      "in": "query",
+      "name": "active",
+      "required": false,
+      "schema": {
+       "default": false,
+       "description": "Đang mở hội thoại → đánh dấu đã đọc",
+       "title": "Active",
+       "type": "boolean"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Tin của một phòng (500 tin cuối; `since` = chỉ tin mới) + cảm xúc; `active=1` đánh dấu đã đọc",
+    "tags": [
+     "Chat"
+    ]
+   }
+  },
+  "/api/chat/react": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ReactIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Thả / đổi / bỏ cảm xúc (mỗi người một cảm xúc / tin)",
+    "tags": [
+     "Chat"
+    ]
+   }
+  },
+  "/api/chat/send": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SendIn1"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Gửi tin (chữ và/hoặc ảnh dán)",
+    "tags": [
+     "Chat"
+    ]
+   }
+  },
+  "/api/chat/unread": {
+   "get": {
+    "parameters": [
+     {
+      "in": "query",
+      "name": "scope",
+      "required": false,
+      "schema": {
+       "default": "LAB",
+       "enum": [
+        "LAB",
+        "HSK",
+        "PM"
+       ],
+       "title": "Scope",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Tổng số tin chưa đọc của tôi (huy hiệu)",
+    "tags": [
+     "Chat"
     ]
    }
   },
@@ -3338,6 +3824,9 @@
   },
   {
    "name": "Giao bài / thu bài"
+  },
+  {
+   "name": "Chat"
   },
   {
    "name": "Cập nhật Desktop"

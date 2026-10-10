@@ -68,6 +68,14 @@ def on_connect(auth=None):
         raise ConnectionRefusedError("Chưa đăng nhập hoặc phiên đã hết hạn")
     _TOKENS[_sid()] = str(token)
     join_room(user_room(ctx))  # kết quả lệnh chỉ dành cho người bấm (đăng nhập từ xa…)
+    # Chat (Sổ tay 8.1): phía admin nghe mọi phòng; phía phòng chỉ nghe phòng của mình — không broadcast như hub cũ
+    from app.chat.service import room_admin, room_of_room
+
+    if _unrestricted(ctx):
+        join_room(room_admin(ctx.tenant_id))
+    else:
+        for rid in ctx.room_ids:
+            join_room(room_of_room(ctx.tenant_id, rid))
     if _unrestricted(ctx):
         join_room(f"t:{ctx.tenant_id}:devices")
         join_room(f"t:{ctx.tenant_id}:incidents")
