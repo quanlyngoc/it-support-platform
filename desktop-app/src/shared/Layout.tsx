@@ -9,6 +9,8 @@ import { connectRealtime, disconnectRealtime, useRealtime, type BatchDeviceUpdat
 import { useSession } from "../session/store";
 import { notifyOs } from "./notify";
 import { checkUpdate, installUpdate, useUpdate } from "./updater";
+import { ChatPanel } from "../chat/ChatPanel";
+import { ChatButton, ChatNotifier } from "../chat/ChatNotifier";
 
 type IncidentNew = { hostname: string; room_name?: string; title: string; description?: string };
 
@@ -66,6 +68,7 @@ export function Layout() {
           <NavLink to="/rooms">Phòng máy</NavLink>
           <NavLink to="/about">Giới thiệu</NavLink>
         </nav>
+        <ChatButton />
         <span className="who">
           <b>{session.tenant_code}</b> · {session.username}
           {session.is_super && <span className="badge">Super Admin</span>}
@@ -81,6 +84,8 @@ export function Layout() {
       <div className="content">
         <Outlet />
       </div>
+      <ChatPanel />
+      <ChatNotifier />
     </div>
   );
 }

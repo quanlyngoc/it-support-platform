@@ -209,3 +209,8 @@ dẫn con) · `/send_work` + `/hub_send_work` → `POST /api/work/send` · `/sen
 `/collect_upload`, `/collect_report`; xoá tệp đã giao vẫn là `fs_request {op: "delete", target}`. Khác hub cũ: tên tệp
 Core gửi đã ở điểm bất động của `_duong_con_agent`; `pushed_files` chỉ ghi tệp agent báo đã ghi (bỏ "đã có, bỏ qua");
 Core từ chối đích `Windows`/thư mục agent, xoá nguồn ở gốc ổ/thư mục hệ thống, mẫu tệp chứa đường dẫn.
+Chat (10/10/2026 — route TRÌNH DUYỆT, agent không liên quan): `/chat/me` → `GET /api/chat/me` · `/chat/rooms` →
+`GET /api/chat/conversations` · `/chat/unread` → `GET /api/chat/unread` · `/chat/poll` → `GET /api/chat/messages` ·
+`/chat/send` → `POST /api/chat/send` · `/chat/react` → `POST /api/chat/react` · `/chat/clear` → `POST /api/chat/clear` ·
+`/chat/image/<tên>` → `GET /api/chat/image/<msg_id>` · `/chat/rooms_all` → `GET /api/rooms`. `ctx=hsk` → tham số `scope`
+(LAB mặc định). Socket `chat_event` chỉ tới room `t:<tid>:chat:admin` / `t:<tid>:chat:room:<id>` (hub cũ broadcast).

@@ -236,6 +236,10 @@ sự kiện riêng `vnc_thumb_req`, `fs_request`. (`kill_and_update` KHÔNG còn
   dùng `webkitRelativePath` làm `?name=` (giữ cây con — Core làm sạch theo luật agent). Thu bài lưu vào thư mục máy bạn
   bằng `entries` + `entry` (Core đọc từng tệp trong .zip theo luồng) — KHÔNG giải nén trong trình duyệt (không thêm thư
   viện, không nạp cả bài vào RAM). Không lồng Modal trong Modal: Esc đóng cả hai (nhật ký thu vì vậy hiện trong thẻ).
+- **Chat** (`src/chat/`, Core `app/chat/`): `ChatNotifier` gắn ở `Layout` chạy SUỐT phiên (huy hiệu, tiêu đề "(n)", toast,
+  tiếng, `notifyOs`); ngăn chat chỉ là giao diện. Ảnh tin nhắn tải bằng `authFetch` → blob URL (thẻ `<img>` không gửi được
+  Bearer). Lớp phóng ảnh nghe Esc ở pha capture + `stopPropagation` để không đóng thứ khác. Chat HSK thuộc ThiHSK (đã tách) —
+  Desktop chỉ dùng scope LAB.
 - **Chạy thử đầu-cuối không cần Atlas:** scratchpad `core_mock.py` = `app.server.main()` thật (gevent) trên mongomock, tự
   tạo PHENIKAA + `admin`/`Ui@12345`. Kịch bản e2e chờ form đăng nhập xuất hiện rồi mới điền (Vite nguội > 8 s).
 
@@ -401,6 +405,7 @@ Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay l�
 | 03/10/2026 | 4.1–4.3 + 4.5 Desktop: công cụ, khung `desktop-app`, api-client/realtime-client/phiên | Xong | Node 24.15, Rust 1.99, VS 2022 BT, pnpm 12.8.1; typecheck/build + `cargo build` đạt; Core thêm CORS + namespace `/desktop` (cần `CapNhat`); job `desktop` trong CI |
 | 03/10/2026 | 4.4 plugin updater/notification/process + khoá ký | Xong | `pnpm tauri build` sinh bộ cài NSIS 2,35 MB + `.sig` (chữ ký ghi `version:0.1.0`), 550 s BelowNormal |
 | 03/10/2026 | 4.6 Đăng nhập + Dashboard + trang phòng + Giới thiệu | Xong (chờ máy canary để đối chiếu số thật) | Core thêm `GET /api/incidents` + `/api/incidents/summary`; Dashboard: phiếu sự cố, cảnh báo phần cứng, đồng hồ, biểu đồ Chart.js, sự cố đang mở; `incident_new` → thông báo HĐH. Chạy thử đầu-cuối đạt |
+| 10/10/2026 | 8.1 Chat theo phòng | Xong phần mã (thông báo Windows thử ở bản cài) | Core `/api/chat/*` (phía admin / phía phòng, chưa đọc + cảm xúc theo TỪNG NGƯỜI, scope LAB/HSK/PM không lẫn, ảnh dán vào kho chung, realtime chỉ tới đúng người); Desktop nút 💬 Chat + ngăn chat (dán ảnh nén JPEG, cảm xúc, phóng ảnh) + báo tin (huy hiệu, "(n)" tiêu đề, toast, tiếng ting, thông báo Windows). 222 test; thử đầu-cuối đạt |
 | 09/10/2026 | 7.3 Giao bài, thu bài, nhật ký | Xong phần mã (cổng ra GĐ7 chờ canary) | Core `/api/work/*` (lô theo luồng giữ cây con, giao nhiều phòng SV/GV, thu bài 6 trạng thái, tải 1 máy / tất cả / từng tệp, cấu trúc THU, nhật ký + xoá có hàng chờ); luật đường dẫn = bản agent; an toàn hơn hub cũ (chỉ ghi sổ tệp agent báo đã ghi, chặn đích hệ thống/agent, chặn xoá nguồn gốc ổ, mẫu không chứa đường dẫn). Desktop `src/work/` (3 thẻ, tự lưu bài vào <thư mục>/<phòng>/<máy>, nhật ký thu + sao chép). 217 test; thử đầu-cuối trên Core mongomock đạt |
 | 05/10/2026 | 7.2 Trình quản lý tệp 2 khung | Xong phần mã (thử agent thật chờ canary) | Core `/api/files/*` (token, tải lên/về theo luồng, "máy này", khung Máy chủ = kho riêng `drive` + Thùng rác 30 ngày) + chốt token ở relay `fs_request`; Desktop `src/files/` mang hành vi `fbrowser.js` v13 (giữ chỗ cuộn, Back đúng chỗ, kéo-thả, hoàn tác, trạm→trạm 2 chặng). 209 test; thử đầu-cuối 11 bước trên thư mục thật đạt |
 | 05/10/2026 | 6.5 Ra lệnh bằng giọng nói | BỎ (ADR-0014) | Người phụ trách bỏ ghi âm + voice AI; hệ cũ chỉ có 1 route proxy Gemini, không dữ liệu, agent/hệ thi không phụ thuộc → bỏ không ảnh hưởng chuyển đổi |
