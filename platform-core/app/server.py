@@ -47,7 +47,9 @@ def create_app(db=None, settings: Settings | None = None, async_mode: str | None
     from app.devices.vnc import bp as vnc_bp
     from app.files.routes import bp as files_bp
     from app.incidents.routes import bp as incidents_bp
+    from app.integrations.routes import bp as alerts_bp
     from app.legacy_adapter import init_app as legacy_init
+    from app.reports.routes import bp as reports_bp
     from app.rooms.map_routes import bp as room_maps_bp
     from app.work.routes import bp as work_bp
 
@@ -65,6 +67,8 @@ def create_app(db=None, settings: Settings | None = None, async_mode: str | None
     app.register_blueprint(files_bp)
     app.register_blueprint(work_bp)
     app.register_blueprint(chat_bp)
+    app.register_blueprint(reports_bp)
+    app.register_blueprint(alerts_bp)
     app.register_blueprint(desktop_release_bp)
     from app.realtime import desktop  # noqa: F401  — đăng ký namespace /desktop lúc import
 

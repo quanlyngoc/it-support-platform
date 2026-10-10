@@ -510,6 +510,55 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/client-logs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Log lỗi agent máy trạm gửi về (/client_log) — mới nhất trước */
+        get: {
+            parameters: {
+                query?: {
+                    hostname?: string | null;
+                    q?: string | null;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/devices": {
         parameters: {
             query?: never;
@@ -1396,6 +1445,96 @@ export interface paths {
                     q?: string | null;
                     hostname?: string | null;
                     room_id?: string | null;
+                    source?: ("USER" | "SYSTEM_WATCHDOG") | null;
+                    date_from?: string | null;
+                    date_to?: string | null;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Báo hỏng một máy (máy có phiếu đang mở → bổ sung dòng); phiếu mới gửi email + Telegram */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["CreateIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/incidents/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Xuất Excel báo cáo sửa chữa (cùng bộ lọc với danh sách) — hệ cũ /export_incidents */
+        get: {
+            parameters: {
+                query?: {
+                    status?: ("OPEN" | "PENDING" | "PROCESSING" | "DONE") | null;
+                    q?: string | null;
+                    hostname?: string | null;
+                    room_id?: string | null;
+                    source?: ("USER" | "SYSTEM_WATCHDOG") | null;
+                    date_from?: string | null;
+                    date_to?: string | null;
                     limit?: number;
                 };
                 header?: never;
@@ -1462,6 +1601,233 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/incidents/{incident_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Chi tiết một sự cố (các dòng lỗi + ghi chú IT) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    incident_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/incidents/{incident_id}/append": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Bổ sung một dòng lỗi vào phiếu đang mở (chỉ phiếu do người báo) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    incident_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["TextIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/incidents/{incident_id}/note": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Ghi chú IT (nhận xử lý) — phiếu chuyển Đang xử lý, người ghi là người xử lý */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    incident_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["TextIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/incidents/{incident_id}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Xử lý: đánh dấu các dòng đã xong (hoặc cả phiếu) + ghi nội dung xử lý */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    incident_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["ResolveIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -1950,6 +2316,250 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/reports/hardware-history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lịch sử RAM / ổ cứng thay đổi (cũ → mới) kèm MAC — hệ cũ /history */
+        get: {
+            parameters: {
+                query?: {
+                    q?: string | null;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/reports/usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Thống kê thời gian sử dụng theo phòng / máy trong năm (hoặc tháng) */
+        get: {
+            parameters: {
+                query?: {
+                    year?: number;
+                    month?: number | null;
+                    room_id?: string | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/reports/usage/day": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Báo cáo một ngày: các máy có dùng + số phút + RAM + lần cuối RAM thay đổi */
+        get: {
+            parameters: {
+                query: {
+                    day: string;
+                    room_id?: string | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/reports/usage/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Xuất Excel thống kê sử dụng (theo máy · theo phòng · theo tháng) */
+        get: {
+            parameters: {
+                query?: {
+                    year?: number;
+                    month?: number | null;
+                    room_id?: string | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/reports/usage/series": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Tổng giờ sử dụng + số máy có dùng theo NGÀY hoặc THÁNG (vẽ biểu đồ, danh sách báo cáo ngày) */
+        get: {
+            parameters: {
+                query?: {
+                    group?: "day" | "month";
+                    date_from?: string | null;
+                    date_to?: string | null;
+                    room_id?: string | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/rooms": {
         parameters: {
             query?: never;
@@ -2338,6 +2948,124 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/settings/alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Cấu hình email + Telegram cảnh báo sự cố (bí mật chỉ trả mặt nạ) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+            };
+        };
+        /** Lưu cấu hình cảnh báo (bí mật để trống = giữ nguyên) */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["AlertCfg"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/settings/alerts/test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Gửi thử một kênh (dùng giá trị đang nhập trên form nếu có, không thì giá trị đã lưu) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["TestIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
                     };
                 };
             };
@@ -3082,6 +3810,57 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AlertCfg */
+        AlertCfg: {
+            /**
+             * Clear Gmail App Password
+             * @default false
+             */
+            clear_gmail_app_password: boolean;
+            /**
+             * Clear Telegram Bot Token
+             * @default false
+             */
+            clear_telegram_bot_token: boolean;
+            /**
+             * Gmail App Password
+             * @description Để trống = giữ nguyên
+             * @default null
+             */
+            gmail_app_password: string | null;
+            /**
+             * Receiver Email
+             * @description Nhiều địa chỉ: phẩy / xuống dòng
+             * @default null
+             */
+            receiver_email: string | null;
+            /**
+             * Sender Email
+             * @default null
+             */
+            sender_email: string | null;
+            /**
+             * Smtp Port
+             * @default null
+             */
+            smtp_port: string | null;
+            /**
+             * Smtp Server
+             * @default null
+             */
+            smtp_server: string | null;
+            /**
+             * Telegram Bot Token
+             * @description Để trống = giữ nguyên
+             * @default null
+             */
+            telegram_bot_token: string | null;
+            /**
+             * Telegram Chat Id
+             * @default null
+             */
+            telegram_chat_id: string | null;
+        };
         /** BulkIn */
         BulkIn: {
             /** Device Ids */
@@ -3191,6 +3970,13 @@ export interface components {
             } | null;
             /** Hostname */
             hostname: string;
+        };
+        /** CreateIn */
+        CreateIn: {
+            /** Description */
+            description: string;
+            /** Device Id */
+            device_id: string;
         };
         /** DelIn */
         DelIn: {
@@ -3513,6 +4299,19 @@ export interface components {
              */
             scope: "LAB" | "HSK" | "PM";
         };
+        /** ResolveIn */
+        ResolveIn: {
+            /**
+             * Lines
+             * @description Số thứ tự các dòng đã xử lý; rỗng = xong cả phiếu
+             */
+            lines?: number[];
+            /**
+             * Text
+             * @description Nội dung xử lý (bắt buộc)
+             */
+            text: string;
+        };
         /** SendIn */
         SendIn: {
             /** Batch Id */
@@ -3654,6 +4453,67 @@ export interface components {
              * @default 30
              */
             rows: number;
+        };
+        /** TestIn */
+        TestIn: {
+            /**
+             * Channel
+             * @enum {string}
+             */
+            channel: "email" | "telegram";
+            /**
+             * Clear Gmail App Password
+             * @default false
+             */
+            clear_gmail_app_password: boolean;
+            /**
+             * Clear Telegram Bot Token
+             * @default false
+             */
+            clear_telegram_bot_token: boolean;
+            /**
+             * Gmail App Password
+             * @description Để trống = giữ nguyên
+             * @default null
+             */
+            gmail_app_password: string | null;
+            /**
+             * Receiver Email
+             * @description Nhiều địa chỉ: phẩy / xuống dòng
+             * @default null
+             */
+            receiver_email: string | null;
+            /**
+             * Sender Email
+             * @default null
+             */
+            sender_email: string | null;
+            /**
+             * Smtp Port
+             * @default null
+             */
+            smtp_port: string | null;
+            /**
+             * Smtp Server
+             * @default null
+             */
+            smtp_server: string | null;
+            /**
+             * Telegram Bot Token
+             * @description Để trống = giữ nguyên
+             * @default null
+             */
+            telegram_bot_token: string | null;
+            /**
+             * Telegram Chat Id
+             * @default null
+             */
+            telegram_chat_id: string | null;
+        };
+        /** TextIn */
+        TextIn: {
+            /** Text */
+            text: string;
         };
         ValidationError: {
             detail?: {

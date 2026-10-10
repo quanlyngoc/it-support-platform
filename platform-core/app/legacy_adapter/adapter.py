@@ -207,8 +207,23 @@ class LegacyAdapter:
             return None
         if self._writer is None:
             self._writer = Writer(self.db, tid, self.state)
-            self._writer.on_incident = lambda d: self.emit("incident_new", d, f"t:{tid}:incidents")
+            self._writer.on_incident = self._on_incident
         return self._writer
+
+    def _on_incident(self, d: dict) -> None:
+        """Sự cố phần cứng tự phát hiện: báo Desktop + email/Telegram (hệ cũ utils.check_hardware_changes cũng gửi,
+        nguồn "HỆ THỐNG TỰ ĐỘNG"). Lỗi kênh cảnh báo không bao giờ làm hỏng vòng ghi nền."""
+        tid = self.tenant_id
+        self.emit("incident_new", d, f"t:{tid}:incidents")
+        try:
+            from app.integrations import alerts
+
+            if tid is not None:
+                alerts.alert(self.db, tid, self.s.MASTER_KEY_B64, hostname=str(d.get("hostname") or ""),
+                             room=str(d.get("room_name") or ""), source="HỆ THỐNG TỰ ĐỘNG",
+                             description=str(d.get("description") or d.get("title") or ""))
+        except Exception:
+            log.exception("Không gửi được cảnh báo sự cố phần cứng")
 
     def writer_tick(self) -> int:
         """Một nhịp ghi nền; trả số máy đã ghi xuống `computers` (0 khi chưa có tổ chức)."""

@@ -170,9 +170,8 @@ cài bằng tác vụ Task Scheduler tách rời, báo tiến độ qua `/ps_bul
 7. Kết quả bất đồng bộ + token truyền tệp lưu MongoDB (hub cũ để RAM).
 8. Cổng chia đợt cộng dồn kiểu HOẶC (`all` / máy / phòng / %); hub cũ: có danh sách phòng thì bỏ qua %.
 
-Chưa làm (ghi để không quên): GỬI email/Telegram khi có sự cố phần cứng (hệ cũ `send_alert_email_thread`; Core mới
-tạo sự cố + phát `incident_new` tới room `t:<tid>:incidents` — kênh thông báo làm ở GĐ8 tích hợp); API cấp phiên
-giao/thu bài + token truyền tệp cho Desktop (GĐ7); `/internal/*` + `/hubapi/*` cho hệ thi (GĐ9).
+Chưa làm (ghi để không quên): `/internal/*` + `/hubapi/*` cho hệ thi (GĐ9). (Email/Telegram cho sự cố: XONG 8.2 —
+`app/integrations/alerts.py`; phiên giao/thu bài + token truyền tệp cho Desktop: XONG GĐ7.)
 
 Đã làm (03/10/2026): Desktop vào room `t:<tid>:{room:<id>|devices|incidents|ps:<tok>|pty|watch}` qua namespace `/desktop`
 có xác thực token (`app/realtime/desktop.py`). Mọi sự kiện adapter phát cho Desktop đều ở `/desktop`, KHÔNG ở `/` của
@@ -214,3 +213,16 @@ Chat (10/10/2026 — route TRÌNH DUYỆT, agent không liên quan): `/chat/me` 
 `/chat/send` → `POST /api/chat/send` · `/chat/react` → `POST /api/chat/react` · `/chat/clear` → `POST /api/chat/clear` ·
 `/chat/image/<tên>` → `GET /api/chat/image/<msg_id>` · `/chat/rooms_all` → `GET /api/rooms`. `ctx=hsk` → tham số `scope`
 (LAB mặc định). Socket `chat_event` chỉ tới room `t:<tid>:chat:admin` / `t:<tid>:chat:room:<id>` (hub cũ broadcast).
+Sự cố + báo cáo (11/10/2026 — route TRÌNH DUYỆT; agent chỉ liên quan `/client_log`, giữ nguyên): `/report_issue` →
+`POST /api/incidents` (máy đã có phiếu USER đang mở → bổ sung dòng, như giao diện cũ chỉ cho "+") · `/append_issue` →
+`POST /api/incidents/<id>/append` · `/resolve_issue` → `POST /api/incidents/<id>/resolve` (`lines` = SỐ THỨ TỰ dòng 1-based,
+hệ cũ gửi chỉ số 0-based) · thêm `POST /api/incidents/<id>/note` (ghi chú IT không chốt dòng → Đang xử lý) · `/admin` +
+`/incident_logs` → `GET /api/incidents` · `/export_incidents` → `GET /api/incidents/export` · `/api/get_client_logs` →
+`GET /api/client-logs` · `/history` → `GET /api/reports/hardware-history` · `/reports` + `/report/<ngày>` →
+`GET /api/reports/usage/series` + `/usage/day` · `/admin/stats` + `/admin/export_stats_excel` → `GET /api/reports/usage` +
+`/usage/export` · `/export_excel` → `GET /api/reports/config-export` (sheet "Chi tiết máy") · `/settings/api/integration_*`,
+`email_test`, `telegram_test` → `GET|PUT /api/settings/alerts` + `POST /api/settings/alerts/test` (khoá Gemini bỏ — ADR-0014).
+Khác hệ cũ: dòng lỗi + ghi chú IT lưu CÓ CẤU TRÚC (`items`, `it_notes`) thay chuỗi "n. dd/mm/yy HH:MM. …" + hậu tố " V"
+(`description` vẫn giữ bản chữ) — bước chuyển dữ liệu GĐ9 phải tách chuỗi cũ thành `items` (dòng kết thúc " V" = `done`);
+socket `incident_update` chỉ tới `t:<tid>:incidents` + `t:<tid>:room:<id>` (hub cũ broadcast); bí mật email/Telegram mã
+hoá bằng khoá chủ (hệ cũ để thô trong `settings`); quyền mới `incident.handle`, `report.export` (hệ cũ: role admin).

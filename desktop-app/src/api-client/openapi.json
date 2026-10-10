@@ -1,6 +1,116 @@
 {
  "components": {
   "schemas": {
+   "AlertCfg": {
+    "properties": {
+     "clear_gmail_app_password": {
+      "default": false,
+      "title": "Clear Gmail App Password",
+      "type": "boolean"
+     },
+     "clear_telegram_bot_token": {
+      "default": false,
+      "title": "Clear Telegram Bot Token",
+      "type": "boolean"
+     },
+     "gmail_app_password": {
+      "anyOf": [
+       {
+        "maxLength": 200,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Để trống = giữ nguyên",
+      "title": "Gmail App Password"
+     },
+     "receiver_email": {
+      "anyOf": [
+       {
+        "maxLength": 2000,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Nhiều địa chỉ: phẩy / xuống dòng",
+      "title": "Receiver Email"
+     },
+     "sender_email": {
+      "anyOf": [
+       {
+        "maxLength": 200,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Sender Email"
+     },
+     "smtp_port": {
+      "anyOf": [
+       {
+        "maxLength": 6,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Smtp Port"
+     },
+     "smtp_server": {
+      "anyOf": [
+       {
+        "maxLength": 200,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Smtp Server"
+     },
+     "telegram_bot_token": {
+      "anyOf": [
+       {
+        "maxLength": 200,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Để trống = giữ nguyên",
+      "title": "Telegram Bot Token"
+     },
+     "telegram_chat_id": {
+      "anyOf": [
+       {
+        "maxLength": 64,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Telegram Chat Id"
+     }
+    },
+    "title": "AlertCfg",
+    "type": "object"
+   },
    "BulkIn": {
     "properties": {
      "device_ids": {
@@ -213,6 +323,28 @@
      "hostname"
     ],
     "title": "CommandIn",
+    "type": "object"
+   },
+   "CreateIn": {
+    "properties": {
+     "description": {
+      "maxLength": 1000,
+      "minLength": 1,
+      "title": "Description",
+      "type": "string"
+     },
+     "device_id": {
+      "maxLength": 24,
+      "minLength": 24,
+      "title": "Device Id",
+      "type": "string"
+     }
+    },
+    "required": [
+     "device_id",
+     "description"
+    ],
+    "title": "CreateIn",
     "type": "object"
    },
    "DelIn": {
@@ -877,6 +1009,31 @@
     "title": "ReactIn",
     "type": "object"
    },
+   "ResolveIn": {
+    "properties": {
+     "lines": {
+      "description": "Số thứ tự các dòng đã xử lý; rỗng = xong cả phiếu",
+      "items": {
+       "type": "integer"
+      },
+      "maxItems": 500,
+      "title": "Lines",
+      "type": "array"
+     },
+     "text": {
+      "description": "Nội dung xử lý (bắt buộc)",
+      "maxLength": 1000,
+      "minLength": 1,
+      "title": "Text",
+      "type": "string"
+     }
+    },
+    "required": [
+     "text"
+    ],
+    "title": "ResolveIn",
+    "type": "object"
+   },
    "SendIn": {
     "properties": {
      "batch_id": {
@@ -1127,6 +1284,142 @@
      }
     },
     "title": "TermStartIn",
+    "type": "object"
+   },
+   "TestIn": {
+    "properties": {
+     "channel": {
+      "enum": [
+       "email",
+       "telegram"
+      ],
+      "title": "Channel",
+      "type": "string"
+     },
+     "clear_gmail_app_password": {
+      "default": false,
+      "title": "Clear Gmail App Password",
+      "type": "boolean"
+     },
+     "clear_telegram_bot_token": {
+      "default": false,
+      "title": "Clear Telegram Bot Token",
+      "type": "boolean"
+     },
+     "gmail_app_password": {
+      "anyOf": [
+       {
+        "maxLength": 200,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Để trống = giữ nguyên",
+      "title": "Gmail App Password"
+     },
+     "receiver_email": {
+      "anyOf": [
+       {
+        "maxLength": 2000,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Nhiều địa chỉ: phẩy / xuống dòng",
+      "title": "Receiver Email"
+     },
+     "sender_email": {
+      "anyOf": [
+       {
+        "maxLength": 200,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Sender Email"
+     },
+     "smtp_port": {
+      "anyOf": [
+       {
+        "maxLength": 6,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Smtp Port"
+     },
+     "smtp_server": {
+      "anyOf": [
+       {
+        "maxLength": 200,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Smtp Server"
+     },
+     "telegram_bot_token": {
+      "anyOf": [
+       {
+        "maxLength": 200,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Để trống = giữ nguyên",
+      "title": "Telegram Bot Token"
+     },
+     "telegram_chat_id": {
+      "anyOf": [
+       {
+        "maxLength": 64,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Telegram Chat Id"
+     }
+    },
+    "required": [
+     "channel"
+    ],
+    "title": "TestIn",
+    "type": "object"
+   },
+   "TextIn": {
+    "properties": {
+     "text": {
+      "maxLength": 1000,
+      "minLength": 1,
+      "title": "Text",
+      "type": "string"
+     }
+    },
+    "required": [
+     "text"
+    ],
+    "title": "TextIn",
     "type": "object"
    },
    "ValidationError": {
@@ -1607,6 +1900,84 @@
     "summary": "Tổng số tin chưa đọc của tôi (huy hiệu)",
     "tags": [
      "Chat"
+    ]
+   }
+  },
+  "/api/client-logs": {
+   "get": {
+    "parameters": [
+     {
+      "in": "query",
+      "name": "hostname",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "maxLength": 64,
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "title": "Hostname"
+      }
+     },
+     {
+      "in": "query",
+      "name": "q",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "maxLength": 64,
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "title": "Q"
+      }
+     },
+     {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+       "default": 100,
+       "maximum": 1000,
+       "minimum": 1,
+       "title": "Limit",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Log lỗi agent máy trạm gửi về (/client_log) — mới nhất trước",
+    "tags": [
+     "Sự cố"
     ]
    }
   },
@@ -2420,7 +2791,7 @@
         }
        ],
        "default": null,
-       "description": "Tìm theo tên máy / tiêu đề / phòng",
+       "description": "Tìm theo tên máy / tiêu đề / phòng / mô tả / người báo / người xử lý",
        "title": "Q"
       }
      },
@@ -2464,11 +2835,70 @@
      },
      {
       "in": "query",
+      "name": "source",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "enum": [
+          "USER",
+          "SYSTEM_WATCHDOG"
+         ],
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "title": "Source"
+      }
+     },
+     {
+      "in": "query",
+      "name": "date_from",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "format": "date",
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "description": "Từ ngày (giờ máy chủ, gồm cả ngày này)",
+       "title": "Date From"
+      }
+     },
+     {
+      "in": "query",
+      "name": "date_to",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "format": "date",
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "description": "Đến ngày (gồm cả ngày này)",
+       "title": "Date To"
+      }
+     },
+     {
+      "in": "query",
       "name": "limit",
       "required": false,
       "schema": {
        "default": 200,
-       "maximum": 1000,
+       "maximum": 5000,
        "minimum": 1,
        "title": "Limit",
        "type": "integer"
@@ -2499,6 +2929,224 @@
     "tags": [
      "Sự cố"
     ]
+   },
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CreateIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Báo hỏng một máy (máy có phiếu đang mở → bổ sung dòng); phiếu mới gửi email + Telegram",
+    "tags": [
+     "Sự cố"
+    ]
+   }
+  },
+  "/api/incidents/export": {
+   "get": {
+    "parameters": [
+     {
+      "in": "query",
+      "name": "status",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "enum": [
+          "OPEN",
+          "PENDING",
+          "PROCESSING",
+          "DONE"
+         ],
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "description": "OPEN = đang chờ + đang xử lý",
+       "title": "Status"
+      }
+     },
+     {
+      "in": "query",
+      "name": "q",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "maxLength": 64,
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "description": "Tìm theo tên máy / tiêu đề / phòng / mô tả / người báo / người xử lý",
+       "title": "Q"
+      }
+     },
+     {
+      "in": "query",
+      "name": "hostname",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "maxLength": 64,
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "description": "Đúng tên máy (không phân biệt hoa thường)",
+       "title": "Hostname"
+      }
+     },
+     {
+      "in": "query",
+      "name": "room_id",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "maxLength": 24,
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "description": "Sự cố của các máy trong một phòng",
+       "title": "Room Id"
+      }
+     },
+     {
+      "in": "query",
+      "name": "source",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "enum": [
+          "USER",
+          "SYSTEM_WATCHDOG"
+         ],
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "title": "Source"
+      }
+     },
+     {
+      "in": "query",
+      "name": "date_from",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "format": "date",
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "description": "Từ ngày (giờ máy chủ, gồm cả ngày này)",
+       "title": "Date From"
+      }
+     },
+     {
+      "in": "query",
+      "name": "date_to",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "format": "date",
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "description": "Đến ngày (gồm cả ngày này)",
+       "title": "Date To"
+      }
+     },
+     {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+       "default": 200,
+       "maximum": 5000,
+       "minimum": 1,
+       "title": "Limit",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Xuất Excel báo cáo sửa chữa (cùng bộ lọc với danh sách) — hệ cũ /export_incidents",
+    "tags": [
+     "Sự cố"
+    ]
    }
   },
   "/api/incidents/summary": {
@@ -2515,6 +3163,215 @@
      }
     },
     "summary": "Số phiếu sự cố đang mở + cảnh báo phần cứng đang mở (số tuyệt đối)",
+    "tags": [
+     "Sự cố"
+    ]
+   }
+  },
+  "/api/incidents/{incident_id}": {
+   "get": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "incident_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Chi tiết một sự cố (các dòng lỗi + ghi chú IT)",
+    "tags": [
+     "Sự cố"
+    ]
+   }
+  },
+  "/api/incidents/{incident_id}/append": {
+   "post": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "incident_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/TextIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Bổ sung một dòng lỗi vào phiếu đang mở (chỉ phiếu do người báo)",
+    "tags": [
+     "Sự cố"
+    ]
+   }
+  },
+  "/api/incidents/{incident_id}/note": {
+   "post": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "incident_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/TextIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Ghi chú IT (nhận xử lý) — phiếu chuyển Đang xử lý, người ghi là người xử lý",
+    "tags": [
+     "Sự cố"
+    ]
+   }
+  },
+  "/api/incidents/{incident_id}/resolve": {
+   "post": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "incident_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ResolveIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Xử lý: đánh dấu các dòng đã xong (hoặc cả phiếu) + ghi nội dung xử lý",
     "tags": [
      "Sự cố"
     ]
@@ -2879,6 +3736,382 @@
     ]
    }
   },
+  "/api/reports/hardware-history": {
+   "get": {
+    "parameters": [
+     {
+      "in": "query",
+      "name": "q",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "maxLength": 64,
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "title": "Q"
+      }
+     },
+     {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+       "default": 500,
+       "maximum": 5000,
+       "minimum": 1,
+       "title": "Limit",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Lịch sử RAM / ổ cứng thay đổi (cũ → mới) kèm MAC — hệ cũ /history",
+    "tags": [
+     "Báo cáo"
+    ]
+   }
+  },
+  "/api/reports/usage": {
+   "get": {
+    "parameters": [
+     {
+      "in": "query",
+      "name": "year",
+      "required": false,
+      "schema": {
+       "maximum": 2100,
+       "minimum": 2020,
+       "title": "Year",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "month",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "maximum": 12,
+         "minimum": 1,
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "description": "Bỏ trống = cả năm",
+       "title": "Month"
+      }
+     },
+     {
+      "in": "query",
+      "name": "room_id",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "maxLength": 24,
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "title": "Room Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Thống kê thời gian sử dụng theo phòng / máy trong năm (hoặc tháng)",
+    "tags": [
+     "Báo cáo"
+    ]
+   }
+  },
+  "/api/reports/usage/day": {
+   "get": {
+    "parameters": [
+     {
+      "in": "query",
+      "name": "day",
+      "required": true,
+      "schema": {
+       "description": "Ngày cần xem (YYYY-MM-DD)",
+       "format": "date",
+       "title": "Day",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "room_id",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "maxLength": 24,
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "title": "Room Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Báo cáo một ngày: các máy có dùng + số phút + RAM + lần cuối RAM thay đổi",
+    "tags": [
+     "Báo cáo"
+    ]
+   }
+  },
+  "/api/reports/usage/export": {
+   "get": {
+    "parameters": [
+     {
+      "in": "query",
+      "name": "year",
+      "required": false,
+      "schema": {
+       "maximum": 2100,
+       "minimum": 2020,
+       "title": "Year",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "month",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "maximum": 12,
+         "minimum": 1,
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "description": "Bỏ trống = cả năm",
+       "title": "Month"
+      }
+     },
+     {
+      "in": "query",
+      "name": "room_id",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "maxLength": 24,
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "title": "Room Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Xuất Excel thống kê sử dụng (theo máy · theo phòng · theo tháng)",
+    "tags": [
+     "Báo cáo"
+    ]
+   }
+  },
+  "/api/reports/usage/series": {
+   "get": {
+    "parameters": [
+     {
+      "in": "query",
+      "name": "group",
+      "required": false,
+      "schema": {
+       "default": "day",
+       "enum": [
+        "day",
+        "month"
+       ],
+       "title": "Group",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "date_from",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "format": "date",
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "description": "Mặc định: 30 ngày / 12 tháng gần nhất",
+       "title": "Date From"
+      }
+     },
+     {
+      "in": "query",
+      "name": "date_to",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "format": "date",
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "title": "Date To"
+      }
+     },
+     {
+      "in": "query",
+      "name": "room_id",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "maxLength": 24,
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "title": "Room Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Tổng giờ sử dụng + số máy có dùng theo NGÀY hoặc THÁNG (vẽ biểu đồ, danh sách báo cáo ngày)",
+    "tags": [
+     "Báo cáo"
+    ]
+   }
+  },
   "/api/rooms": {
    "get": {
     "parameters": [],
@@ -3215,6 +4448,99 @@
     "summary": "Nhập Excel vào sơ đồ ĐANG SỬA (multipart: file + map JSON tuỳ chọn) — trả sơ đồ mới, CHƯA lưu",
     "tags": [
      "Sơ đồ phòng"
+    ]
+   }
+  },
+  "/api/settings/alerts": {
+   "get": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Cấu hình email + Telegram cảnh báo sự cố (bí mật chỉ trả mặt nạ)",
+    "tags": [
+     "Cấu hình"
+    ]
+   },
+   "put": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AlertCfg"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Lưu cấu hình cảnh báo (bí mật để trống = giữ nguyên)",
+    "tags": [
+     "Cấu hình"
+    ]
+   }
+  },
+  "/api/settings/alerts/test": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/TestIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Gửi thử một kênh (dùng giá trị đang nhập trên form nếu có, không thì giá trị đã lưu)",
+    "tags": [
+     "Cấu hình"
     ]
    }
   },
@@ -3827,6 +5153,12 @@
   },
   {
    "name": "Chat"
+  },
+  {
+   "name": "Báo cáo"
+  },
+  {
+   "name": "Cấu hình"
   },
   {
    "name": "Cập nhật Desktop"

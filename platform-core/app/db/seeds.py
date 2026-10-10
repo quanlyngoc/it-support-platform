@@ -26,6 +26,8 @@ PERMISSIONS: list[tuple[str, str]] = [
     ("remote.vnc", "Xem/điều khiển màn hình (VNC)"),
     ("machine_events.view", "Xem nhật ký thay đổi máy"),
     ("audit.view", "Xem nhật ký hệ thống"),
+    ("incident.handle", "Xử lý sự cố (ghi chú IT, hoàn thành) + xem log máy trạm"),
+    ("report.export", "Xuất báo cáo Excel (sự cố, thống kê sử dụng)"),
 ]
 
 
