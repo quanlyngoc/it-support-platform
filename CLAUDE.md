@@ -107,7 +107,10 @@ thật nhận đúng — đã thử 03/10/2026) → CLI nhận chữ có dấu p
 - Mật khẩu: **Argon2id**. Secret cấu hình (SMTP, LDAP bind, Telegram): AES-256-GCM, khoá chính ngoài DB.
   (Gemini / ra lệnh bằng giọng nói đã BỎ — ADR-0014.)
 - RBAC: `permissions` (catalog toàn nền tảng) → `policies` (theo tổ chức, có `room_ids`) → user/AD user.
-  Policy `Super Admin` là system policy, không sửa/xoá.
+  Policy `Super Admin` là system policy, không sửa/xoá. Thêm quyền mới vào `app/db/seeds.py` thì phải chạy
+  `uv run python -m app.db.init` trên CSDL thật (CapNhat KHÔNG chạy bước này) — thiếu là policy không gán được quyền đó.
+  Quyền thay "role admin" của hệ cũ theo từng việc: `incident.handle` (xử lý sự cố + log máy trạm), `report.export`
+  (Excel sự cố / thống kê), `system.configure` (kênh cảnh báo), `device.manage`, `device.control`…
 - `g.ctx = {tenant_id, user_id, permissions, room_ids, is_super, system}` gắn trong `before_request`.
 - **Truy cập dữ liệu tenant-owned CHỈ qua `TenantRepo`** (`app/tenants/repo.py`; collection bất kỳ: `repo_for(db, tid, col)`).
   Repo tự gắn `tenant_id`, chặn truy vấn/ghi mang `tenant_id` khác, chặn `$lookup/$unionWith/$out/$merge`, chặn
@@ -240,8 +243,14 @@ sự kiện riêng `vnc_thumb_req`, `fs_request`. (`kill_and_update` KHÔNG còn
   tiếng, `notifyOs`); ngăn chat chỉ là giao diện. Ảnh tin nhắn tải bằng `authFetch` → blob URL (thẻ `<img>` không gửi được
   Bearer). Lớp phóng ảnh nghe Esc ở pha capture + `stopPropagation` để không đóng thứ khác. Chat HSK thuộc ThiHSK (đã tách) —
   Desktop chỉ dùng scope LAB.
-- **Chạy thử đầu-cuối không cần Atlas:** scratchpad `core_mock.py` = `app.server.main()` thật (gevent) trên mongomock, tự
-  tạo PHENIKAA + `admin`/`Ui@12345`. Kịch bản e2e chờ form đăng nhập xuất hiện rồi mới điền (Vite nguội > 8 s).
+- **Sự cố + báo cáo** (`src/incidents/`, `src/reports/`, Core `app/incidents/`, `app/reports/`, `app/integrations/`):
+  một phiếu USER đang mở / máy — "Báo hỏng" khi máy đã có phiếu mở là BỔ SUNG dòng (Core quyết, Desktop chỉ báo trước).
+  Xử lý theo DÒNG (`lines` = số thứ tự 1-based); phiếu hệ thống xử lý một lần. Cập nhật phiếu có chốt `rev` → 409 thì tải
+  lại. `IncidentDialog` dùng chung cho Tổng quan / trang phòng / trang máy / trang Sự cố. Bí mật email/Telegram KHÔNG
+  bao giờ trả về (chỉ mặt nạ + `has_*`); để trống = giữ nguyên. Thời gian Excel theo giờ MÁY CHỦ (`incidents.service.stamp`).
+- **Chạy thử đầu-cuối không cần Atlas:** scratchpad `core_mock.py` = `app.server.main()` thật (gevent) trên mongomock
+  (`tz_aware=True` như Core thật — thiếu là giờ hiển thị lệch 7 tiếng), tự tạo PHENIKAA + `admin`/`Ui@12345`. Kịch bản
+  e2e chờ form đăng nhập xuất hiện rồi mới điền (Vite nguội > 8 s).
 
 ---
 
@@ -406,6 +415,7 @@ Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay l�
 | 03/10/2026 | 4.4 plugin updater/notification/process + khoá ký | Xong | `pnpm tauri build` sinh bộ cài NSIS 2,35 MB + `.sig` (chữ ký ghi `version:0.1.0`), 550 s BelowNormal |
 | 03/10/2026 | 4.6 Đăng nhập + Dashboard + trang phòng + Giới thiệu | Xong (chờ máy canary để đối chiếu số thật) | Core thêm `GET /api/incidents` + `/api/incidents/summary`; Dashboard: phiếu sự cố, cảnh báo phần cứng, đồng hồ, biểu đồ Chart.js, sự cố đang mở; `incident_new` → thông báo HĐH. Chạy thử đầu-cuối đạt |
 | 10/10/2026 | 8.1 Chat theo phòng | Xong phần mã (thông báo Windows thử ở bản cài) | Core `/api/chat/*` (phía admin / phía phòng, chưa đọc + cảm xúc theo TỪNG NGƯỜI, scope LAB/HSK/PM không lẫn, ảnh dán vào kho chung, realtime chỉ tới đúng người); Desktop nút 💬 Chat + ngăn chat (dán ảnh nén JPEG, cảm xúc, phóng ảnh) + báo tin (huy hiệu, "(n)" tiêu đề, toast, tiếng ting, thông báo Windows). 222 test; thử đầu-cuối đạt |
+| 11/10/2026 | 8.2 Sự cố và báo cáo | Xong phần mã | Core: báo hỏng / bổ sung / ghi chú IT / xử lý theo dòng (dòng + ghi chú có cấu trúc, chốt `rev`), kênh Telegram + email theo tổ chức (bí mật mã hoá, gửi nền, gửi thử), log máy trạm, báo cáo sử dụng năm/tháng/ngày + lịch sử RAM/ổ cứng + Excel; quyền `incident.handle`, `report.export`. Desktop: trang Sự cố (+ log, kênh cảnh báo), trang Báo cáo, Báo hỏng ở trang máy/phòng. 229 test; thử đầu-cuối đạt |
 | 09/10/2026 | 7.3 Giao bài, thu bài, nhật ký | Xong phần mã (cổng ra GĐ7 chờ canary) | Core `/api/work/*` (lô theo luồng giữ cây con, giao nhiều phòng SV/GV, thu bài 6 trạng thái, tải 1 máy / tất cả / từng tệp, cấu trúc THU, nhật ký + xoá có hàng chờ); luật đường dẫn = bản agent; an toàn hơn hub cũ (chỉ ghi sổ tệp agent báo đã ghi, chặn đích hệ thống/agent, chặn xoá nguồn gốc ổ, mẫu không chứa đường dẫn). Desktop `src/work/` (3 thẻ, tự lưu bài vào <thư mục>/<phòng>/<máy>, nhật ký thu + sao chép). 217 test; thử đầu-cuối trên Core mongomock đạt |
 | 05/10/2026 | 7.2 Trình quản lý tệp 2 khung | Xong phần mã (thử agent thật chờ canary) | Core `/api/files/*` (token, tải lên/về theo luồng, "máy này", khung Máy chủ = kho riêng `drive` + Thùng rác 30 ngày) + chốt token ở relay `fs_request`; Desktop `src/files/` mang hành vi `fbrowser.js` v13 (giữ chỗ cuộn, Back đúng chỗ, kéo-thả, hoàn tác, trạm→trạm 2 chặng). 209 test; thử đầu-cuối 11 bước trên thư mục thật đạt |
 | 05/10/2026 | 6.5 Ra lệnh bằng giọng nói | BỎ (ADR-0014) | Người phụ trách bỏ ghi âm + voice AI; hệ cũ chỉ có 1 route proxy Gemini, không dữ liệu, agent/hệ thi không phụ thuộc → bỏ không ảnh hưởng chuyển đổi |
