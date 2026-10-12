@@ -52,6 +52,10 @@ class Settings:
     # HKLM\SOFTWARE\PhenikaaIT\AesKey) — cùng biến môi trường AES_256_KEY_HEX của hệ cũ. Chỉ nằm trong .env, KHÔNG có
     # giá trị mặc định trong mã; thiếu thì API đăng nhập từ xa báo 503.
     AES_256_KEY_HEX: str = ""
+    # Cập nhật agent (Sổ tay 8.4): địa chỉ mà UPDATER trên máy trạm gọi để tải bộ cài + báo tiến độ. PHẢI đi qua Caddy
+    # :5443 (khối canary chuyển /download_setup + /ps_bulk_result/* của máy canary về Core) — KHÔNG dùng :5009 (thẳng
+    # hub cũ: máy sẽ tải nhầm bộ cài của hệ cũ và báo tiến độ vào hư không).
+    AGENT_UPDATE_BASE: str = "https://10.21.24.142:5443"
 
 
 def _load_env() -> None:
@@ -87,6 +91,7 @@ def get_settings() -> Settings:
         VNC_PASSWORD=os.getenv("VNC_PASSWORD", "") or "6xw2Yykq",
         VNC_VIEWER_BASE=os.getenv("VNC_VIEWER_BASE", "").strip().rstrip("/"),
         AES_256_KEY_HEX=os.getenv("AES_256_KEY_HEX", "").strip().strip('"').strip("'"),
+        AGENT_UPDATE_BASE=os.getenv("AGENT_UPDATE_BASE", "").strip().rstrip("/") or "https://10.21.24.142:5443",
     )
 
 

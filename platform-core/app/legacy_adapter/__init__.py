@@ -18,11 +18,13 @@ def init_app(app: Flask, db: Database, settings: Settings, socketio: Any) -> Leg
     from app.legacy_adapter import socket_handlers  # noqa: F401  — đăng ký handler socket lúc import
     from app.legacy_adapter.api import bp as api_bp
     from app.legacy_adapter.http_routes import bp as http_bp
+    from app.legacy_adapter.update_routes import bp as update_bp
 
     ad = LegacyAdapter(db, settings, socketio, app.extensions.get("storage"))
     app.extensions["legacy"] = ad
     app.register_blueprint(http_bp)
     app.register_blueprint(api_bp)
+    app.register_blueprint(update_bp)
     # /update + /check_command/<mac> đi đường nhanh, không qua Flask (thử tải: xem fastpath.py)
     app.wsgi_app = FastPath(app.wsgi_app, ad, settings.TRUSTED_PROXIES)  # type: ignore[method-assign]
     return ad

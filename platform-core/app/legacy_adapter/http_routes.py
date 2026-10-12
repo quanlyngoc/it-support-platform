@@ -70,6 +70,14 @@ def download_setup():
     ad = _ad()
     if not ad.state.dl_acquire(DL_MAX, DL_HOLD):
         return "busy", 503  # agent tự thử lại chu kỳ sau
+    ver = request.args.get("ver", "").strip()
+    if ver:  # updater do Core đẩy xuống (Sổ tay 8.4) xin ĐÚNG một bản trong kho — "Cài lại bản cũ"
+        from app.legacy_adapter.releases import Releases
+
+        rel = Releases(ad.root / "updates").get(ver)
+        if rel is None:
+            return "File not found", 404
+        return send_file(rel["path"], as_attachment=True, download_name=INSTALLER, max_age=0)
     if not ad.gate.manifest():
         return "File not found", 404  # không có bộ cài khớp manifest → không phát (A5)
     return send_file(ad.gate.installer, as_attachment=True, download_name=INSTALLER, max_age=0)

@@ -124,6 +124,26 @@
     "title": "AlertCfg",
     "type": "object"
    },
+   "AllIn": {
+    "properties": {
+     "confirm": {
+      "default": "",
+      "description": "Bật: gõ đúng chữ BẬT (xác nhận ngay trên giao diện)",
+      "maxLength": 10,
+      "title": "Confirm",
+      "type": "string"
+     },
+     "on": {
+      "title": "On",
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "on"
+    ],
+    "title": "AllIn",
+    "type": "object"
+   },
    "BulkIn": {
     "properties": {
      "device_ids": {
@@ -1279,6 +1299,49 @@
      "script"
     ],
     "title": "PowerShellIn",
+    "type": "object"
+   },
+   "PushIn": {
+    "properties": {
+     "confirm_many": {
+      "default": false,
+      "description": "Bắt buộc khi đợt > 40 máy (luật §0.5)",
+      "title": "Confirm Many",
+      "type": "boolean"
+     },
+     "device_ids": {
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 2000,
+      "title": "Device Ids",
+      "type": "array"
+     },
+     "room_ids": {
+      "description": "Cả phòng (mọi máy trong phòng)",
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 200,
+      "title": "Room Ids",
+      "type": "array"
+     },
+     "version": {
+      "anyOf": [
+       {
+        "maxLength": 20,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Bỏ trống = bản đang phát; có = cài lại bản đó trong kho (kể cả bản cũ)",
+      "title": "Version"
+     }
+    },
+    "title": "PushIn",
     "type": "object"
    },
    "ReactIn": {
@@ -2816,6 +2879,196 @@
     "summary": "Khoá / mở tài khoản (có hiệu lực ngay, kể cả phiên đang mở)",
     "tags": [
      "Quản trị"
+    ]
+   }
+  },
+  "/api/agent-update/all": {
+   "put": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AllIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "All Update BẬT (cần xác nhận + đủ máy canary chạy đúng bản) / TẮT = Dừng khẩn (xoá sạch cổng)",
+    "tags": [
+     "Cập nhật agent"
+    ]
+   }
+  },
+  "/api/agent-update/push": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PushIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Đẩy lệnh cài AN TOÀN (updater tách rời qua Task Scheduler, kiểm SHA-256) cho máy / phòng chọn",
+    "tags": [
+     "Cập nhật agent"
+    ]
+   }
+  },
+  "/api/agent-update/push/{token}": {
+   "get": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "token",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Tiến độ một đợt cài theo từng máy",
+    "tags": [
+     "Cập nhật agent"
+    ]
+   }
+  },
+  "/api/agent-update/releases": {
+   "get": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Các bản agent trong kho (bản đang phát được đánh dấu)",
+    "tags": [
+     "Cập nhật agent"
+    ]
+   }
+  },
+  "/api/agent-update/releases/{version}/activate": {
+   "post": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "version",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Đưa một bản trong kho thành bản đang phát (không tự đẩy xuống máy nào)",
+    "tags": [
+     "Cập nhật agent"
+    ]
+   }
+  },
+  "/api/agent-update/status": {
+   "get": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Bản đang phát, cổng chia đợt, từng máy: phiên bản / online / tiến độ đợt cài gần nhất",
+    "tags": [
+     "Cập nhật agent"
     ]
    }
   },
@@ -6668,6 +6921,9 @@
   },
   {
    "name": "Agent v2 (bộ tương thích)"
+  },
+  {
+   "name": "Cập nhật agent"
   },
   {
    "name": "Phòng & thiết bị"
