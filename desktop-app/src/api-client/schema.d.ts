@@ -4,6 +4,824 @@
  */
 
 export interface paths {
+    "/api/admin/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Nhật ký hệ thống (lọc theo hệ LAB / HSK / THI + từ khoá + khoảng ngày) — giữ 180 ngày */
+        get: {
+            parameters: {
+                query?: {
+                    system?: ("LAB" | "HSK" | "THI") | null;
+                    q?: string | null;
+                    date_from?: string | null;
+                    date_to?: string | null;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/auth-config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Cấu hình đăng nhập: Local (luôn bật), LDAP, SSO — bí mật chỉ trả mặt nạ */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/auth-config/ldap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Lưu cấu hình LDAP / bật-tắt LDAP */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["LdapIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/auth-config/ldap/test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Kiểm tra kết nối LDAP (dùng giá trị đang gõ, thiếu thì giá trị đã lưu) — báo đúng mã lỗi AD */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["LdapTestIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/auth-config/sso": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Lưu cấu hình SSO (OpenID Connect) / bật-tắt SSO */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["SsoIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/auth-config/sso/test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Kiểm tra cấu hình SSO: đọc tài liệu OpenID của nhà cung cấp */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["SsoIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/permissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Catalog quyền (nhóm theo chức năng) để tick khi tạo / sửa policy */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/policies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Policy của tổ chức: quyền, phòng giới hạn, số người đang gán */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Tạo policy */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["PolicyIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/policies/{policy_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Sửa policy (policy hệ thống chỉ xem) — có hiệu lực từ lần đăng nhập sau của người được gán */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    policy_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["PolicyIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /** Xoá policy (không xoá policy hệ thống / đang gán) */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    policy_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Người đang đăng nhập (hoạt động trong 15 phút) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/sessions/{session_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Đăng xuất một phiên đang mở (có hiệu lực ngay) */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    session_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/system": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Thông tin Core đang chạy (cổng, CSDL, kho tệp, agent v2) — đổi bằng biến môi trường dịch vụ */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Người dùng Local + AD đã đăng ký (kèm policy, trạng thái, giới hạn IP) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Tạo tài khoản Local (local_user.create) hoặc đăng ký tài khoản AD (ad_user.add) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["UserIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/users/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Sửa tài khoản (không tự đổi policy / trạng thái / giới hạn IP của chính mình) */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    user_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["UserEdit"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /** Xoá tài khoản Local / gỡ đăng ký AD (đăng xuất mọi phiên của tài khoản đó) */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    user_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/users/{user_id}/active": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Khoá / mở tài khoản (có hiệu lực ngay, kể cả phiên đang mở) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    user_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["ActiveIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HTTPError"];
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/login": {
         parameters: {
             query?: never;
@@ -13,7 +831,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Đăng nhập bằng mã tổ chức + tài khoản + mật khẩu (+ TOTP) */
+        /** Đăng nhập bằng mã tổ chức + tài khoản + mật khẩu (+ TOTP) — Local, hoặc AD khi LDAP đang bật */
         post: {
             parameters: {
                 query?: never;
@@ -119,6 +937,236 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/methods": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Cơ chế đăng nhập đang bật của tổ chức (màn đăng nhập hiện nút SSO) — không cần đăng nhập */
+        get: {
+            parameters: {
+                query: {
+                    tenant_code: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Tự đổi mật khẩu (tài khoản Local) — hệ cũ /admin/change_password */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["PasswordIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/sso/callback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Nhà cung cấp SSO chuyển trình duyệt về đây (trả trang HTML) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/sso/poll": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Desktop hỏi kết quả SSO: pending / done (kèm token, MỘT lần) / error / expired */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["PollIn"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/sso/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Bắt đầu đăng nhập SSO: trả login_id (giữ bí mật) + auth_url để mở trong trình duyệt */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["TenantQ"];
+                };
+            };
+            responses: {
+                /** @description Successful response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -3810,6 +4858,11 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** ActiveIn */
+        ActiveIn: {
+            /** Is Active */
+            is_active: boolean;
+        };
         /** AlertCfg */
         AlertCfg: {
             /**
@@ -4034,6 +5087,99 @@ export interface components {
              */
             websites: string;
         };
+        /** LdapIn */
+        LdapIn: {
+            /**
+             * Base Dn
+             * @default null
+             */
+            base_dn: string | null;
+            /**
+             * Bind Pass
+             * @description Để trống = giữ nguyên
+             * @default null
+             */
+            bind_pass: string | null;
+            /**
+             * Bind User
+             * @default null
+             */
+            bind_user: string | null;
+            /**
+             * Clear Bind Pass
+             * @default false
+             */
+            clear_bind_pass: boolean;
+            /**
+             * Domain
+             * @default null
+             */
+            domain: string | null;
+            /**
+             * Enabled
+             * @description Công tắc LDAP: tắt = AD không đăng nhập bằng mật khẩu
+             * @default null
+             */
+            enabled: boolean | null;
+            /**
+             * Server
+             * @description ldaps://<ip>:636 · ldap://<ip>:389 · <ip>
+             * @default null
+             */
+            server: string | null;
+        };
+        /** LdapTestIn */
+        LdapTestIn: {
+            /**
+             * Base Dn
+             * @default null
+             */
+            base_dn: string | null;
+            /**
+             * Bind Pass
+             * @description Để trống = giữ nguyên
+             * @default null
+             */
+            bind_pass: string | null;
+            /**
+             * Bind User
+             * @default null
+             */
+            bind_user: string | null;
+            /**
+             * Clear Bind Pass
+             * @default false
+             */
+            clear_bind_pass: boolean;
+            /**
+             * Domain
+             * @default null
+             */
+            domain: string | null;
+            /**
+             * Enabled
+             * @description Công tắc LDAP: tắt = AD không đăng nhập bằng mật khẩu
+             * @default null
+             */
+            enabled: boolean | null;
+            /**
+             * Server
+             * @description ldaps://<ip>:636 · ldap://<ip>:389 · <ip>
+             * @default null
+             */
+            server: string | null;
+            /**
+             * Test Password
+             * @default null
+             */
+            test_password: string | null;
+            /**
+             * Test User
+             * @description Thử bằng tài khoản này thay bind user
+             * @default null
+             */
+            test_user: string | null;
+        };
         /** LiveLayoutIn */
         LiveLayoutIn: {
             /**
@@ -4238,6 +5384,37 @@ export interface components {
              */
             seat: string;
         };
+        /** PasswordIn */
+        PasswordIn: {
+            /** New Password */
+            new_password: string;
+            /** Old Password */
+            old_password: string;
+        };
+        /** PolicyIn */
+        PolicyIn: {
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Name */
+            name: string;
+            /** Permissions */
+            permissions?: string[];
+            /**
+             * Room Ids
+             * @description Rỗng = mọi phòng
+             */
+            room_ids?: string[];
+        };
+        /** PollIn */
+        PollIn: {
+            /** Login Id */
+            login_id: string;
+            /** Tenant Code */
+            tenant_code: string;
+        };
         /** PowerIn */
         PowerIn: {
             /**
@@ -4415,6 +5592,65 @@ export interface components {
              */
             zipped: boolean;
         };
+        /** SsoIn */
+        SsoIn: {
+            /**
+             * Allowed Domains
+             * @description Rỗng = mọi tên miền
+             * @default null
+             */
+            allowed_domains: string | null;
+            /**
+             * Clear Client Secret
+             * @default false
+             */
+            clear_client_secret: boolean;
+            /**
+             * Client Id
+             * @default null
+             */
+            client_id: string | null;
+            /**
+             * Client Secret
+             * @description Để trống = giữ nguyên
+             * @default null
+             */
+            client_secret: string | null;
+            /**
+             * Enabled
+             * @description Công tắc SSO: tắt = ẩn nút SSO, từ chối mọi đăng nhập SSO
+             * @default null
+             */
+            enabled: boolean | null;
+            /**
+             * Issuer
+             * @description vd. https://login.microsoftonline.com/<tenant-id>/v2.0
+             * @default null
+             */
+            issuer: string | null;
+            /**
+             * Provider Name
+             * @description Nhãn nút, vd. Microsoft 365
+             * @default null
+             */
+            provider_name: string | null;
+            /**
+             * Redirect Uri
+             * @description Rỗng = tự suy từ địa chỉ Core
+             * @default null
+             */
+            redirect_uri: string | null;
+            /**
+             * Scopes
+             * @default null
+             */
+            scopes: string | null;
+            /**
+             * Username Claim
+             * @default null
+             */
+            username_claim: string | null;
+        };
         /** TargetsIn */
         TargetsIn: {
             /** Device Ids */
@@ -4430,6 +5666,11 @@ export interface components {
              * @default null
              */
             room_id: string | null;
+        };
+        /** TenantQ */
+        TenantQ: {
+            /** Tenant Code */
+            tenant_code: string;
         };
         /** TermAuthIn */
         TermAuthIn: {
@@ -4514,6 +5755,93 @@ export interface components {
         TextIn: {
             /** Text */
             text: string;
+        };
+        /** UserEdit */
+        UserEdit: {
+            /**
+             * Allowed Ip Cidrs
+             * @default null
+             */
+            allowed_ip_cidrs: string[] | null;
+            /**
+             * Display Name
+             * @default null
+             */
+            display_name: string | null;
+            /**
+             * Email
+             * @default null
+             */
+            email: string | null;
+            /**
+             * Is Active
+             * @default null
+             */
+            is_active: boolean | null;
+            /**
+             * Password
+             * @description Local: để trống = giữ nguyên
+             * @default null
+             */
+            password: string | null;
+            /**
+             * Phone
+             * @default null
+             */
+            phone: string | null;
+            /**
+             * Policy Ids
+             * @default null
+             */
+            policy_ids: string[] | null;
+        };
+        /** UserIn */
+        UserIn: {
+            /**
+             * Allowed Ip Cidrs
+             * @description Rỗng = mọi nơi
+             */
+            allowed_ip_cidrs?: string[];
+            /**
+             * Display Name
+             * @default
+             */
+            display_name: string;
+            /**
+             * Email
+             * @description Dùng để ghép tài khoản khi đăng nhập SSO
+             * @default
+             */
+            email: string;
+            /**
+             * Is Active
+             * @default true
+             */
+            is_active: boolean;
+            /**
+             * Password
+             * @description Local: bắt buộc, ≥ 6 ký tự
+             * @default
+             */
+            password: string;
+            /**
+             * Phone
+             * @default
+             */
+            phone: string;
+            /** Policy Ids */
+            policy_ids?: string[];
+            /**
+             * User Type
+             * @default LOCAL
+             * @enum {string}
+             */
+            user_type: "LOCAL" | "AD";
+            /**
+             * Username
+             * @description AD: chỉ gõ tên — tự ghép @domain của LDAP
+             */
+            username: string;
         };
         ValidationError: {
             detail?: {

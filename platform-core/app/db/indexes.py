@@ -60,6 +60,8 @@ INDEXES: dict[str, list[tuple[list, dict]]] = {
                                              {"expires_at": {"$type": "date"}}})],
     "machine_events": [([("tenant_id", A), ("created_at", Z)], {}), ([("tenant_id", A), ("hostname", A)], {})],
     "computers_archive": [([("tenant_id", A), ("archived_at", Z)], {})],
+    "sso_logins": [([("tenant_id", A), ("state", A)], {}), ([("tenant_id", A), ("login_hash", A)], {}),
+                   ([("expires_at", A)], {"expireAfterSeconds": 3600})],  # bản ghi chờ SSO: tự dọn sau 1 giờ
     "command_results": [([("tenant_id", A), ("token", A)], {}),
                         ([("created_at", A)], {"expireAfterSeconds": 2 * 86400})],
 }

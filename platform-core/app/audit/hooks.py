@@ -6,7 +6,7 @@ from flask import Flask, current_app, g, request
 from app.audit.service import write_audit
 
 _MUTATING = {"POST", "PUT", "PATCH", "DELETE"}
-_SKIP = {"/api/auth/login", "/api/auth/logout"}  # đã ghi riêng trong dịch vụ xác thực
+_SKIP = {"/api/auth/login", "/api/auth/logout", "/api/auth/password"}  # đã ghi riêng trong dịch vụ xác thực
 
 
 def _system_of(path: str) -> str:

@@ -51,6 +51,7 @@ def create_app(db=None, settings: Settings | None = None, async_mode: str | None
     from app.legacy_adapter import init_app as legacy_init
     from app.reports.routes import bp as reports_bp
     from app.rooms.map_routes import bp as room_maps_bp
+    from app.users.routes import bp as admin_bp
     from app.work.routes import bp as work_bp
 
     app.before_request(load_context)
@@ -69,6 +70,7 @@ def create_app(db=None, settings: Settings | None = None, async_mode: str | None
     app.register_blueprint(chat_bp)
     app.register_blueprint(reports_bp)
     app.register_blueprint(alerts_bp)
+    app.register_blueprint(admin_bp)
     app.register_blueprint(desktop_release_bp)
     from app.realtime import desktop  # noqa: F401  — đăng ký namespace /desktop lúc import
 

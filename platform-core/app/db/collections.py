@@ -8,7 +8,7 @@ TENANT_OWNED = (
     "users", "ad_user_policies", "policies", "rooms", "computers", "agents", "agent_enrollments",
     "incidents", "usage_stats", "online_state", "client_logs", "sessions", "active_sessions", "settings",
     "chat_messages", "chat_reads", "chat_reactions", "audit_log", "pushed_files", "file_metadata",
-    "machine_events", "computers_archive", "command_results",
+    "machine_events", "computers_archive", "command_results", "sso_logins",
 )
 
 ALL = PLATFORM_OWNED + TENANT_OWNED

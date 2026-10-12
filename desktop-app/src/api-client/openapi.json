@@ -1,6 +1,19 @@
 {
  "components": {
   "schemas": {
+   "ActiveIn": {
+    "properties": {
+     "is_active": {
+      "title": "Is Active",
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "is_active"
+    ],
+    "title": "ActiveIn",
+    "type": "object"
+   },
    "AlertCfg": {
     "properties": {
      "clear_gmail_app_password": {
@@ -460,6 +473,215 @@
     "title": "InternetIn",
     "type": "object"
    },
+   "LdapIn": {
+    "properties": {
+     "base_dn": {
+      "anyOf": [
+       {
+        "maxLength": 300,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Base Dn"
+     },
+     "bind_pass": {
+      "anyOf": [
+       {
+        "maxLength": 512,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Để trống = giữ nguyên",
+      "title": "Bind Pass"
+     },
+     "bind_user": {
+      "anyOf": [
+       {
+        "maxLength": 200,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Bind User"
+     },
+     "clear_bind_pass": {
+      "default": false,
+      "title": "Clear Bind Pass",
+      "type": "boolean"
+     },
+     "domain": {
+      "anyOf": [
+       {
+        "maxLength": 200,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Domain"
+     },
+     "enabled": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Công tắc LDAP: tắt = AD không đăng nhập bằng mật khẩu",
+      "title": "Enabled"
+     },
+     "server": {
+      "anyOf": [
+       {
+        "maxLength": 300,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "ldaps://<ip>:636 · ldap://<ip>:389 · <ip>",
+      "title": "Server"
+     }
+    },
+    "title": "LdapIn",
+    "type": "object"
+   },
+   "LdapTestIn": {
+    "properties": {
+     "base_dn": {
+      "anyOf": [
+       {
+        "maxLength": 300,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Base Dn"
+     },
+     "bind_pass": {
+      "anyOf": [
+       {
+        "maxLength": 512,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Để trống = giữ nguyên",
+      "title": "Bind Pass"
+     },
+     "bind_user": {
+      "anyOf": [
+       {
+        "maxLength": 200,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Bind User"
+     },
+     "clear_bind_pass": {
+      "default": false,
+      "title": "Clear Bind Pass",
+      "type": "boolean"
+     },
+     "domain": {
+      "anyOf": [
+       {
+        "maxLength": 200,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Domain"
+     },
+     "enabled": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Công tắc LDAP: tắt = AD không đăng nhập bằng mật khẩu",
+      "title": "Enabled"
+     },
+     "server": {
+      "anyOf": [
+       {
+        "maxLength": 300,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "ldaps://<ip>:636 · ldap://<ip>:389 · <ip>",
+      "title": "Server"
+     },
+     "test_password": {
+      "anyOf": [
+       {
+        "maxLength": 512,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Test Password"
+     },
+     "test_user": {
+      "anyOf": [
+       {
+        "maxLength": 200,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Thử bằng tài khoản này thay bind user",
+      "title": "Test User"
+     }
+    },
+    "title": "LdapTestIn",
+    "type": "object"
+   },
    "LiveLayoutIn": {
     "properties": {
      "layout": {
@@ -887,6 +1109,88 @@
     "title": "MoveIn",
     "type": "object"
    },
+   "PasswordIn": {
+    "properties": {
+     "new_password": {
+      "maxLength": 512,
+      "minLength": 6,
+      "title": "New Password",
+      "type": "string"
+     },
+     "old_password": {
+      "maxLength": 512,
+      "minLength": 1,
+      "title": "Old Password",
+      "type": "string"
+     }
+    },
+    "required": [
+     "old_password",
+     "new_password"
+    ],
+    "title": "PasswordIn",
+    "type": "object"
+   },
+   "PolicyIn": {
+    "properties": {
+     "description": {
+      "default": "",
+      "maxLength": 500,
+      "title": "Description",
+      "type": "string"
+     },
+     "name": {
+      "maxLength": 100,
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+     },
+     "permissions": {
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 200,
+      "title": "Permissions",
+      "type": "array"
+     },
+     "room_ids": {
+      "description": "Rỗng = mọi phòng",
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 500,
+      "title": "Room Ids",
+      "type": "array"
+     }
+    },
+    "required": [
+     "name"
+    ],
+    "title": "PolicyIn",
+    "type": "object"
+   },
+   "PollIn": {
+    "properties": {
+     "login_id": {
+      "maxLength": 128,
+      "minLength": 10,
+      "title": "Login Id",
+      "type": "string"
+     },
+     "tenant_code": {
+      "maxLength": 32,
+      "minLength": 2,
+      "title": "Tenant Code",
+      "type": "string"
+     }
+    },
+    "required": [
+     "tenant_code",
+     "login_id"
+    ],
+    "title": "PollIn",
+    "type": "object"
+   },
    "PowerIn": {
     "properties": {
      "action": {
@@ -1210,6 +1514,139 @@
     "title": "SrvIn",
     "type": "object"
    },
+   "SsoIn": {
+    "properties": {
+     "allowed_domains": {
+      "anyOf": [
+       {
+        "maxLength": 300,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Rỗng = mọi tên miền",
+      "title": "Allowed Domains"
+     },
+     "clear_client_secret": {
+      "default": false,
+      "title": "Clear Client Secret",
+      "type": "boolean"
+     },
+     "client_id": {
+      "anyOf": [
+       {
+        "maxLength": 200,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Client Id"
+     },
+     "client_secret": {
+      "anyOf": [
+       {
+        "maxLength": 1000,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Để trống = giữ nguyên",
+      "title": "Client Secret"
+     },
+     "enabled": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Công tắc SSO: tắt = ẩn nút SSO, từ chối mọi đăng nhập SSO",
+      "title": "Enabled"
+     },
+     "issuer": {
+      "anyOf": [
+       {
+        "maxLength": 500,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "vd. https://login.microsoftonline.com/<tenant-id>/v2.0",
+      "title": "Issuer"
+     },
+     "provider_name": {
+      "anyOf": [
+       {
+        "maxLength": 60,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Nhãn nút, vd. Microsoft 365",
+      "title": "Provider Name"
+     },
+     "redirect_uri": {
+      "anyOf": [
+       {
+        "maxLength": 500,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Rỗng = tự suy từ địa chỉ Core",
+      "title": "Redirect Uri"
+     },
+     "scopes": {
+      "anyOf": [
+       {
+        "maxLength": 300,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Scopes"
+     },
+     "username_claim": {
+      "anyOf": [
+       {
+        "maxLength": 60,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Username Claim"
+     }
+    },
+    "title": "SsoIn",
+    "type": "object"
+   },
    "TargetsIn": {
     "properties": {
      "device_ids": {
@@ -1241,6 +1678,21 @@
      }
     },
     "title": "TargetsIn",
+    "type": "object"
+   },
+   "TenantQ": {
+    "properties": {
+     "tenant_code": {
+      "maxLength": 32,
+      "minLength": 2,
+      "title": "Tenant Code",
+      "type": "string"
+     }
+    },
+    "required": [
+     "tenant_code"
+    ],
+    "title": "TenantQ",
     "type": "object"
    },
    "TermAuthIn": {
@@ -1422,6 +1874,182 @@
     "title": "TextIn",
     "type": "object"
    },
+   "UserEdit": {
+    "properties": {
+     "allowed_ip_cidrs": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "maxItems": 50,
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Allowed Ip Cidrs"
+     },
+     "display_name": {
+      "anyOf": [
+       {
+        "maxLength": 100,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Display Name"
+     },
+     "email": {
+      "anyOf": [
+       {
+        "maxLength": 200,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Email"
+     },
+     "is_active": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Is Active"
+     },
+     "password": {
+      "anyOf": [
+       {
+        "maxLength": 512,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "description": "Local: để trống = giữ nguyên",
+      "title": "Password"
+     },
+     "phone": {
+      "anyOf": [
+       {
+        "maxLength": 30,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Phone"
+     },
+     "policy_ids": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "maxItems": 20,
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Policy Ids"
+     }
+    },
+    "title": "UserEdit",
+    "type": "object"
+   },
+   "UserIn": {
+    "properties": {
+     "allowed_ip_cidrs": {
+      "description": "Rỗng = mọi nơi",
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 50,
+      "title": "Allowed Ip Cidrs",
+      "type": "array"
+     },
+     "display_name": {
+      "default": "",
+      "maxLength": 100,
+      "title": "Display Name",
+      "type": "string"
+     },
+     "email": {
+      "default": "",
+      "description": "Dùng để ghép tài khoản khi đăng nhập SSO",
+      "maxLength": 200,
+      "title": "Email",
+      "type": "string"
+     },
+     "is_active": {
+      "default": true,
+      "title": "Is Active",
+      "type": "boolean"
+     },
+     "password": {
+      "default": "",
+      "description": "Local: bắt buộc, ≥ 6 ký tự",
+      "maxLength": 512,
+      "title": "Password",
+      "type": "string"
+     },
+     "phone": {
+      "default": "",
+      "maxLength": 30,
+      "title": "Phone",
+      "type": "string"
+     },
+     "policy_ids": {
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 20,
+      "title": "Policy Ids",
+      "type": "array"
+     },
+     "user_type": {
+      "default": "LOCAL",
+      "enum": [
+       "LOCAL",
+       "AD"
+      ],
+      "title": "User Type",
+      "type": "string"
+     },
+     "username": {
+      "description": "AD: chỉ gõ tên — tự ghép @domain của LDAP",
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "Username",
+      "type": "string"
+     }
+    },
+    "required": [
+     "username"
+    ],
+    "title": "UserIn",
+    "type": "object"
+   },
    "ValidationError": {
     "properties": {
      "detail": {
@@ -1454,6 +2082,743 @@
  },
  "openapi": "3.1.0",
  "paths": {
+  "/api/admin/audit": {
+   "get": {
+    "parameters": [
+     {
+      "in": "query",
+      "name": "system",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "enum": [
+          "LAB",
+          "HSK",
+          "THI"
+         ],
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "title": "System"
+      }
+     },
+     {
+      "in": "query",
+      "name": "q",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "maxLength": 64,
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "title": "Q"
+      }
+     },
+     {
+      "in": "query",
+      "name": "date_from",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "format": "date",
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "title": "Date From"
+      }
+     },
+     {
+      "in": "query",
+      "name": "date_to",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "format": "date",
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": null,
+       "title": "Date To"
+      }
+     },
+     {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+       "default": 300,
+       "maximum": 2000,
+       "minimum": 1,
+       "title": "Limit",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Nhật ký hệ thống (lọc theo hệ LAB / HSK / THI + từ khoá + khoảng ngày) — giữ 180 ngày",
+    "tags": [
+     "Quản trị"
+    ]
+   }
+  },
+  "/api/admin/auth-config": {
+   "get": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Cấu hình đăng nhập: Local (luôn bật), LDAP, SSO — bí mật chỉ trả mặt nạ",
+    "tags": [
+     "Quản trị"
+    ]
+   }
+  },
+  "/api/admin/auth-config/ldap": {
+   "put": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/LdapIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Lưu cấu hình LDAP / bật-tắt LDAP",
+    "tags": [
+     "Quản trị"
+    ]
+   }
+  },
+  "/api/admin/auth-config/ldap/test": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/LdapTestIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Kiểm tra kết nối LDAP (dùng giá trị đang gõ, thiếu thì giá trị đã lưu) — báo đúng mã lỗi AD",
+    "tags": [
+     "Quản trị"
+    ]
+   }
+  },
+  "/api/admin/auth-config/sso": {
+   "put": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SsoIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Lưu cấu hình SSO (OpenID Connect) / bật-tắt SSO",
+    "tags": [
+     "Quản trị"
+    ]
+   }
+  },
+  "/api/admin/auth-config/sso/test": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SsoIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Kiểm tra cấu hình SSO: đọc tài liệu OpenID của nhà cung cấp",
+    "tags": [
+     "Quản trị"
+    ]
+   }
+  },
+  "/api/admin/permissions": {
+   "get": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Catalog quyền (nhóm theo chức năng) để tick khi tạo / sửa policy",
+    "tags": [
+     "Quản trị"
+    ]
+   }
+  },
+  "/api/admin/policies": {
+   "get": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Policy của tổ chức: quyền, phòng giới hạn, số người đang gán",
+    "tags": [
+     "Quản trị"
+    ]
+   },
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PolicyIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Tạo policy",
+    "tags": [
+     "Quản trị"
+    ]
+   }
+  },
+  "/api/admin/policies/{policy_id}": {
+   "delete": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "policy_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Xoá policy (không xoá policy hệ thống / đang gán)",
+    "tags": [
+     "Quản trị"
+    ]
+   },
+   "put": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "policy_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PolicyIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Sửa policy (policy hệ thống chỉ xem) — có hiệu lực từ lần đăng nhập sau của người được gán",
+    "tags": [
+     "Quản trị"
+    ]
+   }
+  },
+  "/api/admin/sessions": {
+   "get": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Người đang đăng nhập (hoạt động trong 15 phút)",
+    "tags": [
+     "Quản trị"
+    ]
+   }
+  },
+  "/api/admin/sessions/{session_id}": {
+   "delete": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "session_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Đăng xuất một phiên đang mở (có hiệu lực ngay)",
+    "tags": [
+     "Quản trị"
+    ]
+   }
+  },
+  "/api/admin/system": {
+   "get": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Thông tin Core đang chạy (cổng, CSDL, kho tệp, agent v2) — đổi bằng biến môi trường dịch vụ",
+    "tags": [
+     "Quản trị"
+    ]
+   }
+  },
+  "/api/admin/users": {
+   "get": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Người dùng Local + AD đã đăng ký (kèm policy, trạng thái, giới hạn IP)",
+    "tags": [
+     "Quản trị"
+    ]
+   },
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/UserIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Tạo tài khoản Local (local_user.create) hoặc đăng ký tài khoản AD (ad_user.add)",
+    "tags": [
+     "Quản trị"
+    ]
+   }
+  },
+  "/api/admin/users/{user_id}": {
+   "delete": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "user_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     }
+    },
+    "summary": "Xoá tài khoản Local / gỡ đăng ký AD (đăng xuất mọi phiên của tài khoản đó)",
+    "tags": [
+     "Quản trị"
+    ]
+   },
+   "put": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "user_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/UserEdit"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Sửa tài khoản (không tự đổi policy / trạng thái / giới hạn IP của chính mình)",
+    "tags": [
+     "Quản trị"
+    ]
+   }
+  },
+  "/api/admin/users/{user_id}/active": {
+   "post": {
+    "parameters": [
+     {
+      "in": "path",
+      "name": "user_id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ActiveIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPError"
+        }
+       }
+      },
+      "description": "Not found"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Khoá / mở tài khoản (có hiệu lực ngay, kể cả phiên đang mở)",
+    "tags": [
+     "Quản trị"
+    ]
+   }
+  },
   "/api/auth/login": {
    "post": {
     "parameters": [],
@@ -1486,7 +2851,7 @@
       "description": "Validation error"
      }
     },
-    "summary": "Đăng nhập bằng mã tổ chức + tài khoản + mật khẩu (+ TOTP)",
+    "summary": "Đăng nhập bằng mã tổ chức + tài khoản + mật khẩu (+ TOTP) — Local, hoặc AD khi LDAP đang bật",
     "tags": [
      "Đăng nhập"
     ]
@@ -1525,6 +2890,180 @@
      }
     },
     "summary": "Thông tin phiên hiện tại",
+    "tags": [
+     "Đăng nhập"
+    ]
+   }
+  },
+  "/api/auth/methods": {
+   "get": {
+    "parameters": [
+     {
+      "in": "query",
+      "name": "tenant_code",
+      "required": true,
+      "schema": {
+       "maxLength": 32,
+       "minLength": 2,
+       "title": "Tenant Code",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Cơ chế đăng nhập đang bật của tổ chức (màn đăng nhập hiện nút SSO) — không cần đăng nhập",
+    "tags": [
+     "Đăng nhập"
+    ]
+   }
+  },
+  "/api/auth/password": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PasswordIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Tự đổi mật khẩu (tài khoản Local) — hệ cũ /admin/change_password",
+    "tags": [
+     "Đăng nhập"
+    ]
+   }
+  },
+  "/api/auth/sso/callback": {
+   "get": {
+    "parameters": [],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     }
+    },
+    "summary": "Nhà cung cấp SSO chuyển trình duyệt về đây (trả trang HTML)",
+    "tags": [
+     "Đăng nhập"
+    ]
+   }
+  },
+  "/api/auth/sso/poll": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PollIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Desktop hỏi kết quả SSO: pending / done (kèm token, MỘT lần) / error / expired",
+    "tags": [
+     "Đăng nhập"
+    ]
+   }
+  },
+  "/api/auth/sso/start": {
+   "post": {
+    "parameters": [],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/TenantQ"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ValidationError"
+        }
+       }
+      },
+      "description": "Validation error"
+     }
+    },
+    "summary": "Bắt đầu đăng nhập SSO: trả login_id (giữ bí mật) + auth_url để mở trong trình duyệt",
     "tags": [
      "Đăng nhập"
     ]
@@ -5159,6 +6698,9 @@
   },
   {
    "name": "Cấu hình"
+  },
+  {
+   "name": "Quản trị"
   },
   {
    "name": "Cập nhật Desktop"
