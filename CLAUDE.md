@@ -111,6 +111,12 @@ thật nhận đúng — đã thử 03/10/2026) → CLI nhận chữ có dấu p
   `uv run python -m app.db.init` trên CSDL thật (CapNhat KHÔNG chạy bước này) — thiếu là policy không gán được quyền đó.
   Quyền thay "role admin" của hệ cũ theo từng việc: `incident.handle` (xử lý sự cố + log máy trạm), `report.export`
   (Excel sự cố / thống kê), `system.configure` (kênh cảnh báo), `device.manage`, `device.control`…
+- **Cơ chế đăng nhập theo tổ chức (8.3, ADR-0015):** Local LUÔN bật; công tắc `ldap.enabled` (chưa gạt = bật như cũ;
+  tắt → AD đăng nhập mật khẩu báo `LDAP_OFF`, Core không gọi AD) và `sso.enabled` (mặc định tắt). SSO = OpenID Connect
+  (code + PKCE + nonce): Desktop `sso/start` → mở trình duyệt hệ thống → hỏi `sso/poll` mỗi 1,5 s; callback ở Core ghép
+  định danh với tài khoản ĐÃ đăng ký (AD tên/UPN/email → Local email → AD trùng phần trước @) — KHÔNG tự tạo tài khoản.
+  Mọi đường đăng nhập đi qua `auth.service.issue_session` (giới hạn IP + một thiết bị + nhật ký). `state` mang mã tổ
+  chức để callback tra `sso_logins` qua TenantRepo. Đá phiên / đặt lại mật khẩu dùng `revoke_session` (xoá luôn đệm 15 s).
 - `g.ctx = {tenant_id, user_id, permissions, room_ids, is_super, system}` gắn trong `before_request`.
 - **Truy cập dữ liệu tenant-owned CHỈ qua `TenantRepo`** (`app/tenants/repo.py`; collection bất kỳ: `repo_for(db, tid, col)`).
   Repo tự gắn `tenant_id`, chặn truy vấn/ghi mang `tenant_id` khác, chặn `$lookup/$unionWith/$out/$merge`, chặn
@@ -248,6 +254,10 @@ sự kiện riêng `vnc_thumb_req`, `fs_request`. (`kill_and_update` KHÔNG còn
   Xử lý theo DÒNG (`lines` = số thứ tự 1-based); phiếu hệ thống xử lý một lần. Cập nhật phiếu có chốt `rev` → 409 thì tải
   lại. `IncidentDialog` dùng chung cho Tổng quan / trang phòng / trang máy / trang Sự cố. Bí mật email/Telegram KHÔNG
   bao giờ trả về (chỉ mặt nạ + `has_*`); để trống = giữ nguyên. Thời gian Excel theo giờ MÁY CHỦ (`incidents.service.stamp`).
+- **Quản trị** (`src/admin/`, Core `app/users/`, `app/auth/methods.py`, `app/auth/sso.py`): tab hiện theo quyền; nút gạt
+  (`Toggle` trong `shared/ui.tsx`) của LDAP / SSO LƯU NGAY. Chạy trong trình duyệt (pnpm dev) phải mở cửa sổ SSO NGAY lúc
+  bấm (mở sau `await` là bị chặn popup); bản Tauri dùng `openUrl` của plugin opener. e2e SSO: nhà cung cấp OpenID giả
+  (scratchpad `e2e_admin.py`) + bấm bằng `Input.dispatchMouseEvent` (click() bằng JS không mở được popup).
 - **Chạy thử đầu-cuối không cần Atlas:** scratchpad `core_mock.py` = `app.server.main()` thật (gevent) trên mongomock
   (`tz_aware=True` như Core thật — thiếu là giờ hiển thị lệch 7 tiếng), tự tạo PHENIKAA + `admin`/`Ui@12345`. Kịch bản
   e2e chờ form đăng nhập xuất hiện rồi mới điền (Vite nguội > 8 s).
@@ -416,6 +426,7 @@ Phát hành agent: build → ký số → canary 2-3 máy ≥ 10 phút (quay l�
 | 03/10/2026 | 4.6 Đăng nhập + Dashboard + trang phòng + Giới thiệu | Xong (chờ máy canary để đối chiếu số thật) | Core thêm `GET /api/incidents` + `/api/incidents/summary`; Dashboard: phiếu sự cố, cảnh báo phần cứng, đồng hồ, biểu đồ Chart.js, sự cố đang mở; `incident_new` → thông báo HĐH. Chạy thử đầu-cuối đạt |
 | 10/10/2026 | 8.1 Chat theo phòng | Xong phần mã (thông báo Windows thử ở bản cài) | Core `/api/chat/*` (phía admin / phía phòng, chưa đọc + cảm xúc theo TỪNG NGƯỜI, scope LAB/HSK/PM không lẫn, ảnh dán vào kho chung, realtime chỉ tới đúng người); Desktop nút 💬 Chat + ngăn chat (dán ảnh nén JPEG, cảm xúc, phóng ảnh) + báo tin (huy hiệu, "(n)" tiêu đề, toast, tiếng ting, thông báo Windows). 222 test; thử đầu-cuối đạt |
 | 11/10/2026 | 8.2 Sự cố và báo cáo | Xong phần mã | Core: báo hỏng / bổ sung / ghi chú IT / xử lý theo dòng (dòng + ghi chú có cấu trúc, chốt `rev`), kênh Telegram + email theo tổ chức (bí mật mã hoá, gửi nền, gửi thử), log máy trạm, báo cáo sử dụng năm/tháng/ngày + lịch sử RAM/ổ cứng + Excel; quyền `incident.handle`, `report.export`. Desktop: trang Sự cố (+ log, kênh cảnh báo), trang Báo cáo, Báo hỏng ở trang máy/phòng. 229 test; thử đầu-cuối đạt |
+| 12/10/2026 | 8.3 Quản trị nền tảng + SSO | Xong phần mã (SSO thật cần đăng ký Microsoft Entra + :7443) | Core `/api/admin/*` (người dùng Local/AD, policy, phiên + đá phiên, nhật ký, cấu hình đăng nhập, hệ thống) + công tắc LDAP / SSO + SSO OpenID Connect (ADR-0015) + tự đổi mật khẩu; Desktop trang Quản trị 7 tab, nút gạt LDAP / SSO, nút SSO ở màn đăng nhập. 236 test; thử đầu-cuối với nhà cung cấp OpenID giả đạt |
 | 09/10/2026 | 7.3 Giao bài, thu bài, nhật ký | Xong phần mã (cổng ra GĐ7 chờ canary) | Core `/api/work/*` (lô theo luồng giữ cây con, giao nhiều phòng SV/GV, thu bài 6 trạng thái, tải 1 máy / tất cả / từng tệp, cấu trúc THU, nhật ký + xoá có hàng chờ); luật đường dẫn = bản agent; an toàn hơn hub cũ (chỉ ghi sổ tệp agent báo đã ghi, chặn đích hệ thống/agent, chặn xoá nguồn gốc ổ, mẫu không chứa đường dẫn). Desktop `src/work/` (3 thẻ, tự lưu bài vào <thư mục>/<phòng>/<máy>, nhật ký thu + sao chép). 217 test; thử đầu-cuối trên Core mongomock đạt |
 | 05/10/2026 | 7.2 Trình quản lý tệp 2 khung | Xong phần mã (thử agent thật chờ canary) | Core `/api/files/*` (token, tải lên/về theo luồng, "máy này", khung Máy chủ = kho riêng `drive` + Thùng rác 30 ngày) + chốt token ở relay `fs_request`; Desktop `src/files/` mang hành vi `fbrowser.js` v13 (giữ chỗ cuộn, Back đúng chỗ, kéo-thả, hoàn tác, trạm→trạm 2 chặng). 209 test; thử đầu-cuối 11 bước trên thư mục thật đạt |
 | 05/10/2026 | 6.5 Ra lệnh bằng giọng nói | BỎ (ADR-0014) | Người phụ trách bỏ ghi âm + voice AI; hệ cũ chỉ có 1 route proxy Gemini, không dữ liệu, agent/hệ thi không phụ thuộc → bỏ không ảnh hưởng chuyển đổi |

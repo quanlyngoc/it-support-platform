@@ -226,3 +226,11 @@ Khác hệ cũ: dòng lỗi + ghi chú IT lưu CÓ CẤU TRÚC (`items`, `it_not
 (`description` vẫn giữ bản chữ) — bước chuyển dữ liệu GĐ9 phải tách chuỗi cũ thành `items` (dòng kết thúc " V" = `done`);
 socket `incident_update` chỉ tới `t:<tid>:incidents` + `t:<tid>:room:<id>` (hub cũ broadcast); bí mật email/Telegram mã
 hoá bằng khoá chủ (hệ cũ để thô trong `settings`); quyền mới `incident.handle`, `report.export` (hệ cũ: role admin).
+Quản trị nền tảng (12/10/2026 — route TRÌNH DUYỆT, agent không liên quan): `/settings/api/users|user_add|user_edit|
+user_toggle|user_delete` + `ad_users|ad_user_save|ad_user_toggle|ad_user_delete` → `/api/admin/users*` (một danh sách Local
++ AD) · `permissions|policies|policy_save|policy_delete` → `/api/admin/permissions`, `/api/admin/policies*` ·
+`online_users` → `/api/admin/sessions` (+ `DELETE` đá phiên) · `audit_logs` → `/api/admin/audit` · `ldap_config|ldap_save|
+ldap_test` → `/api/admin/auth-config*` · `network_config|network_save` → `GET /api/admin/system` (chỉ xem: cổng Core đặt bằng
+biến môi trường dịch vụ) · `/admin/change_password` → `POST /api/auth/password` (mọi tài khoản Local). MỚI so với hệ cũ:
+công tắc LDAP / SSO + SSO OpenID Connect (`/api/auth/methods`, `/api/auth/sso/start|callback|poll` — ADR-0015). Không
+chuyển: OU admin/teacher/helpdesk của LDAP (hệ cũ đã thôi dùng, phân quyền theo đăng ký AD + policy), Gemini (ADR-0014).
