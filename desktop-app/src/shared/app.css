@@ -564,3 +564,25 @@ button.armed { background: var(--err); color: #fff; border-color: var(--err); }
 .login-card .sso-btn { width: 100%; padding: 9px 16px; }
 .sso-wait { font-weight: 600; }
 .topbar button.small { white-space: nowrap; }
+
+/* ===== Cập nhật Agent (Sổ tay 8.4) ===== */
+.au { display: grid; gap: 12px; }
+.au-head { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 28px; background: var(--surface);
+  border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: 10px; padding: 12px 16px; }
+.au-head.live { border-left-color: var(--warn); }
+.au-target { display: grid; }
+.au-target b { font-size: 22px; font-variant-numeric: tabular-nums; }
+.au-sum { flex: 1; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; }
+.au-sum span { white-space: nowrap; }
+.au-all { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+.au-confirm { border: 1px solid var(--warn); background: color-mix(in srgb, var(--warn) 10%, var(--surface));
+  border-radius: 10px; padding: 12px 16px; }
+.au-confirm p { margin: 0 0 10px; }
+.au-confirm-row { display: flex; gap: 10px; align-items: center; }
+.au-confirm-row input { max-width: 220px; }
+.au-st.running, .au-st.waiting { color: var(--accent); }
+.au-st.done { color: var(--ok); }
+.au-st.error { color: var(--err); }
+.au-rel summary { cursor: pointer; font-weight: 600; margin: 6px 0; }
+.au-rel code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+.bulkbar select { width: auto; }

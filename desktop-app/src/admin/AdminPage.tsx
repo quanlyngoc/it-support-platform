@@ -9,11 +9,12 @@ import { AlertSettings } from "../incidents/IncidentsPage";
 import { fmtTime } from "../shared/metrics";
 import { useCan } from "../shared/perm";
 import { send, type AuditRow, type OnlineSession, type SystemInfo } from "./api";
+import { AgentUpdateTab } from "./AgentUpdateTab";
 import { AuthTab } from "./AuthTab";
 import { PoliciesTab } from "./PoliciesTab";
 import { UsersTab } from "./UsersTab";
 
-type Tab = "users" | "policies" | "sessions" | "auth" | "alerts" | "audit" | "system";
+type Tab = "users" | "policies" | "sessions" | "auth" | "alerts" | "agent" | "audit" | "system";
 
 export function useAdminVisible(): boolean {
   const a = useCan("user.view");
@@ -21,7 +22,8 @@ export function useAdminVisible(): boolean {
   const c = useCan("policy.create");
   const d = useCan("system.configure");
   const e = useCan("audit.view");
-  return a || b || c || d || e;
+  const f = useCan("agent.update");
+  return a || b || c || d || e || f;
 }
 
 export function AdminPage() {
@@ -31,9 +33,11 @@ export function AdminPage() {
   const canPol = canPolEdit || canPolNew || canUsers;
   const canSys = useCan("system.configure");
   const canAudit = useCan("audit.view");
+  const canAgent = useCan("agent.update");
   const tabs: [Tab, string, boolean][] = [
     ["users", "Người dùng", canUsers], ["policies", "Policy", canPol], ["sessions", "Phiên đang mở", canUsers],
-    ["auth", "Đăng nhập (LDAP / SSO)", canSys], ["alerts", "Kênh cảnh báo", canSys], ["audit", "Nhật ký", canAudit],
+    ["auth", "Đăng nhập (LDAP / SSO)", canSys], ["alerts", "Kênh cảnh báo", canSys], ["agent", "Cập nhật Agent", canAgent],
+    ["audit", "Nhật ký", canAudit],
     ["system", "Hệ thống", canSys],
   ];
   const shown = tabs.filter((t) => t[2]);
@@ -55,6 +59,7 @@ export function AdminPage() {
       {cur === "sessions" && <SessionsTab />}
       {cur === "auth" && <AuthTab />}
       {cur === "alerts" && <AlertSettings />}
+      {cur === "agent" && <AgentUpdateTab />}
       {cur === "audit" && <AuditTab />}
       {cur === "system" && <SystemTab />}
     </section>
