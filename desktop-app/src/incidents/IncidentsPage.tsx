@@ -162,7 +162,7 @@ const TEXT: [keyof AlertSave, string, string][] = [
   ["sender_email", "Email gửi", "it@…"],
 ];
 
-function AlertSettings() {
+export function AlertSettings() {
   const qc = useQueryClient();
   const cfg = useQuery({ queryKey: ["alert-cfg"], queryFn: () => getJson<AlertCfg>("/api/settings/alerts") });
   if (cfg.isPending) return <p className="muted">Đang tải…</p>;

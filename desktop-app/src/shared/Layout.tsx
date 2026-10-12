@@ -1,6 +1,6 @@
 // Khung ứng dụng sau đăng nhập: thanh trên cùng hiện tổ chức + người dùng (đặc tả §10), điều hướng, đăng xuất,
 // kênh realtime, dải đỏ khi mất kết nối (banner B1 của hệ cũ) và dải báo có bản Desktop mới.
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Navigate, NavLink, Outlet } from "react-router";
 import { api } from "../api-client";
@@ -12,6 +12,8 @@ import { checkUpdate, installUpdate, useUpdate } from "./updater";
 import { ChatPanel } from "../chat/ChatPanel";
 import { ChatButton, ChatNotifier } from "../chat/ChatNotifier";
 import type { IncidentUpdate } from "../incidents/api";
+import { useAdminVisible } from "../admin/AdminPage";
+import { PasswordDialog } from "./PasswordDialog";
 
 type IncidentNew = { hostname: string; room_name?: string; title: string; description?: string };
 
@@ -21,6 +23,8 @@ export function Layout() {
   const { token, session, baseUrl, logout } = useSession();
   const { connected, everConnected } = useRealtime();
   const qc = useQueryClient();
+  const showAdmin = useAdminVisible();
+  const [pwd, setPwd] = useState(false);
 
   useEffect(() => {
     if (!token) return;
@@ -76,6 +80,7 @@ export function Layout() {
           <NavLink to="/rooms">Phòng máy</NavLink>
           <NavLink to="/incidents">Sự cố</NavLink>
           <NavLink to="/reports">Báo cáo</NavLink>
+          {showAdmin && <NavLink to="/admin">Quản trị</NavLink>}
           <NavLink to="/about">Giới thiệu</NavLink>
         </nav>
         <ChatButton />
@@ -83,6 +88,7 @@ export function Layout() {
           <b>{session.tenant_code}</b> · {session.username}
           {session.is_super && <span className="badge">Super Admin</span>}
         </span>
+        <button className="ghost small" onClick={() => setPwd(true)} title="Đổi mật khẩu tài khoản Local">Đổi mật khẩu</button>
         <button className="ghost" onClick={signOut}>Đăng xuất</button>
       </header>
       <div className="strips">
@@ -96,6 +102,7 @@ export function Layout() {
       </div>
       <ChatPanel />
       <ChatNotifier />
+      {pwd && <PasswordDialog onClose={() => setPwd(false)} />}
     </div>
   );
 }

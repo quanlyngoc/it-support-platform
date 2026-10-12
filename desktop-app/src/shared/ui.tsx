@@ -32,3 +32,17 @@ export function Modal({ title, children, onClose, busy = false, wide = false }: 
     </div>
   );
 }
+
+/** Nút gạt bật/tắt (role="switch") — dùng cho công tắc cơ chế đăng nhập LDAP / SSO (Sổ tay 8.3). */
+export function Toggle({ checked, onChange, disabled = false, label }: {
+  checked: boolean; onChange: (v: boolean) => void; disabled?: boolean; label?: ReactNode;
+}) {
+  return (
+    <label className={`switch${disabled ? " dis" : ""}`}>
+      <input type="checkbox" role="switch" aria-checked={checked} checked={checked} disabled={disabled}
+             onChange={(e) => onChange(e.target.checked)} />
+      <span className="track"><span className="knob" /></span>
+      {label && <span className="switch-label">{label}</span>}
+    </label>
+  );
+}

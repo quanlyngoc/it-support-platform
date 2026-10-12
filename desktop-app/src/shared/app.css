@@ -509,3 +509,54 @@ table.grid th.num, table.grid td.num { text-align: right; font-variant-numeric: 
 .rp-room table.grid { border: 0; border-top: 1px solid var(--line); border-radius: 0; }
 .rp-day h2 { display: flex; align-items: center; gap: 10px; }
 .rp-day h2 button { margin-left: auto; }
+
+/* ===== Quản trị + đăng nhập SSO (Sổ tay 8.3) ===== */
+.switch { position: relative; display: inline-flex; align-items: center; gap: 10px; cursor: pointer; user-select: none;
+  font-weight: 600; font-size: 13px; }
+.switch input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.switch .track { position: relative; flex-shrink: 0; width: 44px; height: 24px; border-radius: 99px;
+  background: color-mix(in srgb, var(--muted) 45%, var(--line)); transition: background .15s; }
+.switch .knob { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / .35); transition: transform .15s; }
+.switch input:checked + .track { background: var(--ok); }
+.switch input:checked + .track .knob { transform: translateX(20px); }
+.switch input:focus-visible + .track { outline: 2px solid var(--accent); outline-offset: 2px; }
+.switch.dis { cursor: default; opacity: .65; }
+.chk { display: flex; align-items: center; gap: 8px; font-weight: 400; cursor: pointer; }
+.chk input { width: auto; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px 16px; }
+.form-grid.one { grid-template-columns: 1fr; }
+.form-grid > label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+.form-grid > label.chk { display: flex; align-self: end; color: var(--ink); }
+.pol-pick { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: grid; gap: 4px;
+  max-height: 180px; overflow: auto; }
+.pol-pick legend { font-size: 13px; color: var(--muted); padding: 0 4px; }
+.ip-row { display: grid; gap: 8px; }
+.ip-dot { display: inline-flex; align-items: center; gap: 6px; }
+.ip-dot::before { content: ""; width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.ip-dot.green::before { background: var(--ok); }
+.ip-dot.red::before { background: var(--err); }
+button.armed { background: var(--err); color: #fff; border-color: var(--err); }
+.pol-form { border: 0; padding: 0; margin: 0; min-width: 0; }
+.pol-form h3 { font-size: 14px; margin: 16px 0 8px; }
+.perm-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.perm-group { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: grid; gap: 4px; }
+.perm-group .grp { border-bottom: 1px solid var(--line); padding-bottom: 4px; margin-bottom: 2px; }
+.room-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 4px 12px; max-height: 220px;
+  overflow: auto; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; }
+.auth-cards { display: grid; gap: 14px; max-width: 980px; }
+.auth-card { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--line);
+  border-radius: 10px; padding: 14px 18px; }
+.auth-card.on { border-left-color: var(--ok); }
+.auth-card header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.auth-card h3 { margin: 0; font-size: 15px; }
+.auth-card .actions { display: flex; gap: 10px; margin: 14px 0 6px; }
+.auth-test { margin-top: 10px; font-size: 13px; }
+.auth-test summary { cursor: pointer; color: var(--muted); margin-bottom: 8px; }
+.redirect-box code { background: var(--surface-2); padding: 2px 6px; border-radius: 4px; overflow-wrap: anywhere; }
+.warn-notice { border-left-color: var(--warn); }
+.login-card .or { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; }
+.login-card .or::before, .login-card .or::after { content: ""; flex: 1; border-top: 1px solid var(--line); }
+.login-card .sso-btn { width: 100%; padding: 9px 16px; }
+.sso-wait { font-weight: 600; }
+.topbar button.small { white-space: nowrap; }
