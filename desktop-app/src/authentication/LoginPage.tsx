@@ -1,5 +1,6 @@
 // Đăng nhập (đặc tả §10): Tài khoản + Mật khẩu + các nút đăng nhập — KHÔNG câu giải thích (yêu cầu người dùng 12/10/2026).
-// Mã tổ chức (nhớ lần trước, mặc định PHENIKAA) + địa chỉ máy chủ nằm trong nút ⚙ thu gọn; tự mở khi sai mã tổ chức.
+// Mã tổ chức (nhớ lần trước, mặc định PHENIKAA) + địa chỉ máy chủ nằm trong nút ⚙ thu gọn — CHỈ hiện khi lần đăng nhập
+// gần nhất trên máy này là Super Admin (yêu cầu 12/10/2026); máy cài mới cần đổi máy chủ: Super Admin bấm Ctrl+Shift+K.
 // Ô TOTP chỉ hiện khi máy chủ yêu cầu.
 // SSO (Sổ tay 8.3): gõ mã tổ chức → hỏi Core cơ chế đang bật (`/api/auth/methods`) → có SSO thì hiện nút "Đăng nhập bằng
 // <nhà cung cấp>": Core cấp auth_url → mở bằng TRÌNH DUYỆT của máy (người dùng đăng nhập + MFA ở nhà cung cấp) → ứng dụng
@@ -17,7 +18,9 @@ const POLL_MS = 1500;
 const DEFAULT_TENANT = (import.meta.env.VITE_DEFAULT_TENANT as string | undefined) || "PHENIKAA";
 
 export function LoginPage() {
-  const { token, baseUrl, tenantCode, setServer, login } = useSession();
+  const { token, baseUrl, tenantCode, lastSuper, setServer, login } = useSession();
+  const [reveal, setReveal] = useState(false);
+  const showConn = lastSuper || reveal;
   const navigate = useNavigate();
   const [server, setServerInput] = useState(baseUrl);
   const [tenant, setTenant] = useState(tenantCode || DEFAULT_TENANT);
@@ -51,6 +54,19 @@ export function LoginPage() {
 
   useEffect(() => () => {
     cancel.current = true;
+  }, []);
+
+  useEffect(() => {
+    // tổ hợp phím ẩn cho Super Admin trên máy cài mới (chưa từng đăng nhập Super Admin) — không có chữ nào chỉ tới nó
+    const k = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setReveal(true);
+        setConn(true);
+      }
+    };
+    window.addEventListener("keydown", k);
+    return () => window.removeEventListener("keydown", k);
   }, []);
 
   if (token) return <Navigate to="/" replace />;
@@ -178,18 +194,20 @@ export function LoginPage() {
             </button>
           </>
         )}
-        <details className="server" open={conn} onToggle={(e) => setConn((e.target as HTMLDetailsElement).open)}>
-          <summary title="Mã tổ chức và địa chỉ máy chủ" aria-label="Kết nối">⚙</summary>
-          <label>
-            Mã tổ chức
-            <input name="tenant" value={tenant} onChange={(e) => setTenant(e.target.value)} required
-                   autoCapitalize="characters" />
-          </label>
-          <label>
-            Máy chủ
-            <input name="server" value={server} onChange={(e) => setServerInput(e.target.value)} />
-          </label>
-        </details>
+        {showConn && (
+          <details className="server" open={conn} onToggle={(e) => setConn((e.target as HTMLDetailsElement).open)}>
+            <summary title="Mã tổ chức và địa chỉ máy chủ" aria-label="Kết nối">⚙</summary>
+            <label>
+              Mã tổ chức
+              <input name="tenant" value={tenant} onChange={(e) => setTenant(e.target.value)} required
+                     autoCapitalize="characters" />
+            </label>
+            <label>
+              Máy chủ
+              <input name="server" value={server} onChange={(e) => setServerInput(e.target.value)} />
+            </label>
+          </details>
+        )}
       </form>
     </main>
   );

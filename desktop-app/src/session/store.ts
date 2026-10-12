@@ -13,6 +13,8 @@ type State = {
   tenantCode: string;
   token: string | null;
   session: SessionInfo | null;
+  /** Lần đăng nhập gần nhất trên máy này là Super Admin → màn đăng nhập mới hiện nút ⚙ (mã tổ chức + máy chủ). */
+  lastSuper: boolean;
   hydrate: () => Promise<void>;
   setServer: (baseUrl: string) => void;
   login: (tenantCode: string, token: string, session: SessionInfo) => void;
@@ -25,12 +27,14 @@ export const useSession = create<State>((set) => ({
   tenantCode: "",
   token: null,
   session: null,
+  lastSuper: false,
   hydrate: async () => {
-    const [baseUrl, tenantCode, token, session] = await Promise.all([
+    const [baseUrl, tenantCode, token, session, lastSuper] = await Promise.all([
       readValue<string>("baseUrl"),
       readValue<string>("tenantCode"),
       readValue<string>("token"),
       readValue<SessionInfo>("session"),
+      readValue<boolean>("lastSuper"),
     ]);
     set({
       ready: true,
@@ -38,6 +42,7 @@ export const useSession = create<State>((set) => ({
       tenantCode: tenantCode || "",
       token: token || null,
       session: session || null,
+      lastSuper: !!lastSuper,
     });
   },
   setServer: (baseUrl) => {
@@ -49,7 +54,8 @@ export const useSession = create<State>((set) => ({
     void writeValue("tenantCode", tenantCode);
     void writeValue("token", token);
     void writeValue("session", session);
-    set({ tenantCode, token, session });
+    void writeValue("lastSuper", session.is_super);
+    set({ tenantCode, token, session, lastSuper: session.is_super });
   },
   logout: () => {
     void writeValue("token", undefined);

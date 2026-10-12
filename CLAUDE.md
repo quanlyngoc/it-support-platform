@@ -260,7 +260,9 @@ sự kiện riêng `vnc_thumb_req`, `fs_request`. (`kill_and_update` KHÔNG còn
   (scratchpad `e2e_admin.py`) + bấm bằng `Input.dispatchMouseEvent` (click() bằng JS không mở được popup).
 - **Màn đăng nhập TỐI GIẢN (yêu cầu người dùng 12/10/2026):** chỉ ô Tài khoản, Mật khẩu và các nút đăng nhập — KHÔNG câu
   giải thích / dòng hướng dẫn. Mã tổ chức (mặc định PHENIKAA hoặc mã lần trước, `VITE_DEFAULT_TENANT`) + máy chủ nằm trong
-  nút ⚙ thu gọn, tự mở khi sai mã tổ chức. Ô có `name` (tenant/username/password/server) để kịch bản e2e điền.
+  nút ⚙ thu gọn — nút ⚙ CHỈ hiện khi lần đăng nhập gần nhất trên máy là Super Admin (cờ `lastSuper` trong kho phiên);
+  máy cài mới cần đổi máy chủ: Super Admin bấm Ctrl+Shift+K (không có chữ nào chỉ tới). Ô có `name`
+  (tenant/username/password/server) để kịch bản e2e điền.
 - **Chạy thử đầu-cuối không cần Atlas:** scratchpad `core_mock.py` = `app.server.main()` thật (gevent) trên mongomock
   (`tz_aware=True` như Core thật — thiếu là giờ hiển thị lệch 7 tiếng), tự tạo PHENIKAA + `admin`/`Ui@12345`. Kịch bản
   e2e chờ form đăng nhập xuất hiện rồi mới điền (Vite nguội > 8 s).
