@@ -1,4 +1,6 @@
-// Đăng nhập (đặc tả §10): Mã tổ chức (nhớ lần trước) + Tài khoản + Mật khẩu; ô TOTP chỉ hiện khi máy chủ yêu cầu.
+// Đăng nhập (đặc tả §10): Tài khoản + Mật khẩu + các nút đăng nhập — KHÔNG câu giải thích (yêu cầu người dùng 12/10/2026).
+// Mã tổ chức (nhớ lần trước, mặc định PHENIKAA) + địa chỉ máy chủ nằm trong nút ⚙ thu gọn; tự mở khi sai mã tổ chức.
+// Ô TOTP chỉ hiện khi máy chủ yêu cầu.
 // SSO (Sổ tay 8.3): gõ mã tổ chức → hỏi Core cơ chế đang bật (`/api/auth/methods`) → có SSO thì hiện nút "Đăng nhập bằng
 // <nhà cung cấp>": Core cấp auth_url → mở bằng TRÌNH DUYỆT của máy (người dùng đăng nhập + MFA ở nhà cung cấp) → ứng dụng
 // hỏi lại Core mỗi 1,5 s tới khi có token (không cần đăng ký đường dẫn riêng cho ứng dụng).
@@ -12,12 +14,14 @@ import { IN_TAURI } from "../shared/platform";
 import { useSession } from "../session/store";
 
 const POLL_MS = 1500;
+const DEFAULT_TENANT = (import.meta.env.VITE_DEFAULT_TENANT as string | undefined) || "PHENIKAA";
 
 export function LoginPage() {
   const { token, baseUrl, tenantCode, setServer, login } = useSession();
   const navigate = useNavigate();
   const [server, setServerInput] = useState(baseUrl);
-  const [tenant, setTenant] = useState(tenantCode);
+  const [tenant, setTenant] = useState(tenantCode || DEFAULT_TENANT);
+  const [conn, setConn] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [totp, setTotp] = useState("");
@@ -73,8 +77,8 @@ export function LoginPage() {
       const ae = err as ApiError | undefined;
       if (ae?.code === "TOTP_REQUIRED") {
         setNeedTotp(true);
-        setError("Tài khoản này cần mã xác thực 2 lớp (TOTP).");
       } else {
+        if (ae?.code === "TENANT") setConn(true);
         setError(errorMessage(ae, `Đăng nhập không thành công (${response.status})`));
       }
     } catch (ex) {
@@ -136,7 +140,6 @@ export function LoginPage() {
         <div className="login-card">
           <h1>Phenikaa IT Monitor</h1>
           <p className="sso-wait">Đang chờ đăng nhập {methods?.sso_label ?? "SSO"} trên trình duyệt…</p>
-          <p className="muted small">Hoàn tất đăng nhập ở cửa sổ trình duyệt vừa mở rồi quay lại đây — ứng dụng tự vào.</p>
           <button type="button" className="ghost" onClick={() => void openBrowser(sso.url)}>Mở lại trang đăng nhập</button>
           <button type="button" className="ghost" onClick={() => { cancel.current = true; setSso(null); }}>Huỷ</button>
         </div>
@@ -148,20 +151,14 @@ export function LoginPage() {
     <main className="login">
       <form className="login-card" onSubmit={submit}>
         <h1>Phenikaa IT Monitor</h1>
-        <p className="muted">Đăng nhập bằng mã tổ chức và tài khoản được cấp.</p>
-        <label>
-          Mã tổ chức
-          <input value={tenant} onChange={(e) => setTenant(e.target.value)} placeholder="VD: PHENIKAA" required
-                 autoFocus={!tenant} autoCapitalize="characters" />
-        </label>
         <label>
           Tài khoản
-          <input value={username} onChange={(e) => setUsername(e.target.value)} required autoFocus={!!tenant}
+          <input name="username" value={username} onChange={(e) => setUsername(e.target.value)} required autoFocus
                  autoComplete="username" />
         </label>
         <label>
           Mật khẩu
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required
+          <input name="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required
                  autoComplete="current-password" />
         </label>
         {needTotp && (
@@ -171,24 +168,28 @@ export function LoginPage() {
                    required autoFocus />
           </label>
         )}
-        {methods && !methods.ldap && (
-          <p className="muted small">Tài khoản AD đăng nhập bằng mật khẩu đang tắt ở tổ chức này
-            {methods.sso ? " — dùng nút SSO bên dưới." : "."}</p>
-        )}
-        <details className="server">
-          <summary>Máy chủ: {server}</summary>
-          <input value={server} onChange={(e) => setServerInput(e.target.value)} aria-label="Địa chỉ máy chủ" />
-        </details>
         {error && <p className="error" role="alert">{error}</p>}
         <button type="submit" disabled={busy}>{busy ? "Đang đăng nhập…" : "Đăng nhập"}</button>
         {methods?.sso && (
           <>
-            <div className="or"><span>hoặc</span></div>
+            <div className="or" />
             <button type="button" className="ghost sso-btn" onClick={() => void startSso()} disabled={busy}>
               Đăng nhập bằng {methods.sso_label || "SSO"}
             </button>
           </>
         )}
+        <details className="server" open={conn} onToggle={(e) => setConn((e.target as HTMLDetailsElement).open)}>
+          <summary title="Mã tổ chức và địa chỉ máy chủ" aria-label="Kết nối">⚙</summary>
+          <label>
+            Mã tổ chức
+            <input name="tenant" value={tenant} onChange={(e) => setTenant(e.target.value)} required
+                   autoCapitalize="characters" />
+          </label>
+          <label>
+            Máy chủ
+            <input name="server" value={server} onChange={(e) => setServerInput(e.target.value)} />
+          </label>
+        </details>
       </form>
     </main>
   );

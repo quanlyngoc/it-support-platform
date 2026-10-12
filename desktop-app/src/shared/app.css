@@ -555,8 +555,12 @@ button.armed { background: var(--err); color: #fff; border-color: var(--err); }
 .auth-test summary { cursor: pointer; color: var(--muted); margin-bottom: 8px; }
 .redirect-box code { background: var(--surface-2); padding: 2px 6px; border-radius: 4px; overflow-wrap: anywhere; }
 .warn-notice { border-left-color: var(--warn); }
-.login-card .or { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; }
-.login-card .or::before, .login-card .or::after { content: ""; flex: 1; border-top: 1px solid var(--line); }
+.login-card .or { border-top: 1px solid var(--line); margin: 2px 0; }
+.login-card details.server { align-self: end; text-align: right; }
+.login-card details.server summary { list-style: none; cursor: pointer; font-size: 16px; color: var(--muted); }
+.login-card details.server summary::-webkit-details-marker { display: none; }
+.login-card details.server[open] { text-align: left; display: grid; gap: 8px; }
+.login-card details.server[open] summary { text-align: right; }
 .login-card .sso-btn { width: 100%; padding: 9px 16px; }
 .sso-wait { font-weight: 600; }
 .topbar button.small { white-space: nowrap; }
