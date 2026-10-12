@@ -6,7 +6,7 @@
 > Kế hoạch đầy đủ: `docs/plan/SoTay_ThucHien_ITMonitor_SaaS.html` (số bước bên dưới theo Sổ tay;
 > tài liệu đó còn ghi `D:\Platform` — hiểu là `D:\ITSupportPlatform`).
 
-Cập nhật lần cuối: 12/10/2026 (GĐ4 4.1–4.6 xong, 4.7 chờ cổng :7443; GĐ5 5.1–5.5 + GĐ6 6.1–6.4 + GĐ7 7.1–7.3 + GĐ8 8.1–8.4 xong phần mã — cổng ra cần canary; 6.5 BỎ (ADR-0014); SSO + công tắc LDAP/SSO (ADR-0015); ⚠ Atlas đang chặn IP máy chủ — xem "Việc cần người vận hành"; kế: GĐ8 8.5)
+Cập nhật lần cuối: 12/10/2026 (GĐ4 4.1–4.6 xong, 4.7 chờ cổng :7443; GĐ5 5.1–5.5 + GĐ6 6.1–6.4 + GĐ7 7.1–7.3 + GĐ8 8.1–8.4 xong phần mã — cổng ra cần canary; 6.5 BỎ (ADR-0014); SSO + công tắc LDAP/SSO (ADR-0015); Atlas thông lại 12/10; kế: GĐ8 8.5)
 
 ## Cách mở phiên mới để làm tiếp
 
@@ -149,19 +149,17 @@ Cập nhật lần cuối: 12/10/2026 (GĐ4 4.1–4.6 xong, 4.7 chờ cổng :74
       Lần khởi động đó `core-err.log` dính 1 cảnh báo vô hại của gevent ("libuv ... millisecond timer") → đã lọc (`dfbf804`).
 - [x] `dich_vu_core.ps1 -Lenh CapNhat` lên `1b22d30` (7.2). Mã 7.3 + 8.1 + 8.2 (giao/thu bài, chat, sự cố + báo cáo) cần
       `CapNhat` lần kế — không gấp (chưa máy nào nối vào Core). Index 7.3 Claude đã tạo trên Atlas (05/10, trước khi Atlas
-      chặn). 8.2 thêm 2 quyền (`incident.handle`, `report.export`) → khi Atlas vào lại được, Claude chạy
-      `uv run python -m app.db.init` để nạp catalog quyền (Super Admin không cần, policy khác mới gán được). 8.3 thêm
-      collection `sso_logins` (validator + index TTL) — cùng lệnh `app.db.init` đó lo luôn.
+      chặn). Quyền 8.2 + collection `sso_logins` 8.3: đã nạp lên Atlas bằng `app.db.init` (12/10/2026). Dịch vụ vẫn chạy
+      `1b22d30` → cần `CapNhat` để chạy mã 7.3 → 8.4.
 - [ ] **SSO thật (8.3, khi muốn dùng):** đăng ký ứng dụng ở Microsoft Entra (App registrations → New registration →
       Web, Redirect URI = địa chỉ hiện ở Desktop → Quản trị → Đăng nhập; Microsoft chỉ nhận `https://` → cần khối Caddy
       :7443 của 4.7) → tạo Client secret → nhập Issuer `https://login.microsoftonline.com/<Directory (tenant) ID>/v2.0`,
       Client ID, Client secret → "Kiểm tra cấu hình" → gạt BẬT. Tài khoản phải được đăng ký trước ở tab Người dùng.
-- [ ] **GẤP với Core (không ảnh hưởng hệ cũ): Atlas đang TỪ CHỐI kết nối từ máy chủ** (09/10/2026: `SSL handshake failed …
-      TLSV1_ALERT_INTERNAL_ERROR` ở cả 3 node; `dich_vu_core.ps1 -Lenh KiemTra` báo "KHÔNG tới được CSDL"). Dấu hiệu điển hình
-      của IP chưa có trong **Atlas → Security → Network Access**. IP công khai hiện tại của máy chủ: **118.70.209.177**
-      (đo bằng `Resolve-DnsName myip.opendns.com -Server resolver1.opendns.com`). Thêm IP này (hoặc kiểm mục cũ có bị hết
-      hạn / IP có đổi không), chờ ~1 phút → `KiemTra` phải ĐẠT. Trong lúc chờ, Claude chạy thử đầu-cuối bằng Core trên
-      mongomock (scratchpad `core_mock.py`) — không cần Atlas.
+- [x] Atlas từ chối kết nối từ máy chủ (09/10/2026, `TLSV1_ALERT_INTERNAL_ERROR`) — người vận hành thêm IP công khai
+      **118.70.209.177/32** vào Atlas → Database & Network Access → IP Access List (12/10/2026, Active). `KiemTra` ĐẠT
+      (ping 446 ms). Claude chạy `app.db.init` (26 collection, 59 index, 21 quyền — có `incident.handle`, `report.export`,
+      `sso_logins`) + `pytest -m atlas` 4/4 xanh. IP máy chủ đổi → Atlas lại chặn: đo bằng `Resolve-DnsName
+      myip.opendns.com -Server resolver1.opendns.com` rồi thêm IP mới.
 - [ ] 4.7 — mở cổng Desktop (PowerShell **Run as Administrator** trên máy chủ, làm theo phần đầu tệp
       `platform-deployment\caddy\khoi_7443.caddy`): chép khối vào CUỐI `D:\Caddy\Caddyfile` → `caddy validate` → `caddy reload`
       (nạp nóng, không đụng `:5443/:5444`; khối đã có `/vncws` + `/novnc/*` cho xem màn hình) → mở tường lửa TCP 7443. Trên **2 máy quản trị** thử: `Import-Certificate` tệp
