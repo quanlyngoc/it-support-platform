@@ -138,7 +138,7 @@ def test_realtime_chi_toi_dung_nguoi(world, db):
         "kind": "message", "scope": "LAB", "room_name": "Phòng 301 - A6", "from_admin": False, "preview": "alo"}
 
 
-def test_xoa_khi_anh_dang_bi_giu_thi_don_luot_sau(world, db):
+def test_xoa_khi_anh_dang_bi_giu_thi_don_luot_sau(world, db, monkeypatch):
     from datetime import UTC, datetime, timedelta
 
     from app.storage.sweeper import sweep
@@ -148,8 +148,20 @@ def test_xoa_khi_anh_dang_bi_giu_thi_don_luot_sau(world, db):
     r301 = rooms["Phòng 301 - A6"]
     m = c.post("/api/chat/send", json={"room_id": r301, "image": JPG}, headers=auth(n["gs301"])).get_json()
     dang_tai = c.get(f"/api/chat/image/{m['id']}", headers=auth(n["admin"]))  # chưa đóng = tệp đang bị giữ
+    # Windows không xoá được tệp đang mở (WinError 32); Linux (CI) thì xoá được → giả lập đúng lỗi đó ở kho tệp để test
+    # chạy như nhau trên mọi hệ điều hành
+    kho = world["app"].extensions["storage"]
+    goc, giu = kho.delete, {"on": True}
+
+    def delete(key):
+        if giu["on"]:
+            raise PermissionError(32, "Tệp đang được tiến trình khác sử dụng")
+        return goc(key)
+
+    monkeypatch.setattr(kho, "delete", delete)
     assert c.post("/api/chat/clear", json={"room_id": r301}, headers=auth(n["admin"])).status_code == 200
     so = repo_for(db, world["tid"], "file_metadata").find_one({"scope": "storage", "area": "chat"})
     assert so is not None and so["delete_after"] is not None  # chưa xoá được → hẹn worker
     dang_tai.close()
+    giu["on"] = False
     assert sweep(db, world["app"].extensions["storage"], datetime.now(UTC) + timedelta(seconds=1)) == {"deleted": 1}
