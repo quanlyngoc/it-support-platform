@@ -135,9 +135,10 @@ Cập nhật lần cuối: 12/10/2026 (GĐ4 4.1–4.6 xong, 4.7 chờ cổng :74
 ## Việc cần người vận hành (Claude không có quyền Administrator)
 
 - [x] Đẩy mã lên `origin` (github.com/quanlyngoc/it-support-platform): 12/10/2026 Claude push theo yêu cầu người dùng
-      (`bb5d6b2..628f63b`, 41 commit, đã quét không lọt bí mật). Còn: mở tab **Actions** trên GitHub xem CI (`ci.yml`) xanh
-      không — máy chủ không có `gh` nên Claude không xem được; đỏ vì phiên bản `actions/checkout` / `astral-sh/setup-uv`
-      thì báo Claude sửa.
+      (`bb5d6b2..628f63b`, 41 commit, đã quét không lọt bí mật). CI lần đầu đỏ đúng 1 test chat (trông vào việc Windows
+      khoá tệp đang mở — Linux thì không) → sửa test (`a1b3008`) → CI XANH cả `core` lẫn `desktop` (run 38338402978,
+      13/10/2026). `gh` CLI portable: `%LOCALAPPDATA%\Programs\GitHubCLI\bin\gh.exe` (tài khoản quanlyngoc) — Claude xem CI bằng
+      `gh run list -R quanlyngoc/it-support-platform`.
 - [x] 2.11: dịch vụ `PlatformCore` đã cài (02/10/2026). Khi có mã mới cần chạy trên dịch vụ: PowerShell **Run as Administrator** →
       `Set-ExecutionPolicy -Scope Process Bypass -Force; & D:\ITSupportPlatform\platform-deployment\nssm\dich_vu_core.ps1 -Lenh CapNhat`
       (máy chủ thiếu System32 trong PATH nên KHÔNG gõ `powershell -File ...`; Claude không tự làm được vì cần dừng dịch vụ).
